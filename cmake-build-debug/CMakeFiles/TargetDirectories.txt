@@ -1,0 +1,3 @@
+/Users/tolelom/CLionProjects/tolelom/cmake-build-debug/CMakeFiles/tolelom.dir
+/Users/tolelom/CLionProjects/tolelom/cmake-build-debug/CMakeFiles/edit_cache.dir
+/Users/tolelom/CLionProjects/tolelom/cmake-build-debug/CMakeFiles/rebuild_cache.dir

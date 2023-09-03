@@ -12,7 +12,6 @@ vector<string> Utf8Converter::convert(const string &input) {
     return characters;
 }
 
-// TODO: 나중에 보기 좋게 정리할 것
 int Utf8Converter::getCharacterLength(int position) {
     int length = 0;
     if (input[position] & 0x80) {

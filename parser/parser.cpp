@@ -35,6 +35,7 @@ Statement* Parser::parseStatement() {
     else if (currentToken->tokenType == TokenType::IDENTIFIER && nextToken->tokenType == TokenType::ASSIGN) {
         return parseAssignStatement();
     }
+
 }
 
 IntegerStatement* Parser::parseIntegerStatement() {
@@ -76,6 +77,9 @@ IdentifierExpression* Parser::parseIdentifierExpression() {
 }
 
 IntegerExpression* Parser::parseIntegerExpression() {
+    if (currentToken->tokenType == TokenType::IDENTIFIER) { // identifier type checking eval 단계에서 하기
+
+    }
     if (currentToken->tokenType != TokenType::INTEGER)
         throw invalid_argument("parseIntegerExpression: 토큰 타입이 INTEGER가 아닙니다.");
 

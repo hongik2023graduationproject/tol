@@ -17,9 +17,9 @@
 class Parser {
 public:
     Lexer* lexer{};
+    Program program;
     void Parse();
 private:
-    Program program;
     Token* currentToken{};
     Token* nextToken{};
 

@@ -28,8 +28,17 @@ Token* Lexer::getToken() {
     else if (characters[currentReadPoint] == "/") {
         token = new Token{TokenType::SLASH, characters[currentReadPoint]};
     }
+    else if (characters[currentReadPoint] == "!") {
+        token = new Token{TokenType::BANG, characters[currentReadPoint]};
+    }
     else if (characters[currentReadPoint] == " ") {
         token = new Token{TokenType::SPACE, characters[currentReadPoint]};
+    }
+    else if (characters[currentReadPoint] == "(") {
+        token = new Token{TokenType::LPAREN, characters[currentReadPoint]};
+    }
+    else if (characters[currentReadPoint] == ")") {
+        token = new Token{TokenType::RPAREN, characters[currentReadPoint]};
     }
     else if (isNumber(characters[currentReadPoint])) {
         token = new Token{TokenType::INTEGER, readNumber()};

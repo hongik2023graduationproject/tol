@@ -25,4 +25,10 @@ add_executable(tolelom main.cpp
         ast/expressions/integerExpression.h
         ast/statements/integerStatement.h
         exception/exception.h
+        evaluator/evaluator.cpp
+        evaluator/evaluator.h
+        object/object.h
+        ast/literal/integerLiteral.h
+        ast/literal/literal.h
+        ast/literal/booleanLiteral.h
 )

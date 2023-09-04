@@ -5,7 +5,8 @@
 
 class Node {
 public:
-
+    virtual ~Node() = default;
+    Token* token;
 };
 
 

@@ -79,6 +79,12 @@ build CMakeFiles/tolelom.dir/parser/parser.cpp.o: CXX_COMPILER__tolelom_unscanne
   OBJECT_DIR = CMakeFiles/tolelom.dir
   OBJECT_FILE_DIR = CMakeFiles/tolelom.dir/parser
 
+build CMakeFiles/tolelom.dir/evaluator/evaluator.cpp.o: CXX_COMPILER__tolelom_unscanned_Debug /Users/tolelom/CLionProjects/tolelom/evaluator/evaluator.cpp || cmake_object_order_depends_target_tolelom
+  DEP_FILE = CMakeFiles/tolelom.dir/evaluator/evaluator.cpp.o.d
+  FLAGS = -g -std=gnu++20 -arch arm64 -isysroot /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX13.3.sdk -fdiagnostics-color=always
+  OBJECT_DIR = CMakeFiles/tolelom.dir
+  OBJECT_FILE_DIR = CMakeFiles/tolelom.dir/evaluator
+
 
 # =============================================================================
 # Link build statements for EXECUTABLE target tolelom
@@ -87,7 +93,7 @@ build CMakeFiles/tolelom.dir/parser/parser.cpp.o: CXX_COMPILER__tolelom_unscanne
 #############################################
 # Link the executable tolelom
 
-build tolelom: CXX_EXECUTABLE_LINKER__tolelom_Debug CMakeFiles/tolelom.dir/main.cpp.o CMakeFiles/tolelom.dir/repl/repl.cpp.o CMakeFiles/tolelom.dir/lexer/lexer.cpp.o CMakeFiles/tolelom.dir/utf8Converter/utf8Converter.cpp.o CMakeFiles/tolelom.dir/parser/parser.cpp.o
+build tolelom: CXX_EXECUTABLE_LINKER__tolelom_Debug CMakeFiles/tolelom.dir/main.cpp.o CMakeFiles/tolelom.dir/repl/repl.cpp.o CMakeFiles/tolelom.dir/lexer/lexer.cpp.o CMakeFiles/tolelom.dir/utf8Converter/utf8Converter.cpp.o CMakeFiles/tolelom.dir/parser/parser.cpp.o CMakeFiles/tolelom.dir/evaluator/evaluator.cpp.o
   FLAGS = -g -arch arm64 -isysroot /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX13.3.sdk
   OBJECT_DIR = CMakeFiles/tolelom.dir
   POST_BUILD = :

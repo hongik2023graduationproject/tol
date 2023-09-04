@@ -7,7 +7,7 @@
 
 using namespace std;
 
-class Program : Node {
+class Program : public Node {
 public:
     vector<Statement*> statements;
 };

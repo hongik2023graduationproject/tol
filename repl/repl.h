@@ -5,6 +5,7 @@
 #include <exception>
 #include "../lexer/lexer.h"
 #include "../parser/parser.h"
+#include "../evaluator/evaluator.h"
 #include "../token/tokenType.h"
 using namespace std;
 
@@ -18,6 +19,7 @@ public:
 private:
     Lexer lexer;
     Parser parser;
+    Evaluator evaluator;
     static std::string printTokenType(TokenType tokenType) {
         switch (tokenType) {
             case TokenType::ILLEGAL:

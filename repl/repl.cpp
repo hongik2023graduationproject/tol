@@ -17,14 +17,22 @@ void Repl::run() {
             break;
 
         lexer.insertString(input);
-        while (true) {
-            try {
-                Token* token = lexer.getToken();
-                cout << "(\"" << token->literal << "\" " << printTokenType(token->tokenType) << ")" << endl;
-            } catch (int ex) {
-                cout << "end" << endl;
-                break;
-            }
+
+        // parse
+        try {
+            parser.Parse();
+        }
+        catch (exception& e) {
+            cout << e.what() << endl;
+        }
+
+        // evaluate
+        try {
+            Object *evaluated = evaluator.eval(&parser.program);
+            cout << evaluated->print() << endl;
+        }
+        catch (exception& e) {
+
         }
     }
 }

@@ -5,16 +5,21 @@ enum class TokenType {
     ILLEGAL,
     END_OF_FILE,
     NEW_LINE,
-    IDENTIFIER,
-    INT, // int 혹은 정수
-    INTEGER, // 실제 숫자
-    PLUS,
-    MINUS,
-    ASTERISK,
-    SLASH,
-    ASSIGN, // =
-    EQUAL, // ==
-    SPACE,
+    IDENTIFIER, // 사과
+    INTEGER,    // 1, 2, 3
+    PLUS,       // +
+    MINUS,      // -
+    ASTERISK,   // *
+    SLASH,      // /
+    ASSIGN,     // =
+    EQUAL,      // ==
+    SPACE,      // ' '
+    BANG,       // !
+    LPAREN,     // (
+    RPAREN,     // )
+
+    // 예약어
+    INT,        // 정수
 };
 
 #endif //TOLELOM_TOKENTYPE_H

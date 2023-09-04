@@ -30,10 +30,11 @@ private:
                 return "NEW LINE";
             case TokenType::IDENTIFIER:
                 return "IDENTIFIER";
-            case TokenType::INT:
-                return "INT";
             case TokenType::INTEGER:
                 return "INTEGER";
+            case TokenType::SPACE:
+                return "SPACE";
+
             case TokenType::PLUS:
                 return "PLUS";
             case TokenType::MINUS:
@@ -46,8 +47,17 @@ private:
                 return "ASSIGN";
             case TokenType::EQUAL:
                 return "EQUAL";
-            case TokenType::SPACE:
-                return "SPACE";
+            case TokenType::BANG:
+                return "BANG";
+            case TokenType::LPAREN:
+                return "LPAREN";
+            case TokenType::RPAREN:
+                return "RPAREN";
+            case TokenType::LESS_THAN:
+                return "LESS_THAN";
+
+            case TokenType::INT:
+                return "INT";
         }
         return "??";
     }

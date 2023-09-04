@@ -40,6 +40,9 @@ Token* Lexer::getToken() {
     else if (characters[currentReadPoint] == ")") {
         token = new Token{TokenType::RPAREN, characters[currentReadPoint]};
     }
+    else if (characters[currentReadPoint] == "<") {
+        token = new Token{TokenType::LESS_THAN, characters[currentReadPoint]};
+    }
     else if (isNumber(characters[currentReadPoint])) {
         token = new Token{TokenType::INTEGER, readNumber()};
     }

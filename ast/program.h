@@ -10,6 +10,14 @@ using namespace std;
 class Program : public Node {
 public:
     vector<Statement*> statements;
+
+    string String() {
+        string s;
+        for (auto& statement : statements) {
+            s += statement->String();
+        }
+        return s;
+    }
 };
 
 #endif //TOLELOM_PROGRAM_H

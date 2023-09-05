@@ -1,9 +1,9 @@
 #ifndef TOLELOM_LITERAL_H
 #define TOLELOM_LITERAL_H
 
-#include "../node.h"
+#include "../expressions/expression.h"
 
-class Literal : public Node {
+class Literal : public Expression {
 
 };
 

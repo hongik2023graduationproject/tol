@@ -30,7 +30,8 @@ private:
 
     map<string, TokenType> keywords = {
             {"정수", TokenType::INT},
-
+            {"변수", TokenType::LET},
+            {"리턴", TokenType::RETURN},
     };
 };
 

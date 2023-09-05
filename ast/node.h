@@ -1,12 +1,15 @@
 #ifndef TOLELOM_NODE_H
 #define TOLELOM_NODE_H
 
+#include <string>
 #include "../token/token.h"
+
+using namespace std;
 
 class Node {
 public:
-    virtual ~Node() = default;
     Token* token;
+    virtual string String() = 0;
 };
 
 

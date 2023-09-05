@@ -28,7 +28,9 @@ add_executable(tolelom main.cpp
         evaluator/evaluator.cpp
         evaluator/evaluator.h
         object/object.h
-        ast/literal/integerLiteral.h
-        ast/literal/literal.h
-        ast/literal/booleanLiteral.h
+        ast/literals/integerLiteral.h
+        ast/literals/literal.h
+        ast/literals/booleanLiteral.h
+        ast/statements/expressionStatement.h
+        ast/statements/letStatement.h
 )

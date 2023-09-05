@@ -4,9 +4,14 @@
 #include "literal.h"
 #include "../../token/token.h"
 
-class IntegerLiteral : public Literal {
+class IntegerLiteral : public Literal  {
 public:
-    Token token;
+    Token* token;
+    long long value;
+
+    string String() final {
+        return token->literal;
+    }
 };
 
 #endif //TOLELOM_INTEGERLITERAL_H

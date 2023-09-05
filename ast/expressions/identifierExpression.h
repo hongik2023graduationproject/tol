@@ -3,9 +3,14 @@
 
 #include "expression.h"
 
-class IdentifierExpression : Expression {
+class IdentifierExpression : public Expression {
 public:
     Token* token{};
+    string name;
+
+    string String() {
+        return name;
+    }
 };
 
 #endif //TOLELOM_IDENTIFIEREXPRESSION_H

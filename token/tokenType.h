@@ -22,7 +22,9 @@ enum class TokenType {
     LESS_THAN,      // <
 
     // 예약어
+    LET,            // LET
     INT,            // 정수
+    RETURN,         // return
 };
 
 #endif //TOLELOM_TOKENTYPE_H

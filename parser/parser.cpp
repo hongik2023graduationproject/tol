@@ -1,5 +1,10 @@
 #include "parser.h"
 
+Parser::Parser() {
+    prefixParseFunctions.insert({TokenType::IDENTIFIER, &Parser::parseIdentifierExpression});
+}
+
+
 void Parser::Parse() {
     program.statements.clear();
     setNextToken();
@@ -29,54 +34,87 @@ void Parser::skipSpaceToken() {
 }
 
 Statement* Parser::parseStatement() {
-    if (currentToken->tokenType == TokenType::INT) {
+    if (currentToken->tokenType == TokenType::LET) {
+        return parseLetStatement();
+    }
+    else if (currentToken->tokenType == TokenType::INT) {
         return parseIntegerStatement();
     }
     else if (currentToken->tokenType == TokenType::IDENTIFIER && nextToken->tokenType == TokenType::ASSIGN) {
         return parseAssignStatement();
+    } else {
+        return parseExpressionStatement();
+    }
+}
+
+LetStatement* Parser::parseLetStatement() {
+    LetStatement* letStatement = new LetStatement;
+
+    if (currentToken->tokenType != TokenType::LET) {
+        throw invalid_argument("parseLetStatement: 토큰 타입이 LET이 아닙니다.");
+    }
+    letStatement->token = currentToken;
+    setNextToken();
+
+    if (currentToken->tokenType != TokenType::IDENTIFIER) {
+        throw invalid_argument("parseLetStatement: 토큰 타입이 IDENTIFIER가 아닙니다.");
+    }
+    letStatement->name = dynamic_cast<IdentifierExpression*>(parseIdentifierExpression());
+    setNextToken();
+
+    if (currentToken->tokenType != TokenType::ASSIGN) {
+        throw invalid_argument("parseLetStatement: 토큰 타입이 ASSIGN이 아닙니다.");
+    }
+    setNextToken();
+
+    // 추후에 수정 예정
+    while (currentToken->tokenType != TokenType::NEW_LINE) {
+        setNextToken();
     }
 
+    return letStatement;
 }
 
 IntegerStatement* Parser::parseIntegerStatement() {
-    if (currentToken->tokenType != TokenType::INT)
-        throw invalid_argument("parseIntegerStatement: 토큰 타입이 INT가 아닙니다.");
-
-    IntegerStatement* integerStatement = new IntegerStatement;
-    integerStatement->token = currentToken;
-    setNextToken();
-
-    skipSpaceToken();
-
-    integerStatement->identifierExpression = parseIdentifierExpression();
-    setNextToken();
-
-    skipSpaceToken();
-
-    if (currentToken->tokenType != TokenType::ASSIGN)
-        throw invalid_argument("parseIntegerStatement: 토큰 타입이 ASSIGN이 아닙니다.");
-    integerStatement->equal = currentToken;
-    setNextToken();
-
-    skipSpaceToken();
-
-    integerStatement->integerExpression = parseIntegerExpression();
-    setNextToken();
-
-    return integerStatement;
+//    if (currentToken->tokenType != TokenType::INT)
+//        throw invalid_argument("parseIntegerStatement: 토큰 타입이 INT가 아닙니다.");
+//
+//    IntegerStatement* integerStatement = new IntegerStatement;
+//    integerStatement->token = currentToken;
+//    setNextToken();
+//
+//    skipSpaceToken();
+//
+//    integerStatement->identifierExpression = parseIdentifierExpression();
+//    setNextToken();
+//
+//    skipSpaceToken();
+//
+//    if (currentToken->tokenType != TokenType::ASSIGN)
+//        throw invalid_argument("parseIntegerStatement: 토큰 타입이 ASSIGN이 아닙니다.");
+//    integerStatement->equal = currentToken;
+//    setNextToken();
+//
+//    skipSpaceToken();
+//
+//    integerStatement->Expression = parseExpression(Precedence::LOWEST);
+//    setNextToken();
+//
+//    return integerStatement;
 }
 
-IdentifierExpression* Parser::parseIdentifierExpression() {
+Expression* Parser::parseIdentifierExpression() {
     if (currentToken->tokenType != TokenType::IDENTIFIER)
         throw invalid_argument("parseIdentifierExpression: 토큰 타입이 IDENTIFIER가 아닙니다.");
 
     IdentifierExpression* identifierExpression = new IdentifierExpression;
     identifierExpression->token = currentToken;
+    identifierExpression->name = currentToken->literal;
 
     return identifierExpression;
 }
 
-IntegerExpression* Parser::parseIntegerExpression() {
+Expression* Parser::parseIntegerExpression() {
     if (currentToken->tokenType == TokenType::IDENTIFIER) { // identifier type checking eval 단계에서 하기
 
     }
@@ -85,6 +123,7 @@ IntegerExpression* Parser::parseIntegerExpression() {
 
     IntegerExpression* integerExpression = new IntegerExpression;
     integerExpression->token = currentToken;
+    integerExpression->value = stoll(currentToken->literal);
 
     return integerExpression;
 }
@@ -100,14 +139,28 @@ IntegerExpression* Parser::parseIntegerExpression() {
 //    return assignStatement;
 }
 
+ExpressionStatement* Parser::parseExpressionStatement() {
+    ExpressionStatement* expressionStatement = new ExpressionStatement;
+    expressionStatement->expression = parseExpression(Precedence::LOWEST);
 
-//Expression* Parser::parseExpression(int precedence) {
-//    if (prefixParseFunctions.find(currentToken) == prefixParseFunctions.end()) {
-//        throw invalid_argument("parseExpression: 찾는 prefixParseFunction이 존재하지 않습니다.");
-//    }
-//
-//    prefixParseFunction prefixFunction = prefixParseFunctions[currentToken];
-//    Expression* leftExpression = prefixFunction();
-//
-//    return leftExpression;
-//}
+    return expressionStatement;
+}
+
+Expression* Parser::parseExpression(Precedence precedence) {
+    if (prefixParseFunctions.find(currentToken->tokenType) == prefixParseFunctions.end()) {
+        throw invalid_argument("parseExpression: 찾는 prefixParseFunction이 존재하지 않습니다.");
+    }
+
+    prefixParseFunction prefixFunction = prefixParseFunctions[currentToken->tokenType];
+    Expression* leftExpression = (this->*prefixFunction)();
+
+    return leftExpression;
+}
+
+Expression* Parser::parseIntegerLiteral() {
+    IntegerLiteral* integerLiteral = new IntegerLiteral;
+    integerLiteral->token = currentToken;
+    integerLiteral->value = stoll(currentToken->literal);
+
+    return integerLiteral;
+}

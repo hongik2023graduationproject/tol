@@ -74,15 +74,5 @@ private:
     Expression* parseIntegerLiteral();
 };
 
-enum class Precedence {
-    LOWEST,
-    EQUALS,         // ==
-    LESSGREATER,    // <, >
-    SUM,            // +
-    PRODUCT,        // *
-    PREFIX,         // -X, !X
-    CALL            // myFunction(x)
-};
-
 
 #endif //TOLELOM_PARSER_H

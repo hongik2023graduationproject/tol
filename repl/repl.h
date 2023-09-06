@@ -68,6 +68,10 @@ private:
                 return "TRUE";
             case TokenType::FALSE:
                 return "FALSE";
+            case TokenType::IF:
+                return "IF";
+            case TokenType::ELSE:
+                return "ELSE";
         }
         return "??";
     }

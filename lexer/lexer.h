@@ -34,6 +34,8 @@ private:
             {"리턴", TokenType::RETURN},
             {"true", TokenType::TRUE},
             {"false", TokenType::FALSE},
+            {"if", TokenType::IF},
+            {"else", TokenType::ELSE},
     };
 };
 

@@ -28,6 +28,8 @@ enum class TokenType {
     RETURN,         // return
     TRUE,           // true
     FALSE,          // false
+    IF,             // if
+    ELSE,           // else
 };
 
 #endif //TOLELOM_TOKENTYPE_H

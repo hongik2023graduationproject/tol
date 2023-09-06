@@ -34,4 +34,6 @@ add_executable(tolelom main.cpp
         ast/statements/expressionStatement.h
         ast/statements/letStatement.h
         ast/statements/returnStatement.h
+        ast/expressions/ifExpression.h
+        ast/statements/blockStatement.h
 )

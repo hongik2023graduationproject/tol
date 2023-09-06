@@ -15,7 +15,7 @@ public:
     Expression* expression;
 
     string String() {
-        return token->literal + " " + identifierExpression->String() + " = " + expression->String() + "\n";
+        return token->literal + " " + identifierExpression->String() + " = " + expression->String();
     }
 };
 

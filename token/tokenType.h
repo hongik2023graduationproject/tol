@@ -16,6 +16,7 @@ enum class TokenType {
     SLASH,          // /
     ASSIGN,         // =
     EQUAL,          // ==
+    NOT_EQUAL,      // !=
     BANG,           // !
     LPAREN,         // (
     RPAREN,         // )

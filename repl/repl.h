@@ -47,6 +47,8 @@ private:
                 return "ASSIGN";
             case TokenType::EQUAL:
                 return "EQUAL";
+            case TokenType::NOT_EQUAL:
+                return "NOT_EQUAL";
             case TokenType::BANG:
                 return "BANG";
             case TokenType::LPAREN:
@@ -58,6 +60,10 @@ private:
 
             case TokenType::INT:
                 return "INT";
+            case TokenType::LET:
+                return "LET";
+            case TokenType::RETURN:
+                return "RETURN";
         }
         return "??";
     }

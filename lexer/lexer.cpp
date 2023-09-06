@@ -9,12 +9,18 @@ void Lexer::insertString(const std::string &input) {
 }
 
 Token* Lexer::getToken() {
-    if (characters.size() <= currentReadPoint)
-        throw out_of_range("입력된 문자열의 끝에 도달했습니다. 종료합니다."); // 임시 0
+    if (characters.size() <= currentReadPoint) { // 고민 중
+        return new Token{TokenType::NEW_LINE, "\n"};
+    }
 
     Token* token;
     if (characters[currentReadPoint] == "=") {
-        token = new Token{TokenType::ASSIGN, characters[currentReadPoint]};
+        if (characters[nextReadPoint] == "=") {
+            token = new Token{TokenType::EQUAL, characters[currentReadPoint] + characters[nextReadPoint]};
+        }
+        else {
+            token = new Token{TokenType::ASSIGN, characters[currentReadPoint]};
+        }
     }
     else if (characters[currentReadPoint] == "+") {
         token = new Token{TokenType::PLUS, characters[currentReadPoint]};
@@ -29,10 +35,18 @@ Token* Lexer::getToken() {
         token = new Token{TokenType::SLASH, characters[currentReadPoint]};
     }
     else if (characters[currentReadPoint] == "!") {
-        token = new Token{TokenType::BANG, characters[currentReadPoint]};
+        if (characters[nextReadPoint] == "=") {
+            token = new Token{TokenType::NOT_EQUAL, characters[currentReadPoint] + characters[nextReadPoint]};
+        }
+        else {
+            token = new Token{TokenType::BANG, characters[currentReadPoint]};
+        }
     }
     else if (characters[currentReadPoint] == " ") {
         token = new Token{TokenType::SPACE, characters[currentReadPoint]};
+    }
+    else if (characters[currentReadPoint] == "\n") {
+        token = new Token{TokenType::NEW_LINE, characters[currentReadPoint]};
     }
     else if (characters[currentReadPoint] == "(") {
         token = new Token{TokenType::LPAREN, characters[currentReadPoint]};

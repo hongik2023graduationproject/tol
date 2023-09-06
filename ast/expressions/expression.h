@@ -4,6 +4,10 @@
 #include "../node.h"
 
 class Expression : public Node {
+public:
+    string String() {
+
+    }
 };
 
 #endif //TOLELOM_EXPRESSION_H

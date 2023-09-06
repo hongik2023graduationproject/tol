@@ -14,7 +14,7 @@ public:
     string String() {
         string s;
         for (auto& statement : statements) {
-            s += statement->String();
+            s += statement->String() + "\n";
         }
         return s;
     }

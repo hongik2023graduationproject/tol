@@ -11,7 +11,9 @@ public:
     IdentifierExpression* name;
     Expression* expression;
 
-    string String(){};
+    string String(){
+        return token->literal + " " + name->String() + " = " + expression->String();
+    };
 };
 
 #endif //TOLELOM_LETSTATEMENT_H

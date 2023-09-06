@@ -2,6 +2,17 @@
 
 Parser::Parser() {
     prefixParseFunctions.insert({TokenType::IDENTIFIER, &Parser::parseIdentifierExpression});
+    prefixParseFunctions.insert({TokenType::INTEGER, &Parser::parseIntegerLiteral});
+    prefixParseFunctions.insert({TokenType::BANG, &Parser::parsePrefixExpression});
+    prefixParseFunctions.insert({TokenType::MINUS, &Parser::parsePrefixExpression});
+
+    infixParseFunctions.insert({TokenType::PLUS, &Parser::parseInfixExpression});
+    infixParseFunctions.insert({TokenType::MINUS, &Parser::parseInfixExpression});
+    infixParseFunctions.insert({TokenType::ASTERISK, &Parser::parseInfixExpression});
+    infixParseFunctions.insert({TokenType::SLASH, &Parser::parseInfixExpression});
+    infixParseFunctions.insert({TokenType::EQUAL, &Parser::parseInfixExpression});
+    infixParseFunctions.insert({TokenType::NOT_EQUAL, &Parser::parseInfixExpression});
+    infixParseFunctions.insert({TokenType::LESS_THAN, &Parser::parseInfixExpression});
 }
 
 
@@ -10,7 +21,7 @@ void Parser::Parse() {
     setNextToken();
     setNextToken();
 
-    while (currentToken->tokenType != TokenType::END_OF_FILE) {
+    while (currentToken->tokenType != TokenType::NEW_LINE) { // 추후에 END_OF_FILE로 바꿀 것
         try {
             Statement *statement = parseStatement();
             program.statements.push_back(statement);
@@ -37,6 +48,9 @@ Statement* Parser::parseStatement() {
     if (currentToken->tokenType == TokenType::LET) {
         return parseLetStatement();
     }
+    else if (currentToken->tokenType == TokenType::RETURN) {
+        return parseReturnStatement();
+    }
     else if (currentToken->tokenType == TokenType::INT) {
         return parseIntegerStatement();
     }
@@ -56,23 +70,38 @@ LetStatement* Parser::parseLetStatement() {
     letStatement->token = currentToken;
     setNextToken();
 
+    skipSpaceToken();
+
     if (currentToken->tokenType != TokenType::IDENTIFIER) {
         throw invalid_argument("parseLetStatement: 토큰 타입이 IDENTIFIER가 아닙니다.");
     }
     letStatement->name = dynamic_cast<IdentifierExpression*>(parseIdentifierExpression());
     setNextToken();
 
+    skipSpaceToken();
+
     if (currentToken->tokenType != TokenType::ASSIGN) {
         throw invalid_argument("parseLetStatement: 토큰 타입이 ASSIGN이 아닙니다.");
     }
     setNextToken();
 
-    // 추후에 수정 예정
+    skipSpaceToken();
+
+    letStatement->expression = parseExpression(Precedence::LOWEST);
+
+    return letStatement;
+}
+
+ReturnStatement* Parser::parseReturnStatement() {
+    ReturnStatement* returnStatement = new ReturnStatement;
+    returnStatement->token = currentToken;
+    setNextToken();
+
     while (currentToken->tokenType != TokenType::NEW_LINE) {
         setNextToken();
     }
 
-    return letStatement;
+    return returnStatement;
 }
 
 IntegerStatement* Parser::parseIntegerStatement() {
@@ -141,8 +170,12 @@ Expression* Parser::parseIntegerExpression() {
 
 ExpressionStatement* Parser::parseExpressionStatement() {
     ExpressionStatement* expressionStatement = new ExpressionStatement;
+    expressionStatement->token = currentToken;
     expressionStatement->expression = parseExpression(Precedence::LOWEST);
 
+    while (currentToken->tokenType != TokenType::NEW_LINE) {
+        setNextToken();
+    }
     return expressionStatement;
 }
 
@@ -154,6 +187,21 @@ Expression* Parser::parseExpression(Precedence precedence) {
     prefixParseFunction prefixFunction = prefixParseFunctions[currentToken->tokenType];
     Expression* leftExpression = (this->*prefixFunction)();
 
+    // infix 연산자가 있을 때는 SPACE가 있다고 가정, infix 연산자가 없을 때 SPACE가 있는 경우는 없는 지 고민할 것
+    if (nextToken->tokenType == TokenType::SPACE) { // 버그 발생의 여지가 높은 코드
+        setNextToken();
+    }
+
+    while (nextToken->tokenType != TokenType::NEW_LINE && precedence < getPrecedence[nextToken->tokenType]) {
+        if (infixParseFunctions.find(nextToken->tokenType) == infixParseFunctions.end()) {
+            throw invalid_argument("parseExpression: 찾는 infixParseFunction이 존재하지 않습니다.");
+        }
+        infixParseFunction  infixFunction = infixParseFunctions[nextToken->tokenType];
+        setNextToken();
+
+        leftExpression = (this->*infixFunction)(leftExpression);
+    }
+
     return leftExpression;
 }
 
@@ -163,4 +211,29 @@ Expression* Parser::parseIntegerLiteral() {
     integerLiteral->value = stoll(currentToken->literal);
 
     return integerLiteral;
+}
+
+Expression* Parser::parsePrefixExpression() {
+    PrefixExpression* prefixExpression = new PrefixExpression;
+    prefixExpression->token = currentToken;
+    setNextToken();
+
+    prefixExpression->right = parseExpression(Precedence::PREFIX);
+
+    return prefixExpression;
+}
+
+Expression* Parser::parseInfixExpression(Expression *left) {
+    InfixExpression* infixExpression = new InfixExpression;
+    infixExpression->token = currentToken;
+    infixExpression->left = left;
+
+    Precedence precedence = getPrecedence[currentToken->tokenType];
+    setNextToken();
+
+    skipSpaceToken();
+
+    infixExpression->right = parseExpression(precedence);
+
+    return infixExpression;
 }

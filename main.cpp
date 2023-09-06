@@ -3,6 +3,6 @@
 
 int main() {
     Repl repl;
-    repl.lexerTest();
+    repl.parserTest();
     return 0;
 }

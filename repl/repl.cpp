@@ -16,6 +16,7 @@ void Repl::run() {
         if (input == "종료하기")
             break;
 
+        input += "\n";
         lexer.insertString(input);
 
         // parse
@@ -48,11 +49,12 @@ void Repl::lexerTest() {
         if (input == "종료하기")
             break;
 
+        input += "\n";
         lexer.insertString(input);
         while (true) {
             try {
                 Token* token = lexer.getToken();
-                cout << "(\"" << token->literal << "\" " << printTokenType(token->tokenType) << ")" << endl;
+                cout << "(\"" << token->literal << "\", " << printTokenType(token->tokenType) << ")" << endl;
             } catch (int ex) {
 
             }
@@ -71,6 +73,7 @@ void Repl::parserTest() {
         if (input == "종료하기")
             break;
 
+        input += "\n";
         lexer.insertString(input);
 
         try {
@@ -79,5 +82,7 @@ void Repl::parserTest() {
         catch (exception& e) {
             cout << e.what() << endl;
         }
+
+        cout << parser.program.String();
     }
 }

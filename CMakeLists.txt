@@ -33,4 +33,5 @@ add_executable(tolelom main.cpp
         ast/literals/booleanLiteral.h
         ast/statements/expressionStatement.h
         ast/statements/letStatement.h
+        ast/statements/returnStatement.h
 )

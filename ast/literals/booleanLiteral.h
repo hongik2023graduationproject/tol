@@ -5,7 +5,11 @@
 
 class BooleanLiteral : public Literal {
 public:
-    Token token;
+    Token* token;
+    bool value;
+    string String() {
+        return token->literal;
+    }
 };
 
 #endif //TOLELOM_BOOLEANLITERAL_H

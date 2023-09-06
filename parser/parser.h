@@ -19,6 +19,7 @@
 #include "../ast/statements/expressionStatement.h"
 
 #include "../ast/literals/integerLiteral.h"
+#include "../ast/literals/booleanLiteral.h"
 
 enum class Precedence;
 
@@ -69,9 +70,11 @@ private:
     Expression* parseIntegerExpression();
     Expression* parseExpression(Precedence precedence);
     Expression* parsePrefixExpression();
+    Expression* parseGroupedExpression();
     Expression* parseInfixExpression(Expression* left);
 
     Expression* parseIntegerLiteral();
+    Expression* parseBooleanLiteral();
 };
 
 

@@ -26,6 +26,8 @@ enum class TokenType {
     LET,            // LET
     INT,            // 정수
     RETURN,         // return
+    TRUE,           // true
+    FALSE,          // false
 };
 
 #endif //TOLELOM_TOKENTYPE_H

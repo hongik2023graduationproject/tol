@@ -5,6 +5,9 @@ Parser::Parser() {
     prefixParseFunctions.insert({TokenType::INTEGER, &Parser::parseIntegerLiteral});
     prefixParseFunctions.insert({TokenType::BANG, &Parser::parsePrefixExpression});
     prefixParseFunctions.insert({TokenType::MINUS, &Parser::parsePrefixExpression});
+    prefixParseFunctions.insert({TokenType::TRUE, &Parser::parseBooleanLiteral});
+    prefixParseFunctions.insert({TokenType::FALSE, &Parser::parseBooleanLiteral});
+    prefixParseFunctions.insert({TokenType::LPAREN, &Parser::parseGroupedExpression});
 
     infixParseFunctions.insert({TokenType::PLUS, &Parser::parseInfixExpression});
     infixParseFunctions.insert({TokenType::MINUS, &Parser::parseInfixExpression});
@@ -213,6 +216,14 @@ Expression* Parser::parseIntegerLiteral() {
     return integerLiteral;
 }
 
+Expression* Parser::parseBooleanLiteral() {
+    BooleanLiteral* booleanLiteral = new BooleanLiteral;
+    booleanLiteral->token = currentToken;
+    booleanLiteral->value = (currentToken->tokenType == TokenType::TRUE);
+
+    return booleanLiteral;
+}
+
 Expression* Parser::parsePrefixExpression() {
     PrefixExpression* prefixExpression = new PrefixExpression;
     prefixExpression->token = currentToken;
@@ -236,4 +247,22 @@ Expression* Parser::parseInfixExpression(Expression *left) {
     infixExpression->right = parseExpression(precedence);
 
     return infixExpression;
+}
+
+Expression* Parser::parseGroupedExpression() {
+    Expression* expression = new Expression;
+
+    if (currentToken->tokenType != TokenType::LPAREN) {
+        throw invalid_argument("parseGroupedExpression: LPAREN이 아닙니다.");
+    }
+    setNextToken();
+
+    expression = parseExpression(Precedence::LOWEST);
+
+    if (nextToken->tokenType != TokenType::RPAREN) {
+        throw invalid_argument("parseGroupedExpression: RPAREN이 아닙니다.");
+    }
+    setNextToken();
+
+    return expression;
 }

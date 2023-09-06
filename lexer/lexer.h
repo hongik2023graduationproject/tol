@@ -32,6 +32,8 @@ private:
             {"정수", TokenType::INT},
             {"변수", TokenType::LET},
             {"리턴", TokenType::RETURN},
+            {"true", TokenType::TRUE},
+            {"false", TokenType::FALSE},
     };
 };
 

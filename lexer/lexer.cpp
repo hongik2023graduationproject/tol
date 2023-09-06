@@ -17,6 +17,8 @@ Token* Lexer::getToken() {
     if (characters[currentReadPoint] == "=") {
         if (characters[nextReadPoint] == "=") {
             token = new Token{TokenType::EQUAL, characters[currentReadPoint] + characters[nextReadPoint]};
+            currentReadPoint++;
+            nextReadPoint++;
         }
         else {
             token = new Token{TokenType::ASSIGN, characters[currentReadPoint]};
@@ -37,6 +39,8 @@ Token* Lexer::getToken() {
     else if (characters[currentReadPoint] == "!") {
         if (characters[nextReadPoint] == "=") {
             token = new Token{TokenType::NOT_EQUAL, characters[currentReadPoint] + characters[nextReadPoint]};
+            currentReadPoint++;
+            nextReadPoint++;
         }
         else {
             token = new Token{TokenType::BANG, characters[currentReadPoint]};

@@ -64,6 +64,10 @@ private:
                 return "LET";
             case TokenType::RETURN:
                 return "RETURN";
+            case TokenType::TRUE:
+                return "TRUE";
+            case TokenType::FALSE:
+                return "FALSE";
         }
         return "??";
     }

@@ -9,10 +9,12 @@ void Repl::run() {
     cout << "한글 프로그래밍 언어 프로젝트" << endl;
     cout << "제작: ezeun, jh-lee-kor, tolelom" << endl;
     cout << "종료는 \"종료하기\"를 입력하세요." << endl;
+
+    Environment* environment = new Environment;
+    string input;
+    getline(cin, input);
     while (true) {
         cout << ">>> ";
-        string input;
-        getline(cin, input);
         if (input == "종료하기")
             break;
 
@@ -29,7 +31,7 @@ void Repl::run() {
 
         // evaluate
         try {
-            Object *evaluated = evaluator.eval(&parser.program);
+            Object *evaluated = evaluator.eval(&parser.program, environment);
             cout << evaluated->print() << endl;
         }
         catch (exception& e) {
@@ -91,30 +93,34 @@ void Repl::webRun() {
     if (access(fileName.c_str(), 0) == -1)
         return;
 
+    Environment* environment = new Environment;
     string input;
     ifstream inputFile(fileName);
-    getline(inputFile, input);
 
-    if (input == "종료하기")
-        return;
+    while (inputFile.peek() != EOF) {
+        getline(inputFile, input);
 
-    input += "\n";
-    lexer.insertString(input);
+        if (input == "종료하기")
+            return;
 
-    try {
-        parser.Parse();
-    }
-    catch (exception& e) {
-        cout << e.what() << endl;
-    }
+        input += "\n";
+        lexer.insertString(input);
 
-    // evaluate
-    try {
-        Object *evaluated = evaluator.eval(&parser.program);
-        cout << evaluated->print() << endl;
-    }
-    catch (exception& e) {
+        try {
+            parser.Parse();
+        }
+        catch (exception& e) {
+            cout << e.what() << endl;
+        }
 
+        // evaluate
+        try {
+            Object *evaluated = evaluator.eval(&parser.program, environment);
+            cout << evaluated->print() << endl;
+        }
+        catch (exception& e) {
+
+        }
     }
 
 }

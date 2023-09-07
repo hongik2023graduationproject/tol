@@ -1,11 +1,11 @@
 #include "evaluator.h"
 
-Object* Evaluator::eval(Node* node) {
+Object* Evaluator::eval(Node* node, Environment* environment) {
     if (Program* program = dynamic_cast<Program*>(node)) {
-        return evalStatements(program->statements);
+        return evalProgram(program->statements, environment);
     }
     else if (ExpressionStatement* expressionStatement = dynamic_cast<ExpressionStatement*>(node)) {
-        return eval(expressionStatement->expression);
+        return eval(expressionStatement->expression, environment);
     }
 //    else if (PrefixExpression* prefixExpression = dynamic_cast<PrefixExpression*>(node)) {
 //        Object* right = eval(prefixExpression->right);
@@ -13,7 +13,7 @@ Object* Evaluator::eval(Node* node) {
 //    }
 //    else if (IntegerExpression* integerExpression = dynamic_cast<IntegerExpression*>(node)) {
 //        Integer* integer = new Integer;
-//        integer->value = stoll(integerExpression->token->literal);
+//        integer->value = stoll(inte->token->literal);
 //        return new Integer;
 //    }
     else if (IntegerLiteral* integerLiteral = dynamic_cast<IntegerLiteral*>(node)) {
@@ -27,22 +27,40 @@ Object* Evaluator::eval(Node* node) {
         return boolean;
     }
     else if (PrefixExpression* prefixExpression = dynamic_cast<PrefixExpression*>(node)) {
-        Object* right = eval(prefixExpression->right);
+        Object* right = eval(prefixExpression->right, environment);
         return evalPrefixExpression(prefixExpression->token, right);
     }
     else if (InfixExpression* infixExpression = dynamic_cast<InfixExpression*>(node)) {
-        Object* left = eval(infixExpression->left);
-        Object* right = eval(infixExpression->right);
+        Object* left = eval(infixExpression->left, environment);
+        Object* right = eval(infixExpression->right, environment);
         return evalInfixExpression(infixExpression->token, left, right);
+    }
+    else if (ReturnStatement* returnStatement = dynamic_cast<ReturnStatement*>(node)) {
+        Object* value = eval(returnStatement->returnValue, environment);
+        ReturnValue* returnValue = new ReturnValue;
+        returnValue->value = value;
+        return returnValue;
+    }
+    else if (LetStatement* letStatement = dynamic_cast<LetStatement*>(node)) {
+        Object* value = eval(letStatement->expression, environment);
+        environment->set(letStatement->name->name, value);
+        return value;
+    }
+    else if (IdentifierExpression* identifierExpression = dynamic_cast<IdentifierExpression*>(node)) {
+        return evalIdentifier(identifierExpression, environment);
     }
 }
 
 // 이게 되나??
-Object* Evaluator::evalStatements(vector<Statement*> statements) {
+Object* Evaluator::evalProgram(vector<Statement*> statements, Environment* environment) {
     Object* object;
 
     for (auto &statement : statements) {
-        object = eval(statement);
+        object = eval(statement, environment);
+
+        if (ReturnValue* returnValue = dynamic_cast<ReturnValue*>(object)) {
+            return returnValue->value;
+        }
     }
 
     return object;
@@ -129,4 +147,9 @@ Object* Evaluator::evalIntegerInfixExpression(Token *token, Object *left, Object
     delete leftInteger;
     delete rightInteger;
 
+}
+
+Object* Evaluator::evalIdentifier(IdentifierExpression* identifier, Environment* environment) {
+    Object* value = environment->get(identifier->name);
+    return value;
 }

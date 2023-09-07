@@ -4,6 +4,7 @@
 enum class ObjectType {
     INTEGER,
     BOOLEAN,
+    RETURN_VALUE_OBJECT
 };
 
 class Object {
@@ -29,6 +30,15 @@ public:
     Boolean(bool value) : value(value) {};
     string print() final {
         return to_string(value);
+    }
+};
+
+class ReturnValue : public Object {
+public:
+    ObjectType type = ObjectType::RETURN_VALUE_OBJECT;
+    Object* value;
+    string print() final {
+        return value->print();
     }
 };
 

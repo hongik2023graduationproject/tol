@@ -96,22 +96,37 @@ Object* Evaluator::evalIntegerInfixExpression(Token *token, Object *left, Object
     long long leftValue = leftInteger->value;
     long long rightValue = rightInteger->value;
 
-    Integer* returnInteger = new Integer;
     if (token->tokenType == TokenType::PLUS) {
+        Integer* returnInteger = new Integer;
         returnInteger->value = leftValue + rightValue;
+        return returnInteger;
     }
     else if (token->tokenType == TokenType::MINUS) {
+        Integer* returnInteger = new Integer;
         returnInteger->value = leftValue - rightValue;
+        return returnInteger;
     }
     else if (token->tokenType == TokenType::ASTERISK) {
+        Integer* returnInteger = new Integer;
         returnInteger->value = leftValue * rightValue;
+        return returnInteger;
     }
     else if (token->tokenType == TokenType::SLASH) {
+        Integer* returnInteger = new Integer;
         returnInteger->value = leftValue / rightValue; // 자동 형 변환에서 오류 날 가능성이 있음
+        return returnInteger;
+    }
+    else if (token->tokenType == TokenType::LESS_THAN) {
+        return new Boolean{leftValue < rightValue};//nativeBoolToBooleanObject(leftValue < rightValue);
+    }
+    else if (token->tokenType == TokenType::EQUAL) {
+        return new Boolean{leftValue == rightValue};
+    }
+    else if (token->tokenType == TokenType::NOT_EQUAL) {
+        return new Boolean{leftValue != rightValue};
     }
 
     delete leftInteger;
     delete rightInteger;
 
-    return returnInteger;
 }

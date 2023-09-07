@@ -87,7 +87,7 @@ void Repl::parserTest() {
 }
 
 void Repl::webRun() {
-    string fileName = "./input.txt";
+    string fileName = "./main.txt";
     if (access(fileName.c_str(), 0) == -1)
         return;
 

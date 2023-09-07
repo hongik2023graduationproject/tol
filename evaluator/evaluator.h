@@ -23,6 +23,7 @@ private:
     Object* evalBangOperatorExpression(Object* right);
     Object* evalMinusPrefixOperatorExpression(Object* right);
     Object* evalIntegerInfixExpression(Token* token, Object* left, Object* right);
+
     // 아직 적용 안함
     Boolean TRUE{true};
     Boolean FALSE{false};

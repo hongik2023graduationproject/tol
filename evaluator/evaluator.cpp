@@ -30,6 +30,11 @@ Object* Evaluator::eval(Node* node) {
         Object* right = eval(prefixExpression->right);
         return evalPrefixExpression(prefixExpression->token, right);
     }
+    else if (InfixExpression* infixExpression = dynamic_cast<InfixExpression*>(node)) {
+        Object* left = eval(infixExpression->left);
+        Object* right = eval(infixExpression->right);
+        return evalInfixExpression(infixExpression->token, left, right);
+    }
 }
 
 // 이게 되나??
@@ -75,4 +80,36 @@ Object* Evaluator::evalMinusPrefixOperatorExpression(Object *right) {
     else {
         // type error
     }
+}
+
+Object* Evaluator::evalInfixExpression(Token *token, Object *left, Object *right) {
+    if (dynamic_cast<Integer*>(left) && dynamic_cast<Integer*>(right)) {
+        return evalIntegerInfixExpression(token, left, right);
+    }
+}
+
+Object* Evaluator::evalIntegerInfixExpression(Token *token, Object *left, Object *right) {
+    Integer* leftInteger = dynamic_cast<Integer*>(left);
+    Integer* rightInteger = dynamic_cast<Integer*>(right);
+    long long leftValue = leftInteger->value;
+    long long rightValue = rightInteger->value;
+
+    Integer* returnInteger = new Integer;
+    if (token->tokenType == TokenType::PLUS) {
+        returnInteger->value = leftValue + rightValue;
+    }
+    else if (token->tokenType == TokenType::MINUS) {
+        returnInteger->value = leftValue - rightValue;
+    }
+    else if (token->tokenType == TokenType::ASTERISK) {
+        returnInteger->value = leftValue * rightValue;
+    }
+    else if (token->tokenType == TokenType::SLASH) {
+        returnInteger->value = leftValue / rightValue; // 자동 형 변환에서 오류 날 가능성이 있음
+    }
+
+    delete leftInteger;
+    delete rightInteger;
+
+    return returnInteger;
 }

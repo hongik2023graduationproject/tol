@@ -3,6 +3,6 @@
 
 int main() {
     Repl repl;
-    repl.run();
+    repl.webRun();
     return 0;
 }

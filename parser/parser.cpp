@@ -59,7 +59,11 @@ Statement* Parser::parseStatement() {
     }
     else if (currentToken->tokenType == TokenType::IDENTIFIER && nextToken->tokenType == TokenType::ASSIGN) {
         return parseAssignStatement();
-    } else {
+    }
+    else if (currentToken->tokenType == TokenType::IF) {
+        
+    }
+    else {
         return parseExpressionStatement();
     }
 }

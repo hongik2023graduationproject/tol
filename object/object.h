@@ -8,6 +8,7 @@ enum class ObjectType {
 
 class Object {
 public:
+    ObjectType type;
     virtual string print() = 0;
 };
 

@@ -40,9 +40,11 @@ Object* Evaluator::eval(Node* node) {
 // 이게 되나??
 Object* Evaluator::evalStatements(vector<Statement*> statements) {
     Object* object;
+
     for (auto &statement : statements) {
         object = eval(statement);
     }
+
     return object;
 }
 
@@ -57,7 +59,7 @@ Object* Evaluator::evalPrefixExpression(Token* token, Object *right) {
 
 Object* Evaluator::evalBangOperatorExpression(Object *right) {
     if (Boolean* boolean = dynamic_cast<Boolean*>(right)) {
-        if (boolean->value == true) {
+        if (boolean->value) {
             delete boolean;
             return new Boolean{false};
         } else {
@@ -83,7 +85,7 @@ Object* Evaluator::evalMinusPrefixOperatorExpression(Object *right) {
 }
 
 Object* Evaluator::evalInfixExpression(Token *token, Object *left, Object *right) {
-    if (dynamic_cast<Integer*>(left) && dynamic_cast<Integer*>(right)) {
+    if (left->type == ObjectType::INTEGER && right->type == ObjectType::INTEGER) {
         return evalIntegerInfixExpression(token, left, right);
     }
 }

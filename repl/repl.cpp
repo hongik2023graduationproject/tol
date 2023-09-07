@@ -85,3 +85,36 @@ void Repl::parserTest() {
         }
     }
 }
+
+void Repl::webRun() {
+    string fileName = "./input.txt";
+    if (access(fileName.c_str(), 0) == -1)
+        return;
+
+    string input;
+    ifstream inputFile(fileName);
+    getline(inputFile, input);
+
+    if (input == "종료하기")
+        return;
+
+    input += "\n";
+    lexer.insertString(input);
+
+    try {
+        parser.Parse();
+    }
+    catch (exception& e) {
+        cout << e.what() << endl;
+    }
+
+    // evaluate
+    try {
+        Object *evaluated = evaluator.eval(&parser.program);
+        cout << evaluated->print() << endl;
+    }
+    catch (exception& e) {
+
+    }
+
+}

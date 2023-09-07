@@ -13,6 +13,7 @@ public:
 
 class Integer : public Object{
 public:
+    ObjectType type = ObjectType::INTEGER;
     long long value;
     string print() final {
         return to_string(value);
@@ -21,7 +22,13 @@ public:
 
 class Boolean : public Object {
 public:
+    ObjectType type = ObjectType::BOOLEAN;
     bool value;
+    Boolean() {};
+    Boolean(bool value) : value(value) {};
+    string print() final {
+        return to_string(value);
+    }
 };
 
 #endif //TOLELOM_OBJECT_H

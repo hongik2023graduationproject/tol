@@ -4,17 +4,35 @@ Object* Evaluator::eval(Node* node) {
     if (Program* program = dynamic_cast<Program*>(node)) {
         return evalStatements(program->statements);
     }
+    else if (ExpressionStatement* expressionStatement = dynamic_cast<ExpressionStatement*>(node)) {
+        return eval(expressionStatement->expression);
+    }
+//    else if (PrefixExpression* prefixExpression = dynamic_cast<PrefixExpression*>(node)) {
+//        Object* right = eval(prefixExpression->right);
+//        return evalPrefixExpression(prefixExpression->token, right);
+//    }
+//    else if (IntegerExpression* integerExpression = dynamic_cast<IntegerExpression*>(node)) {
+//        Integer* integer = new Integer;
+//        integer->value = stoll(integerExpression->token->literal);
+//        return new Integer;
+//    }
+    else if (IntegerLiteral* integerLiteral = dynamic_cast<IntegerLiteral*>(node)) {
+        Integer* integer = new Integer;
+        integer->value = integerLiteral->value;
+        return integer;
+    }
+    else if (BooleanLiteral* booleanLiteral = dynamic_cast<BooleanLiteral*>(node)) {
+        Boolean* boolean = new Boolean;
+        boolean->value = booleanLiteral->value;
+        return boolean;
+    }
     else if (PrefixExpression* prefixExpression = dynamic_cast<PrefixExpression*>(node)) {
         Object* right = eval(prefixExpression->right);
         return evalPrefixExpression(prefixExpression->token, right);
     }
-    else if (IntegerExpression* integerExpression = dynamic_cast<IntegerExpression*>(node)) {
-        Integer* integer = new Integer;
-        integer->value = stoll(integerExpression->token->literal);
-        return new Integer;
-    }
 }
 
+// 이게 되나??
 Object* Evaluator::evalStatements(vector<Statement*> statements) {
     Object* object;
     for (auto &statement : statements) {
@@ -27,8 +45,34 @@ Object* Evaluator::evalPrefixExpression(Token* token, Object *right) {
     if (token->tokenType == TokenType::BANG) {
         return evalBangOperatorExpression(right);
     }
+    else if (token->tokenType == TokenType::MINUS) {
+        return evalMinusPrefixOperatorExpression(right);
+    }
 }
 
 Object* Evaluator::evalBangOperatorExpression(Object *right) {
+    if (Boolean* boolean = dynamic_cast<Boolean*>(right)) {
+        if (boolean->value == true) {
+            delete boolean;
+            return new Boolean{false};
+        } else {
+            delete boolean;
+            return new Boolean{true};
+        }
+    }
+    else {
+        // type error
+    }
+}
 
+Object* Evaluator::evalMinusPrefixOperatorExpression(Object *right) {
+    if (Integer* integer = dynamic_cast<Integer*>(right)) {
+        Integer* newInteger = new Integer;
+        newInteger->value = -(integer->value);
+        delete integer;
+        return newInteger;
+    }
+    else {
+        // type error
+    }
 }

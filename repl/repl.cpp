@@ -78,11 +78,10 @@ void Repl::parserTest() {
 
         try {
             parser.Parse();
+            cout << parser.program.String();
         }
         catch (exception& e) {
             cout << e.what() << endl;
         }
-
-        cout << parser.program.String();
     }
 }

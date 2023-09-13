@@ -10,7 +10,7 @@ void Lexer::insertString(const std::string &input) {
 
 Token* Lexer::getToken() {
     if (characters.size() <= currentReadPoint) { // 고민 중
-        return new Token{TokenType::NEW_LINE, "\n"};
+        return new Token{TokenType::END_OF_FILE, "\n"};
     }
 
     Token* token;

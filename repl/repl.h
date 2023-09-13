@@ -18,11 +18,12 @@ public:
     void run();
     void parserTest();
     void lexerTest();
-    void webRun();
 private:
     Lexer lexer;
     Parser parser;
     Evaluator evaluator;
+
+    string readInputFile();
     static std::string printTokenType(TokenType tokenType) {
         switch (tokenType) {
             case TokenType::ILLEGAL:
@@ -92,7 +93,6 @@ private:
         }
         return "??";
     }
-
 };
 
 

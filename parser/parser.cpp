@@ -8,6 +8,7 @@ Parser::Parser() {
     prefixParseFunctions.insert({TokenType::TRUE, &Parser::parseBooleanLiteral});
     prefixParseFunctions.insert({TokenType::FALSE, &Parser::parseBooleanLiteral});
     prefixParseFunctions.insert({TokenType::LPAREN, &Parser::parseGroupedExpression});
+    prefixParseFunctions.insert({TokenType::IF, &Parser::parseIfExpression});
 
     infixParseFunctions.insert({TokenType::PLUS, &Parser::parseInfixExpression});
     infixParseFunctions.insert({TokenType::MINUS, &Parser::parseInfixExpression});
@@ -59,9 +60,6 @@ Statement* Parser::parseStatement() {
     }
     else if (currentToken->tokenType == TokenType::IDENTIFIER && nextToken->tokenType == TokenType::ASSIGN) {
         return parseAssignStatement();
-    }
-    else if (currentToken->tokenType == TokenType::IF) {
-        
     }
     else {
         return parseExpressionStatement();
@@ -181,6 +179,18 @@ ExpressionStatement* Parser::parseExpressionStatement() {
     return expressionStatement;
 }
 
+BlockStatement* Parser::parseBlockStatement() {
+    BlockStatement* blockStatement = new BlockStatement;
+
+    while (currentToken->tokenType != TokenType::RBRACE && currentToken->tokenType != TokenType::END_OF_FILE) {
+        Statement* statement = parseStatement();
+        blockStatement->statements.push_back(statement);
+        setNextToken();
+    }
+
+    return blockStatement;
+}
+
 Expression* Parser::parseExpression(Precedence precedence) {
     if (prefixParseFunctions.find(currentToken->tokenType) == prefixParseFunctions.end()) {
         throw invalid_argument("parseExpression: 찾는 prefixParseFunction이 존재하지 않습니다.");
@@ -194,7 +204,7 @@ Expression* Parser::parseExpression(Precedence precedence) {
         setNextToken();
     }
 
-    while (nextToken->tokenType != TokenType::NEW_LINE && precedence < getPrecedence[nextToken->tokenType]) {
+    while ((nextToken->tokenType != TokenType::NEW_LINE || nextToken->tokenType != TokenType::RBRACKET)&& precedence < getPrecedence[nextToken->tokenType]) {
         if (infixParseFunctions.find(nextToken->tokenType) == infixParseFunctions.end()) {
             throw invalid_argument("parseExpression: 찾는 infixParseFunction이 존재하지 않습니다.");
         }
@@ -257,4 +267,45 @@ Expression* Parser::parseGroupedExpression() {
     setNextToken();
 
     return expression;
+}
+
+Expression* Parser::parseIfExpression() {
+    IfExpression* ifExpression = new IfExpression;
+
+    if (currentToken->tokenType != TokenType::IF) {
+        throw invalid_argument("parseIfExpression: IF가 아닙니다.");
+    }
+    ifExpression->token = currentToken;
+    setNextToken();
+
+    skipSpaceToken();
+
+    if (currentToken->tokenType != TokenType::LBRACKET) {
+        throw invalid_argument("parseIfExpression: LBRACKET이 아닙니다.");
+    }
+    setNextToken();
+
+    ifExpression->condition = parseExpression(Precedence::LOWEST);
+    setNextToken();
+
+    if (currentToken->tokenType != TokenType::RBRACKET) {
+        throw invalid_argument("parseIfExpression: RBRACKET이 아닙니다.");
+    }
+    setNextToken();
+
+    skipSpaceToken();
+
+    if (currentToken->tokenType != TokenType::LBRACE) { // STARTBLOCK
+        throw invalid_argument("parseIfExpression: STARTBLOCK이 아닙니다.");
+    }
+    setNextToken();
+
+    ifExpression->consequence = parseBlockStatement();
+
+    if (currentToken->tokenType != TokenType::RBRACE) { // ENDBLOCK
+        throw invalid_argument("parseIfExpression: ENDBLOCK이 아닙니다.");
+    }
+    setNextToken();
+
+    return ifExpression;
 }

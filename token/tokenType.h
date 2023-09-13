@@ -8,6 +8,9 @@ enum class TokenType {
     IDENTIFIER,     // 사과
     INTEGER,        // 1, 2, 3
     SPACE,          // ' '
+    TAB,            // '\t'
+    STARTBLOCK,
+    ENDBLOCK,
 
     // 기호
     PLUS,           // +
@@ -20,6 +23,10 @@ enum class TokenType {
     BANG,           // !
     LPAREN,         // (
     RPAREN,         // )
+    LBRACE,         // {
+    RBRACE,         // }
+    LBRACKET,       // [
+    RBRACKET,       // ]
     LESS_THAN,      // <
 
     // 예약어

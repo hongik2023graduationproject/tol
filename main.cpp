@@ -3,6 +3,8 @@
 
 int main() {
     Repl repl;
-    repl.webRun();
+//    repl.lexerTest();
+    repl.parserTest();
+//    repl.webRun();
     return 0;
 }

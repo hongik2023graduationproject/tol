@@ -22,6 +22,7 @@ private:
     Utf8Converter utf8Converter;
     int currentReadPoint;
     int nextReadPoint;
+    int indentLevel;
 
     static bool isNumber(const std::string &character);
     string readNumber();
@@ -34,8 +35,8 @@ private:
             {"리턴", TokenType::RETURN},
             {"true", TokenType::TRUE},
             {"false", TokenType::FALSE},
-            {"if", TokenType::IF},
-            {"else", TokenType::ELSE},
+            {"만약", TokenType::IF},
+            {"아니면", TokenType::ELSE},
     };
 };
 

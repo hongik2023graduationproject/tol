@@ -11,12 +11,14 @@
 #include "../ast/expressions/integerExpression.h"
 #include "../ast/expressions/infixExpression.h"
 #include "../ast/expressions/prefixExpression.h"
+#include "../ast/expressions/ifExpression.h"
 
 #include "../ast/statements/letStatement.h"
 #include "../ast/statements/returnStatement.h"
 #include "../ast/statements/assignStatement.h"
 #include "../ast/statements/integerStatement.h"
 #include "../ast/statements/expressionStatement.h"
+#include "../ast/statements/blockStatement.h"
 
 #include "../ast/literals/integerLiteral.h"
 #include "../ast/literals/booleanLiteral.h"
@@ -65,6 +67,7 @@ private:
     AssignStatement* parseAssignStatement();
     IntegerStatement* parseIntegerStatement();
     ExpressionStatement* parseExpressionStatement();
+    BlockStatement* parseBlockStatement();
 
     Expression* parseIdentifierExpression();
     Expression* parseIntegerExpression();
@@ -72,6 +75,7 @@ private:
     Expression* parsePrefixExpression();
     Expression* parseGroupedExpression();
     Expression* parseInfixExpression(Expression* left);
+    Expression* parseIfExpression();
 
     Expression* parseIntegerLiteral();
     Expression* parseBooleanLiteral();

@@ -37,6 +37,12 @@ private:
                 return "INTEGER";
             case TokenType::SPACE:
                 return "SPACE";
+            case TokenType::TAB:
+                return "TAB";
+            case TokenType::STARTBLOCK:
+                return "STARTBLOCK";
+            case TokenType::ENDBLOCK:
+                return "ENDBLOCK";
 
             case TokenType::PLUS:
                 return "PLUS";
@@ -58,6 +64,14 @@ private:
                 return "LPAREN";
             case TokenType::RPAREN:
                 return "RPAREN";
+            case TokenType::LBRACE:
+                return "LBRACE";
+            case TokenType::RBRACE:
+                return "RBRACE";
+            case TokenType::LBRACKET:
+                return "LBRACKET";
+            case TokenType::RBRACKET:
+                return "RBRACKET";
             case TokenType::LESS_THAN:
                 return "LESS_THAN";
 

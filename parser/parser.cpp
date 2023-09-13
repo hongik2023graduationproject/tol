@@ -37,7 +37,7 @@ void Parser::Parse() {
 
 void Parser::setNextToken() {
     currentToken = nextToken;
-    nextToken = lexer->getToken(); // try
+    nextToken = lexer->getToken(); // try 지금은 끝일 경우 에러가 아니라 특정 토큰 반환 중
 }
 
 void Parser::skipSpaceToken() {
@@ -143,9 +143,7 @@ Expression* Parser::parseIdentifierExpression() {
     if (currentToken->tokenType != TokenType::IDENTIFIER)
         throw invalid_argument("parseIdentifierExpression: 토큰 타입이 IDENTIFIER가 아닙니다.");
 
-    IdentifierExpression* identifierExpression = new IdentifierExpression;
-    identifierExpression->token = currentToken;
-    identifierExpression->name = currentToken->literal;
+    IdentifierExpression* identifierExpression = new IdentifierExpression{currentToken, currentToken->literal};
 
     return identifierExpression;
 }
@@ -157,9 +155,7 @@ Expression* Parser::parseIntegerExpression() {
     if (currentToken->tokenType != TokenType::INTEGER)
         throw invalid_argument("parseIntegerExpression: 토큰 타입이 INTEGER가 아닙니다.");
 
-    IntegerExpression* integerExpression = new IntegerExpression;
-    integerExpression->token = currentToken;
-    integerExpression->value = stoll(currentToken->literal);
+    IntegerExpression* integerExpression = new IntegerExpression{currentToken, stoll(currentToken->literal)};
 
     return integerExpression;
 }
@@ -176,13 +172,12 @@ Expression* Parser::parseIntegerExpression() {
 }
 
 ExpressionStatement* Parser::parseExpressionStatement() {
-    ExpressionStatement* expressionStatement = new ExpressionStatement;
-    expressionStatement->token = currentToken;
-    expressionStatement->expression = parseExpression(Precedence::LOWEST);
+    ExpressionStatement* expressionStatement = new ExpressionStatement{currentToken, parseExpression(Precedence::LOWEST)};
 
     while (currentToken->tokenType != TokenType::NEW_LINE) {
         setNextToken();
     }
+
     return expressionStatement;
 }
 
@@ -213,24 +208,17 @@ Expression* Parser::parseExpression(Precedence precedence) {
 }
 
 Expression* Parser::parseIntegerLiteral() {
-    IntegerLiteral* integerLiteral = new IntegerLiteral;
-    integerLiteral->token = currentToken;
-    integerLiteral->value = stoll(currentToken->literal);
-
-    return integerLiteral;
+    return new IntegerLiteral{currentToken, stoll(currentToken->literal)};
 }
 
 Expression* Parser::parseBooleanLiteral() {
-    BooleanLiteral* booleanLiteral = new BooleanLiteral;
-    booleanLiteral->token = currentToken;
-    booleanLiteral->value = (currentToken->tokenType == TokenType::TRUE);
-
-    return booleanLiteral;
+    return new BooleanLiteral{currentToken, (currentToken->tokenType == TokenType::TRUE)};
 }
 
 Expression* Parser::parsePrefixExpression() {
     PrefixExpression* prefixExpression = new PrefixExpression;
     prefixExpression->token = currentToken;
+
     setNextToken();
 
     prefixExpression->right = parseExpression(Precedence::PREFIX);

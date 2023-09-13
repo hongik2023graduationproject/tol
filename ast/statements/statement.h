@@ -5,7 +5,9 @@
 
 class Statement : public Node {
 public:
-    string String() override = 0;
+    string String() override {
+
+    };
 };
 
 #endif //TOLELOM_STATEMENT_H

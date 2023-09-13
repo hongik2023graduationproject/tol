@@ -6,10 +6,13 @@
 
 class ReturnStatement : public Statement {
 public:
-    Token* token;
-    Expression* returnValue;
+    Token* token{};
+    Expression* returnValue{};
 
-    string String() {
+    ReturnStatement() = default;
+    ReturnStatement(Token* token, Expression* expression) : token(token), returnValue(expression) {};
+
+    string String() override {
         return token->literal + " " + returnValue->String();
     }
 };

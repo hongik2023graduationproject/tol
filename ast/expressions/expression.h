@@ -5,9 +5,7 @@
 
 class Expression : public Node {
 public:
-    string String() {
-
-    }
+    string String() override {};
 };
 
 #endif //TOLELOM_EXPRESSION_H

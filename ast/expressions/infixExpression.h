@@ -8,6 +8,7 @@ public:
     Token* token{};
     Expression *left{};
     Expression *right{};
+
     string String() {
         return "(" + left->String() + " " + token->literal + " " + right->String() + ")";
     }

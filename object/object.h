@@ -9,14 +9,16 @@ enum class ObjectType {
 
 class Object {
 public:
-    ObjectType type;
+    ObjectType type{};
+
     virtual string print() = 0;
 };
 
 class Integer : public Object{
 public:
     ObjectType type = ObjectType::INTEGER;
-    long long value;
+    long long value{};
+
     string print() final {
         return to_string(value);
     }
@@ -25,9 +27,11 @@ public:
 class Boolean : public Object {
 public:
     ObjectType type = ObjectType::BOOLEAN;
-    bool value;
-    Boolean() {};
-    Boolean(bool value) : value(value) {};
+    bool value{};
+
+    Boolean() = default;
+    explicit Boolean(bool value) : value(value) {};
+
     string print() final {
         return to_string(value);
     }
@@ -36,7 +40,8 @@ public:
 class ReturnValue : public Object {
 public:
     ObjectType type = ObjectType::RETURN_VALUE_OBJECT;
-    Object* value;
+    Object* value{};
+
     string print() final {
         return value->print();
     }

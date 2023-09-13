@@ -10,10 +10,11 @@ using namespace std;
 class Environment {
 public:
     map<string, Object*> store;
-    Object* get(string name) {
+
+    Object* get(const string& name) {
         return store[name];
     }
-    Object* set(string name , Object* object) {
+    Object* set(const string& name , Object* object) {
         store[name] = object;
         return object;
     }

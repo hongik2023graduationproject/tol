@@ -6,8 +6,11 @@
 
 class IntegerLiteral : public Literal  {
 public:
-    Token* token;
-    long long value;
+    Token* token{};
+    long long value{};
+
+    IntegerLiteral() = default;
+    IntegerLiteral(Token* token, long long value) : token(token), value(value) {};
 
     string String() final {
         return token->literal;

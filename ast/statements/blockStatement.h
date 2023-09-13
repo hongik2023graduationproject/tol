@@ -9,7 +9,7 @@ public:
     Token* token;
     vector<Statement*> statements;
 
-    string String() {
+    string String() override {
         string s;
         for (auto& statement : statements) {
             s += statement->String() + "\n";

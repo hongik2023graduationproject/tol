@@ -11,7 +11,7 @@ public:
     IdentifierExpression* name;
     Expression* expression;
 
-    string String(){
+    string String() override {
         return token->literal + " " + name->String() + " = " + expression->String();
     };
 };

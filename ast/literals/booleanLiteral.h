@@ -5,9 +5,13 @@
 
 class BooleanLiteral : public Literal {
 public:
-    Token* token;
-    bool value;
-    string String() {
+    Token* token{};
+    bool value{};
+
+    BooleanLiteral() = default;
+    BooleanLiteral(Token* token, bool value) : token(token), value(value) {};
+
+    string String() final {
         return token->literal;
     }
 };

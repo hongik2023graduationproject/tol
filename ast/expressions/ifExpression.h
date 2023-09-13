@@ -6,11 +6,12 @@
 
 class IfExpression : public Expression {
 public:
-    Token* token;
-    Expression* condition;
-    BlockStatement* consequence;
-    BlockStatement* alternative;
-    string String() {
+    Token* token{};
+    Expression* condition{};
+    BlockStatement* consequence{};
+    BlockStatement* alternative{};
+
+    string String() override {
         string s = "if" + condition->String() + " " + consequence->String();
         if (alternative != nullptr) {
             s += "else " + alternative->String();

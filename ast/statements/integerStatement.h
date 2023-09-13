@@ -9,12 +9,12 @@
 // 실수 사과 = 4
 class IntegerStatement : public Statement {
 public:
-    Token* token; // TokenType::Integer
-    IdentifierExpression* identifierExpression;
-    Token* equal;
-    Expression* expression;
+    Token* token{}; // TokenType::Integer
+    IdentifierExpression* identifierExpression{};
+    Token* equal{};
+    Expression* expression{};
 
-    string String() {
+    string String() override {
         return token->literal + " " + identifierExpression->String() + " = " + expression->String();
     }
 };

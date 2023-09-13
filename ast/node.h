@@ -8,7 +8,8 @@ using namespace std;
 
 class Node {
 public:
-    Token* token;
+    Token* token{};
+
     virtual string String() = 0;
 };
 

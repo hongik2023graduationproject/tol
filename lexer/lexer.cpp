@@ -1,6 +1,5 @@
 #include "lexer.h"
 
-
 void Lexer::insertString(const std::string &input) {
     this->input = input;
     characters = utf8Converter.convert(input);
@@ -64,7 +63,7 @@ Token* Lexer::getToken() {
     else if (isNumber(characters[currentReadPoint])) {
         token = new Token{TokenType::INTEGER, readNumber()};
     }
-    else if (isLetter(characters[currentReadPoint])) {
+    else if (isLetter(characters[currentReadPoint])) { // isNumber가 먼저 있어서 숫자로 시작하는 문자열은 존재하지 않는다. 혼동의 여지가 있으니 나중에 정리하는 것도 추천
         string letter = readLetter();
         if (keywords.find(letter) != keywords.end()) {
             token = new Token(keywords.find(letter)->second, letter);
@@ -83,7 +82,7 @@ Token* Lexer::getToken() {
 }
 
 bool Lexer::isLetter(const std::string &character) {
-    return ("a" <= character && character <= "z") || ("A" <= character && character <= "Z") || character == "_" || ("가" <= character && character <= "힣");
+    return ("a" <= character && character <= "z") || ("A" <= character && character <= "Z") || character == "_" || ("가" <= character && character <= "힣") || ("0" <= character && character <= "9");
 }
 
 string Lexer::readLetter() {

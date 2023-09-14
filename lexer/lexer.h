@@ -19,6 +19,7 @@ public:
 private:
     string input;
     vector<string> characters;
+    vector<Token> tokens;
     Utf8Converter utf8Converter;
     int currentReadPoint;
     int nextReadPoint;

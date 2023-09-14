@@ -10,7 +10,7 @@ void Lexer::insertString(const std::string &input) {
 
 Token* Lexer::getToken() {
     if (characters.size() <= currentReadPoint) { // 고민 중
-        return new Token{TokenType::END_OF_FILE, "\n"};
+        return new Token{TokenType::END_OF_FILE, ""};
     }
 
     Token* token;
@@ -47,13 +47,14 @@ Token* Lexer::getToken() {
         }
     }
     else if (characters[currentReadPoint] == "\t") {
-        int tabCount;
-        for (tabCount = 0; currentReadPoint < characters.size() && characters[currentReadPoint] == "\t"; tabCount++) {
+        int tabCount = 1;
+        while (nextReadPoint < characters.size() && characters[nextReadPoint] == "\t") {
             currentReadPoint++;
             nextReadPoint++;
+            tabCount++;
         }
 
-        if (tabCount == indentLevel + 1) {
+        if (tabCount > indentLevel) {
             token = new Token{TokenType::STARTBLOCK, ""};
         }
         else if (tabCount == indentLevel - 1) {
@@ -76,7 +77,7 @@ Token* Lexer::getToken() {
         token = new Token{TokenType::SPACE, characters[currentReadPoint]};
     }
     else if (characters[currentReadPoint] == "\n") {
-        token = new Token{TokenType::NEW_LINE, characters[currentReadPoint]};
+        token = new Token{TokenType::NEW_LINE, "\\n"};
     }
     else if (characters[currentReadPoint] == "(") {
         token = new Token{TokenType::LPAREN, characters[currentReadPoint]};

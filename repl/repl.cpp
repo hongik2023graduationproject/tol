@@ -33,13 +33,10 @@ void Repl::lexerTest() {
 
     lexer.insertString(input);
 
-    try {
-        for (Token* token; token->tokenType != TokenType::END_OF_FILE; ) {
-            token = lexer.getToken();
-            cout << "(\"" << token->literal << "\", " << printTokenType(token->tokenType) << ")" << endl;
-        }
-    } catch (exception& e) {
-        cout << e.what() << endl;
+    vector<Token> tokens = lexer.tokenization();
+
+    for (const Token& token : tokens) {
+        cout << "(\"" << token.literal << "\", " << printTokenType(token.tokenType) << ")" << endl;
     }
 }
 

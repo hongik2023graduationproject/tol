@@ -14,6 +14,7 @@ using namespace std;
 class Lexer {
 public:
     void insertString(const string &input);
+    vector<Token>& tokenization();
     Token* getToken();
 
 private:

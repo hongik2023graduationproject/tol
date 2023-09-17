@@ -18,9 +18,10 @@
 
 class Evaluator {
 public:
-    Object* eval(Node* node, Environment* environment);
+    Object* run(Program* program);
 private:
-    Object* evalProgram(vector<Statement*> statements, Environment* environment);
+    Object* eval(Node* node, Environment* environment);
+    Object* evalProgram(const vector<Statement*>& statements, Environment* environment);
     Object* evalPrefixExpression(Token* token, Object* right);
     Object* evalInfixExpression(Token* token, Object* left, Object* right);
     Object* evalBangOperatorExpression(Object* right);

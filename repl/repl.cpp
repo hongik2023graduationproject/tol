@@ -7,14 +7,8 @@ void Repl::run() {
 
     Program* program = parser.run(tokens);
 
-    Environment* environment = new Environment;
-    try {
-        Object *evaluated = evaluator.eval(program, environment);
-        cout << evaluated->print() << endl;
-    }
-    catch (exception& e) {
-        cout << e.what() << endl;
-    }
+    Object *evaluated = evaluator.run(program);
+    cout << evaluated->print() << endl;
 }
 
 void Repl::lexerTest() {

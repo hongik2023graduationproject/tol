@@ -1,10 +1,12 @@
 #include "evaluator.h"
 
+Object* Evaluator::run(Program *program) {
+    Environment* environment = new Environment;
+    return evalProgram(program->statements, environment);
+}
+
 Object* Evaluator::eval(Node* node, Environment* environment) {
-    if (Program* program = dynamic_cast<Program*>(node)) {
-        return evalProgram(program->statements, environment);
-    }
-    else if (ExpressionStatement* expressionStatement = dynamic_cast<ExpressionStatement*>(node)) {
+    if (ExpressionStatement* expressionStatement = dynamic_cast<ExpressionStatement*>(node)) {
         return eval(expressionStatement->expression, environment);
     }
 //    else if (PrefixExpression* prefixExpression = dynamic_cast<PrefixExpression*>(node)) {
@@ -52,7 +54,7 @@ Object* Evaluator::eval(Node* node, Environment* environment) {
 }
 
 // 이게 되나??
-Object* Evaluator::evalProgram(vector<Statement*> statements, Environment* environment) {
+Object* Evaluator::evalProgram(const vector<Statement*>& statements, Environment* environment) {
     Object* object;
 
     for (auto &statement : statements) {

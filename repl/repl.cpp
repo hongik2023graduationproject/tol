@@ -1,27 +1,20 @@
 #include "repl.h"
 
 void Repl::run() {
-//    cout << boolalpha;
-//    string input = readInputFile();
-//
-//    lexer.insertString(input);
-//
-//    try {
-//        parser.run();
-//    }
-//    catch (exception& e) {
-//        cout << e.what() << endl;
-//    }
-//
-//    // evaluate
-//    Environment* environment = new Environment;
-//    try {
-//        Object *evaluated = evaluator.eval(&parser.program, environment);
-//        cout << evaluated->print() << endl;
-//    }
-//    catch (exception& e) {
-//        cout << e.what() << endl;
-//    }
+    string code = readInputFile();
+
+    vector<Token*> tokens = lexer.run(code);
+
+    Program* program = parser.run(tokens);
+
+    Environment* environment = new Environment;
+    try {
+        Object *evaluated = evaluator.eval(program, environment);
+        cout << evaluated->print() << endl;
+    }
+    catch (exception& e) {
+        cout << e.what() << endl;
+    }
 }
 
 void Repl::lexerTest() {

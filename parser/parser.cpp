@@ -1,64 +1,40 @@
 #include "parser.h"
 
-#include <utility>
-
-Parser::Parser() {
-    prefixParseFunctions.insert({TokenType::IDENTIFIER, &Parser::parseIdentifierExpression});
-    prefixParseFunctions.insert({TokenType::INTEGER, &Parser::parseIntegerLiteral});
-    prefixParseFunctions.insert({TokenType::BANG, &Parser::parsePrefixExpression});
-    prefixParseFunctions.insert({TokenType::MINUS, &Parser::parsePrefixExpression});
-    prefixParseFunctions.insert({TokenType::TRUE, &Parser::parseBooleanLiteral});
-    prefixParseFunctions.insert({TokenType::FALSE, &Parser::parseBooleanLiteral});
-    prefixParseFunctions.insert({TokenType::LPAREN, &Parser::parseGroupedExpression});
-    prefixParseFunctions.insert({TokenType::IF, &Parser::parseIfExpression});
-
-    infixParseFunctions.insert({TokenType::PLUS, &Parser::parseInfixExpression});
-    infixParseFunctions.insert({TokenType::MINUS, &Parser::parseInfixExpression});
-    infixParseFunctions.insert({TokenType::ASTERISK, &Parser::parseInfixExpression});
-    infixParseFunctions.insert({TokenType::SLASH, &Parser::parseInfixExpression});
-    infixParseFunctions.insert({TokenType::EQUAL, &Parser::parseInfixExpression});
-    infixParseFunctions.insert({TokenType::NOT_EQUAL, &Parser::parseInfixExpression});
-    infixParseFunctions.insert({TokenType::LESS_THAN, &Parser::parseInfixExpression});
-}
-
-Program Parser::run(vector<Token> inputToken) {
+Program* Parser::run(vector<Token*> inputToken) {
     this->tokens = std::move(inputToken);
-
     initialization();
 
     while (currentReadPoint < tokens.size()) {
-        if (tokens[currentReadPoint].tokenType == TokenType::END_OF_FILE) {
-            break;
-        }
-
-        if (tokens[currentReadPoint].tokenType == TokenType::NEW_LINE) {
+        if (tokens[currentReadPoint]->tokenType == TokenType::NEW_LINE) {
             setNextToken();
             continue;
         }
 
         try {
-            Statement* statement = parseStatement();
-            program.statements.push_back(statement);
-            setNextToken();
+            Statement* statement = parseStatement(); // parseStatement가 끝나면 currentToken의 타입은 NEW_LINE이 된다.
+            program->statements.push_back(statement);
+            setNextToken(); // NEW_LINE 스킵
         } catch (const exception& e) {
             cout << e.what() << endl;
         }
     }
+
+    return program;
 }
 
 void Parser::initialization() {
-    program.statements.clear();
+    program = new Program;
     currentReadPoint = 0;
     nextReadPoint = 1;
-    currentToken = &tokens[currentReadPoint];
-    nextToken = &tokens[nextReadPoint];
+    currentToken = tokens[currentReadPoint];
+    nextToken = tokens[nextReadPoint];
 }
 
 void Parser::setNextToken() {
     currentReadPoint++;
     nextReadPoint++;
     currentToken = nextToken;
-    nextToken->tokenType == TokenType::END_OF_FILE ? currentToken : &tokens[nextReadPoint];
+    nextToken = nextReadPoint < tokens.size() ? tokens[nextReadPoint] : nullptr;
 }
 
 void Parser::skipSpaceToken() {
@@ -122,9 +98,9 @@ ReturnStatement* Parser::parseReturnStatement() {
     returnStatement->token = currentToken;
     setNextToken();
 
-    while (currentToken->tokenType != TokenType::NEW_LINE) {
-        setNextToken();
-    }
+    skipSpaceToken();
+
+    returnStatement->returnValue = parseExpression(Precedence::LOWEST);
 
     return returnStatement;
 }
@@ -202,10 +178,10 @@ ExpressionStatement* Parser::parseExpressionStatement() {
 BlockStatement* Parser::parseBlockStatement() {
     BlockStatement* blockStatement = new BlockStatement;
 
-    while (currentToken->tokenType != TokenType::RBRACE && currentToken->tokenType != TokenType::END_OF_FILE) {
+    while (currentToken->tokenType != TokenType::RBRACE) {
         Statement* statement = parseStatement();
         blockStatement->statements.push_back(statement);
-        setNextToken();
+        setNextToken(); // NEW_LINE 스킵
     }
 
     return blockStatement;
@@ -220,10 +196,12 @@ Expression* Parser::parseExpression(Precedence precedence) {
     Expression* leftExpression = (this->*prefixFunction)();
 
     // infix 연산자가 있을 때는 SPACE가 있다고 가정, infix 연산자가 없을 때 SPACE가 있는 경우는 없는 지 고민할 것
-    if (nextToken->tokenType == TokenType::SPACE) { // 버그 발생의 여지가 높은 코드
+    if (nextToken->tokenType == TokenType::SPACE) { // SPACE가 아니면 NEW_LINE이 와야할 것 (코드 한 줄의 끝에 의미 없는 공백이 오면 안됨)
         setNextToken();
     }
 
+    // RBRACKET은 if문 같은 경우에 해당
+    // NOTICE: "변수 a = 3]" 같은 코드도 문제가 없을 여지가 있음
     while ((nextToken->tokenType != TokenType::NEW_LINE || nextToken->tokenType != TokenType::RBRACKET)&& precedence < getPrecedence[nextToken->tokenType]) {
         if (infixParseFunctions.find(nextToken->tokenType) == infixParseFunctions.end()) {
             throw invalid_argument("parseExpression: 찾는 infixParseFunction이 존재하지 않습니다.");

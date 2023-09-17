@@ -35,19 +35,17 @@ void Repl::lexerTest() {
 }
 
 void Repl::parserTest() {
-//    string input = readInputFile();
-//
-//    lexer.insertString(input);
-//
-//    vector<Token*> tokens = lexer.run();
-//
-//    try {
-//        Program program = parser.run(tokens);
-//        cout << program.String();
-//    }
-//    catch (exception& e) {
-//        cout << e.what() << endl;
-//    }
+    string input = readInputFile();
+
+    vector<Token*> tokens = lexer.run(input);
+
+    try {
+        Program* program = parser.run(tokens);
+        cout << program->String();
+    }
+    catch (exception& e) {
+        cout << e.what() << endl;
+    }
 }
 
 string Repl::readInputFile() {

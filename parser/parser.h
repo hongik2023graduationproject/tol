@@ -28,21 +28,36 @@ enum class Precedence;
 
 class Parser {
 public:
-    Parser();
-    Lexer* lexer{}; // 삭제 예정
-    Program run(vector<Token> tokens);
+    Program* run(vector<Token*> tokens);
 private:
-    vector<Token> tokens;
+    vector<Token*> tokens;
     int currentReadPoint;
     int nextReadPoint;
     Token* currentToken;
     Token* nextToken;
-    Program program;
+    Program* program;
 
     using prefixParseFunction = Expression* (Parser::*)();
     using infixParseFunction =  Expression* (Parser::*)(Expression*);
-    std::map<TokenType, prefixParseFunction> prefixParseFunctions;
-    std::map<TokenType, infixParseFunction> infixParseFunctions;
+    std::map<TokenType, prefixParseFunction> prefixParseFunctions = {
+            {TokenType::IDENTIFIER, &Parser::parseIdentifierExpression},
+            {TokenType::INTEGER, &Parser::parseIntegerLiteral},
+            {TokenType::BANG, &Parser::parsePrefixExpression},
+            {TokenType::MINUS, &Parser::parsePrefixExpression},
+            {TokenType::TRUE, &Parser::parseBooleanLiteral},
+            {TokenType::FALSE, &Parser::parseBooleanLiteral},
+            {TokenType::LPAREN, &Parser::parseGroupedExpression},
+            {TokenType::IF, &Parser::parseIfExpression},
+    };
+    std::map<TokenType, infixParseFunction> infixParseFunctions = {
+            {TokenType::PLUS, &Parser::parseInfixExpression},
+            {TokenType::MINUS, &Parser::parseInfixExpression},
+            {TokenType::ASTERISK, &Parser::parseInfixExpression},
+            {TokenType::SLASH, &Parser::parseInfixExpression},
+            {TokenType::EQUAL, &Parser::parseInfixExpression},
+            {TokenType::NOT_EQUAL, &Parser::parseInfixExpression},
+            {TokenType::LESS_THAN, &Parser::parseInfixExpression},
+    };
     enum class Precedence {
         LOWEST,
         EQUALS,         // ==

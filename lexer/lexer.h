@@ -4,28 +4,24 @@
 #include <map>
 #include <string>
 #include <vector>
-#include <iostream>
 #include "../token/token.h"
 #include "../utf8Converter/utf8Converter.h"
-//import utf8Converter;
 
 using namespace std;
 
 class Lexer {
 public:
-    void insertString(const string &input);
-    vector<Token>& tokenization();
-    Token* getToken();
-
+    vector<Token*> run(const string &code);
 private:
     string input;
     vector<string> characters;
-    vector<Token> tokens;
+    vector<Token*> tokens;
     Utf8Converter utf8Converter;
     int currentReadPoint;
     int nextReadPoint;
     int indentLevel;
 
+    void initialization();
     static bool isNumber(const std::string &character);
     string readNumber();
     static bool isLetter(const string &character);

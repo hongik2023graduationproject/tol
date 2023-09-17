@@ -7,7 +7,7 @@
 
 class LetStatement : public Statement {
 public:
-    Token* token;
+    Token* token{};
     IdentifierExpression* name;
     Expression* expression;
 

@@ -8,8 +8,6 @@ public:
     Token* token{};
     Expression *right{};
 
-
-
     string String() override {
         return "(" + token->literal + right->String() + ")";
     }

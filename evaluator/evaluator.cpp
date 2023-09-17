@@ -102,13 +102,13 @@ Object* Evaluator::evalMinusPrefixOperatorExpression(Object *right) {
     }
 }
 
-Object* Evaluator::evalInfixExpression(Token *token, Object *left, Object *right) {
+Object* Evaluator::evalInfixExpression(Token* token, Object *left, Object *right) {
     if (left->type == ObjectType::INTEGER && right->type == ObjectType::INTEGER) {
         return evalIntegerInfixExpression(token, left, right);
     }
 }
 
-Object* Evaluator::evalIntegerInfixExpression(Token *token, Object *left, Object *right) {
+Object* Evaluator::evalIntegerInfixExpression(Token* token, Object *left, Object *right) {
     Integer* leftInteger = dynamic_cast<Integer*>(left);
     Integer* rightInteger = dynamic_cast<Integer*>(right);
     long long leftValue = leftInteger->value;

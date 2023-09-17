@@ -9,7 +9,7 @@ public:
     Expression *left{};
     Expression *right{};
 
-    string String() {
+    string String() override {
         return "(" + left->String() + " " + token->literal + " " + right->String() + ")";
     }
 };

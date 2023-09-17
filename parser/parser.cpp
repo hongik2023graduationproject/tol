@@ -1,5 +1,7 @@
 #include "parser.h"
 
+#include <utility>
+
 Parser::Parser() {
     prefixParseFunctions.insert({TokenType::IDENTIFIER, &Parser::parseIdentifierExpression});
     prefixParseFunctions.insert({TokenType::INTEGER, &Parser::parseIntegerLiteral});
@@ -19,15 +21,23 @@ Parser::Parser() {
     infixParseFunctions.insert({TokenType::LESS_THAN, &Parser::parseInfixExpression});
 }
 
+Program Parser::run(vector<Token> inputToken) {
+    this->tokens = std::move(inputToken);
 
-void Parser::Parse() {
-    program.statements.clear();
-    setNextToken();
-    setNextToken();
+    initialization();
 
-    while (currentToken->tokenType != TokenType::NEW_LINE) { // 추후에 END_OF_FILE로 바꿀 것
+    while (currentReadPoint < tokens.size()) {
+        if (tokens[currentReadPoint].tokenType == TokenType::END_OF_FILE) {
+            break;
+        }
+
+        if (tokens[currentReadPoint].tokenType == TokenType::NEW_LINE) {
+            setNextToken();
+            continue;
+        }
+
         try {
-            Statement *statement = parseStatement();
+            Statement* statement = parseStatement();
             program.statements.push_back(statement);
             setNextToken();
         } catch (const exception& e) {
@@ -36,9 +46,19 @@ void Parser::Parse() {
     }
 }
 
+void Parser::initialization() {
+    program.statements.clear();
+    currentReadPoint = 0;
+    nextReadPoint = 1;
+    currentToken = &tokens[currentReadPoint];
+    nextToken = &tokens[nextReadPoint];
+}
+
 void Parser::setNextToken() {
+    currentReadPoint++;
+    nextReadPoint++;
     currentToken = nextToken;
-    nextToken = lexer->getToken(); // try 지금은 끝일 경우 에러가 아니라 특정 토큰 반환 중
+    nextToken->tokenType == TokenType::END_OF_FILE ? currentToken : &tokens[nextReadPoint];
 }
 
 void Parser::skipSpaceToken() {
@@ -55,9 +75,9 @@ Statement* Parser::parseStatement() {
     else if (currentToken->tokenType == TokenType::RETURN) {
         return parseReturnStatement();
     }
-    else if (currentToken->tokenType == TokenType::INT) {
-        return parseIntegerStatement();
-    }
+//    else if (currentToken->tokenType == TokenType::INT) {
+//        return parseIntegerStatement();
+//    }
     else if (currentToken->tokenType == TokenType::IDENTIFIER && nextToken->tokenType == TokenType::ASSIGN) {
         return parseAssignStatement();
     }

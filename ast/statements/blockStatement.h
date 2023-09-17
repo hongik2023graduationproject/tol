@@ -6,7 +6,7 @@
 
 class BlockStatement : public Statement {
 public:
-    Token* token;
+    Token* token{};
     vector<Statement*> statements;
 
     string String() override {

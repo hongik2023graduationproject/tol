@@ -1,6 +1,7 @@
 #ifndef TOLELOM_PARSER_H
 #define TOLELOM_PARSER_H
 
+#include <iostream>
 #include <string>
 #include <format>
 #include <map>
@@ -28,13 +29,15 @@ enum class Precedence;
 class Parser {
 public:
     Parser();
-    Lexer* lexer{};
-    Program program;
-    void Parse();
-
+    Lexer* lexer{}; // 삭제 예정
+    Program run(vector<Token> tokens);
 private:
-    Token* currentToken{};
-    Token* nextToken{};
+    vector<Token> tokens;
+    int currentReadPoint;
+    int nextReadPoint;
+    Token* currentToken;
+    Token* nextToken;
+    Program program;
 
     using prefixParseFunction = Expression* (Parser::*)();
     using infixParseFunction =  Expression* (Parser::*)(Expression*);
@@ -59,6 +62,7 @@ private:
             {TokenType::SLASH, Precedence::PRODUCT},
     };
 
+    void initialization();
     void setNextToken();
     void skipSpaceToken();
     Statement* parseStatement();

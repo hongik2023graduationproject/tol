@@ -1,57 +1,53 @@
 #include "repl.h"
 
-Repl::Repl() {
-    parser.lexer = &lexer;
-}
-
 void Repl::run() {
-    cout << boolalpha;
-    string input = readInputFile();
-
-    lexer.insertString(input);
-
-    try {
-        parser.Parse();
-    }
-    catch (exception& e) {
-        cout << e.what() << endl;
-    }
-
-    // evaluate
-    Environment* environment = new Environment;
-    try {
-        Object *evaluated = evaluator.eval(&parser.program, environment);
-        cout << evaluated->print() << endl;
-    }
-    catch (exception& e) {
-        cout << e.what() << endl;
-    }
+//    cout << boolalpha;
+//    string input = readInputFile();
+//
+//    lexer.insertString(input);
+//
+//    try {
+//        parser.run();
+//    }
+//    catch (exception& e) {
+//        cout << e.what() << endl;
+//    }
+//
+//    // evaluate
+//    Environment* environment = new Environment;
+//    try {
+//        Object *evaluated = evaluator.eval(&parser.program, environment);
+//        cout << evaluated->print() << endl;
+//    }
+//    catch (exception& e) {
+//        cout << e.what() << endl;
+//    }
 }
 
 void Repl::lexerTest() {
     string input = readInputFile();
 
-    lexer.insertString(input);
+    vector<Token*> tokens = lexer.run(input);
 
-    vector<Token> tokens = lexer.tokenization();
-
-    for (const Token& token : tokens) {
-        cout << "(\"" << token.literal << "\", " << printTokenType(token.tokenType) << ")" << endl;
+    for (const Token* token : tokens) {
+        cout << "(\"" << token->literal << "\", " << printTokenType(token->tokenType) << ")" << endl;
     }
 }
 
 void Repl::parserTest() {
-    string input = readInputFile();
-
-    lexer.insertString(input);
-
-    try {
-        parser.Parse();
-        cout << parser.program.String();
-    }
-    catch (exception& e) {
-        cout << e.what() << endl;
-    }
+//    string input = readInputFile();
+//
+//    lexer.insertString(input);
+//
+//    vector<Token*> tokens = lexer.run();
+//
+//    try {
+//        Program program = parser.run(tokens);
+//        cout << program.String();
+//    }
+//    catch (exception& e) {
+//        cout << e.what() << endl;
+//    }
 }
 
 string Repl::readInputFile() {

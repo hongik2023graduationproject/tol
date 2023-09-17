@@ -13,8 +13,6 @@ using namespace std;
 
 class Repl {
 public:
-    Repl();
-
     void run();
     void parserTest();
     void lexerTest();

@@ -5,6 +5,9 @@ Program* Parser::run(vector<Token*> inputToken) {
     initialization();
 
     while (currentReadPoint < tokens.size()) {
+        if (tokens[currentReadPoint]->tokenType == TokenType::END_OF_FILE) {
+            break;
+        }
         if (tokens[currentReadPoint]->tokenType == TokenType::NEW_LINE) {
             setNextToken();
             continue;
@@ -168,9 +171,9 @@ Expression* Parser::parseIntegerExpression() {
 ExpressionStatement* Parser::parseExpressionStatement() {
     ExpressionStatement* expressionStatement = new ExpressionStatement{currentToken, parseExpression(Precedence::LOWEST)};
 
-    while (currentToken->tokenType != TokenType::NEW_LINE) {
-        setNextToken();
-    }
+//    while (currentToken->tokenType != TokenType::NEW_LINE) {
+//        setNextToken();
+//    }
 
     return expressionStatement;
 }
@@ -178,10 +181,11 @@ ExpressionStatement* Parser::parseExpressionStatement() {
 BlockStatement* Parser::parseBlockStatement() {
     BlockStatement* blockStatement = new BlockStatement;
 
-    while (currentToken->tokenType != TokenType::RBRACE) {
+    while (currentToken->tokenType != TokenType::ENDBLOCK) {
         Statement* statement = parseStatement();
         blockStatement->statements.push_back(statement);
-        setNextToken(); // NEW_LINE 스킵
+        setNextToken();
+        setNextToken();// NEW_LINE 스킵
     }
 
     return blockStatement;
@@ -202,7 +206,7 @@ Expression* Parser::parseExpression(Precedence precedence) {
 
     // RBRACKET은 if문 같은 경우에 해당
     // NOTICE: "변수 a = 3]" 같은 코드도 문제가 없을 여지가 있음
-    while ((nextToken->tokenType != TokenType::NEW_LINE || nextToken->tokenType != TokenType::RBRACKET)&& precedence < getPrecedence[nextToken->tokenType]) {
+    while ((nextToken->tokenType != TokenType::NEW_LINE || nextToken->tokenType != TokenType::ENDBLOCK)&& precedence < getPrecedence[nextToken->tokenType]) {
         if (infixParseFunctions.find(nextToken->tokenType) == infixParseFunctions.end()) {
             throw invalid_argument("parseExpression: 찾는 infixParseFunction이 존재하지 않습니다.");
         }
@@ -291,19 +295,22 @@ Expression* Parser::parseIfExpression() {
     }
     setNextToken();
 
-    skipSpaceToken();
+    if (currentToken->tokenType != TokenType::NEW_LINE) {
+        throw invalid_argument("parseIfExpression: NEW_LINE이 아닙니다.");
+    }
+    setNextToken();
 
-    if (currentToken->tokenType != TokenType::LBRACE) { // STARTBLOCK
+    if (currentToken->tokenType != TokenType::STARTBLOCK) { // STARTBLOCK
         throw invalid_argument("parseIfExpression: STARTBLOCK이 아닙니다.");
     }
     setNextToken();
 
     ifExpression->consequence = parseBlockStatement();
 
-    if (currentToken->tokenType != TokenType::RBRACE) { // ENDBLOCK
+    if (currentToken->tokenType != TokenType::ENDBLOCK) { // ENDBLOCK
         throw invalid_argument("parseIfExpression: ENDBLOCK이 아닙니다.");
     }
-    setNextToken();
+//    setNextToken();
 
     return ifExpression;
 }

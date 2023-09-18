@@ -54,15 +54,14 @@ vector<Token*> Lexer::run(const string &code) {
             }
 
             if (tabCount > indentLevel) {
-                tokens.push_back(new Token{TokenType::STARTBLOCK, ""});
+                for (int t = tabCount ; t != indentLevel; t--)
+                    tokens.push_back(new Token{TokenType::STARTBLOCK, ""});
             }
-            else if (tabCount == indentLevel - 1) {
-                tokens.push_back(new Token{TokenType::ENDBLOCK, ""});
+            else if (tabCount < indentLevel) {
+                for (int t = tabCount ; t != indentLevel; t++)
+                    tokens.push_back(new Token{TokenType::ENDBLOCK, ""});
             }
-            else if (tabCount == indentLevel) {
-                // 유지
-            }
-            else {} // error
+            indentLevel = tabCount;
         }
         else if (characters[currentReadPoint] == " ") {
 //        int spaceCount = 1;
@@ -77,6 +76,23 @@ vector<Token*> Lexer::run(const string &code) {
         }
         else if (characters[currentReadPoint] == "\n") {
             tokens.push_back(new Token{TokenType::NEW_LINE, "\\n"});
+
+            int tabCount = 0;
+            while (nextReadPoint < characters.size() && characters[nextReadPoint] == "\t") {
+                currentReadPoint++;
+                nextReadPoint++;
+                tabCount++;
+            }
+
+            if (tabCount > indentLevel) {
+                for (int t = tabCount ; t != indentLevel; t--)
+                    tokens.push_back(new Token{TokenType::STARTBLOCK, ""});
+            }
+            else if (tabCount < indentLevel) {
+                for (int t = tabCount ; t != indentLevel; t++)
+                    tokens.push_back(new Token{TokenType::ENDBLOCK, ""});
+            }
+            indentLevel = tabCount;
         }
         else if (characters[currentReadPoint] == "(") {
             tokens.push_back(new Token{TokenType::LPAREN, characters[currentReadPoint]});
@@ -117,6 +133,7 @@ vector<Token*> Lexer::run(const string &code) {
         currentReadPoint++;
         nextReadPoint++;
     }
+    tokens.push_back(new Token{TokenType::END_OF_FILE, ""});
 
     return tokens;
 }

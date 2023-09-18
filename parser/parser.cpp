@@ -312,5 +312,18 @@ Expression* Parser::parseIfExpression() {
     }
 //    setNextToken();
 
+    if (nextToken->tokenType == TokenType::ELSE) {
+        setNextToken(); // current: ENDBLOCK, next: ELSE
+        setNextToken(); // current: ELSE,     next: NEW_LINE
+        setNextToken(); // current: NEW_LINE, next: STARTBLOCK
+
+        if (currentToken->tokenType != TokenType::STARTBLOCK) {
+            throw invalid_argument("parseIfExpression: STARTBLOCK이 아닙니다.");
+        }
+        setNextToken();
+
+        ifExpression->alternative = parseBlockStatement();
+    }
+
     return ifExpression;
 }

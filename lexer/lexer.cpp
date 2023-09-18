@@ -45,7 +45,7 @@ vector<Token*> Lexer::run(const string &code) {
                 tokens.push_back(new Token{TokenType::BANG, characters[currentReadPoint]});
             }
         }
-        else if (characters[currentReadPoint] == "\t") {
+        else if (characters[currentReadPoint] == "\t") { // 보통 tab은 개행 후에 나오므로 삭제해도 될 것으로 보임
             int tabCount = 1;
             while (nextReadPoint < characters.size() && characters[nextReadPoint] == "\t") {
                 currentReadPoint++;

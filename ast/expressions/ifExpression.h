@@ -14,7 +14,7 @@ public:
     string String() override {
         string s = "if" + condition->String() + " " + "{\n" + consequence->String() + "}";
         if (alternative != nullptr) {
-            s += "else " + alternative->String();
+            s += " else {\n" + alternative->String() + "}";
         }
         return s;
     }

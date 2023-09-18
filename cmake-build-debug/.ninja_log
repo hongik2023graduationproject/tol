@@ -74,3 +74,9 @@
 1	832	1695007949575034831	CMakeFiles/tolelom.dir/main.cpp.o	aec16d25f140e865
 2	843	1695007949585802231	CMakeFiles/tolelom.dir/parser/parser.cpp.o	a7851d7854917362
 843	899	1695007949642343429	tolelom	6601759114a94fed
+2	577	1695008267567677394	CMakeFiles/tolelom.dir/evaluator/evaluator.cpp.o	4d4854cf000137d
+2	588	1695008267579212761	CMakeFiles/tolelom.dir/lexer/lexer.cpp.o	1ec1a8d099162b99
+2	881	1695008267872206476	CMakeFiles/tolelom.dir/repl/repl.cpp.o	32a47169bca0caad
+1	960	1695008267951445861	CMakeFiles/tolelom.dir/main.cpp.o	aec16d25f140e865
+2	971	1695008267962068135	CMakeFiles/tolelom.dir/parser/parser.cpp.o	a7851d7854917362
+971	1027	1695008268018065743	tolelom	6601759114a94fed

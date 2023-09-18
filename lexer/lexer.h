@@ -34,7 +34,9 @@ private:
             {"true", TokenType::TRUE},
             {"false", TokenType::FALSE},
             {"만약", TokenType::IF},
+            {"라면", TokenType::END_IF},
             {"아니면", TokenType::ELSE},
+
     };
 };
 

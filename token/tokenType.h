@@ -35,8 +35,10 @@ enum class TokenType {
     RETURN,         // return
     TRUE,           // true
     FALSE,          // false
-    IF,             // if
-    ELSE,           // else
+    IF,             // 만약
+    END_IF,         // 라면
+    ELSE,           // 아니면
+
 };
 
 #endif //TOLELOM_TOKENTYPE_H

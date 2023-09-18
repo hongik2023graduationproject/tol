@@ -86,6 +86,8 @@ private:
                 return "FALSE";
             case TokenType::IF:
                 return "IF";
+            case TokenType::END_IF:
+                return "END_IF";
             case TokenType::ELSE:
                 return "ELSE";
         }

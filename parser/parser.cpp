@@ -295,6 +295,13 @@ Expression* Parser::parseIfExpression() {
     }
     setNextToken();
 
+    skipSpaceToken();
+
+    if (currentToken->tokenType != TokenType::END_IF) {
+        throw invalid_argument("parseIfExpression: END_IF가 아닙니다.");
+    }
+    setNextToken();
+
     if (currentToken->tokenType != TokenType::NEW_LINE) {
         throw invalid_argument("parseIfExpression: NEW_LINE이 아닙니다.");
     }

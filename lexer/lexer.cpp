@@ -30,7 +30,14 @@ vector<Token*> Lexer::run(const string &code) {
             tokens.push_back(new Token{TokenType::PLUS, characters[currentReadPoint]});
         }
         else if (characters[currentReadPoint] == "-") {
-            tokens.push_back(new Token{TokenType::MINUS, characters[currentReadPoint]});
+            if (characters[nextReadPoint] == ">") {
+                tokens.push_back(new Token{TokenType::RIGHTARROW, characters[currentReadPoint] + characters[nextReadPoint]});
+                currentReadPoint++;
+                nextReadPoint++;
+            }
+            else {
+                tokens.push_back(new Token{TokenType::MINUS, characters[currentReadPoint]});
+            }
         }
         else if (characters[currentReadPoint] == "*") {
             tokens.push_back(new Token{TokenType::ASTERISK, characters[currentReadPoint]});

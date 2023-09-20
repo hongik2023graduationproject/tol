@@ -38,4 +38,5 @@ add_executable(tolelom main.cpp
         ast/statements/blockStatement.h
         object/environment.h
         ast/expressions/functionExpression.h
+        ast/literals/functionLiteral.h
 )

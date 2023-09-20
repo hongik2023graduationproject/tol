@@ -7,6 +7,7 @@ enum class TokenType {
     NEW_LINE,
     IDENTIFIER,     // 사과
     INTEGER,        // 1, 2, 3
+    FLOAT,          // 1.0, 1.5, 2.0
     SPACE,          // ' '
     TAB,            // '\t'
     STARTBLOCK,
@@ -14,6 +15,7 @@ enum class TokenType {
 
 
     COLON,          // :
+    RIGHTARROW,     // ->
     // 기호
     PLUS,           // +
     MINUS,          // -
@@ -34,6 +36,8 @@ enum class TokenType {
     // 예약어
     LET,            // LET
     INT,            // 정수
+    실수,            // 실수
+    FUNCTION,       // 함수
     RETURN,         // return
     TRUE,           // true
     FALSE,          // false

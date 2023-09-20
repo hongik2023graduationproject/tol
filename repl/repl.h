@@ -34,6 +34,8 @@ private:
                 return "IDENTIFIER";
             case TokenType::INTEGER:
                 return "INTEGER";
+            case TokenType::FLOAT:
+                return "FLOAT";
             case TokenType::SPACE:
                 return "SPACE";
             case TokenType::TAB:
@@ -45,7 +47,8 @@ private:
 
             case TokenType::COLON:
                 return "COLON";
-
+            case TokenType::RIGHTARROW:
+                return "RIGHT ARROW";
 
             case TokenType::PLUS:
                 return "PLUS";
@@ -80,6 +83,10 @@ private:
 
             case TokenType::INT:
                 return "INT";
+            case TokenType::실수:
+                return "실수";
+            case TokenType::FUNCTION:
+                return "FUNCTION";
             case TokenType::LET:
                 return "LET";
             case TokenType::RETURN:

@@ -251,14 +251,6 @@ Expression* Parser::parseExpression(Precedence precedence) {
     return leftExpression;
 }
 
-Expression* Parser::parseIntegerLiteral() {
-    return new IntegerLiteral{currentToken, stoll(currentToken->literal)};
-}
-
-Expression* Parser::parseBooleanLiteral() {
-    return new BooleanLiteral{currentToken, (currentToken->tokenType == TokenType::TRUE)};
-}
-
 Expression* Parser::parsePrefixExpression() {
     PrefixExpression* prefixExpression = new PrefixExpression;
     prefixExpression->token = currentToken;
@@ -366,4 +358,78 @@ Expression* Parser::parseIfExpression() {
     }
 
     return ifExpression;
+}
+
+Expression* Parser::parseIntegerLiteral() {
+    return new IntegerLiteral{currentToken, stoll(currentToken->literal)};
+}
+
+Expression* Parser::parseBooleanLiteral() {
+    return new BooleanLiteral{currentToken, (currentToken->tokenType == TokenType::TRUE)};
+}
+
+Expression* Parser::parseFunctionLiteral() {
+    FunctionLiteral* functionLiteral = new FunctionLiteral;
+
+    if (currentToken->tokenType != TokenType::FUNCTION) {
+        throw invalid_argument("parseFunctionLiteral: FUNCTION이 아닙니다.");
+    }
+    functionLiteral->token = currentToken;
+    setNextToken();
+
+    if (currentToken->tokenType != TokenType::COLON) {
+        throw invalid_argument("parseFunctionLiteral: COLON이 아닙니다.");
+    }
+    setNextToken();
+
+    skipSpaceToken();
+
+    functionLiteral->parameters = parseFunctionParameters();
+
+    skipSpaceToken();
+
+    functionLiteral->name = dynamic_cast<IdentifierExpression *>(parseIdentifierExpression());
+
+    skipSpaceToken();
+
+    if (currentToken->tokenType != TokenType::RIGHTARROW) {
+        throw invalid_argument("parseFunctionLiteral: RIGHT ARROW가 아닙니다.");
+    }
+    setNextToken();
+
+    skipSpaceToken();
+
+    if (currentToken->tokenType != TokenType::LBRACKET) {
+        throw invalid_argument("parseFunctionLiteral: LBRACKET이 아닙니다.");
+    }
+    setNextToken();
+
+    if (currentToken->tokenType != TokenType::INT) {
+        throw invalid_argument("parseFunctionLiteral: 리턴 타입이 잘못되었습니다.");
+    }
+    functionLiteral->returnType = currentToken;
+    setNextToken();
+
+    if (currentToken->tokenType != TokenType::RBRACKET) {
+        throw invalid_argument("parseFunctionLiteral: RBRACKET이 아닙니다.");
+    }
+    setNextToken();
+
+    if (currentToken->tokenType != TokenType::NEW_LINE) {
+        throw invalid_argument("parseFunctionLiteral: NEW_LINE이 아닙니다.");
+    }
+    setNextToken();
+
+    functionLiteral->blockStatement = parseBlockStatement();
+
+    if (currentToken->tokenType != TokenType::ENDBLOCK) {
+        throw invalid_argument("parseFunctionLiteral: END BLOCK이 아닙니다.");
+    }
+
+    return functionLiteral;
+}
+
+
+vector<IdentifierExpression*> Parser::parseFunctionParameters() {
+
 }

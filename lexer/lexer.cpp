@@ -26,6 +26,9 @@ vector<Token*> Lexer::run(const string &code) {
                 tokens.push_back(new Token{TokenType::ASSIGN, characters[currentReadPoint]});
             }
         }
+        else if (characters[currentReadPoint] == ",") {
+            tokens.push_back(new Token{TokenType::COMMA, characters[currentReadPoint]});
+        }
         else if (characters[currentReadPoint] == "+") {
             tokens.push_back(new Token{TokenType::PLUS, characters[currentReadPoint]});
         }

@@ -431,5 +431,21 @@ Expression* Parser::parseFunctionLiteral() {
 
 
 vector<IdentifierExpression*> Parser::parseFunctionParameters() {
+    vector<IdentifierExpression*> identifiers;
 
+    if (currentToken->tokenType == TokenType::SPACE) {
+        return identifiers;
+    }
+
+    while (nextToken->tokenType != TokenType::COMMA) {
+        IdentifierExpression* identifier = dynamic_cast<IdentifierExpression*>(parseIdentifierExpression());
+        identifiers.push_back(identifier);
+
+        // 여기도 나중에 엄밀히 검증할 것
+        setNextToken(); // current: identifier, next: COMMA
+        setNextToken(); // current: COMMA, next: SPACE
+        setNextToken(); // current: SPACE, next: identifier
+    }
+
+    return identifiers;
 }

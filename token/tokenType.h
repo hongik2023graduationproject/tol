@@ -16,6 +16,7 @@ enum class TokenType {
 
     COLON,          // :
     RIGHTARROW,     // ->
+    COMMA,          // ,
     // 기호
     PLUS,           // +
     MINUS,          // -

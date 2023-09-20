@@ -49,6 +49,8 @@ private:
                 return "COLON";
             case TokenType::RIGHTARROW:
                 return "RIGHT ARROW";
+            case TokenType::COMMA:
+                return "COMMA";
 
             case TokenType::PLUS:
                 return "PLUS";

@@ -4,7 +4,6 @@ Program* Parser::run(vector<Token*> inputToken) {
     this->tokens = std::move(inputToken);
     initialization();
 
-
     try {
         while (currentReadPoint < tokens.size()) {
             if (tokens[currentReadPoint]->tokenType == TokenType::END_OF_FILE) {
@@ -58,7 +57,7 @@ Statement* Parser::parseStatement() {
 //    else if (currentToken->tokenType == TokenType::INT) {
 //        return parseIntegerStatement();
 //    }
-    else if (currentToken->tokenType == TokenType::IDENTIFIER && nextToken->tokenType == TokenType::ASSIGN) {
+    else if (currentToken->tokenType == TokenType::IDENTIFIER) {
         return parseAssignStatement();
     }
     else {
@@ -173,15 +172,28 @@ Expression* Parser::parseIntegerExpression() {
     return integerExpression;
 }
 
- AssignStatement* Parser::parseAssignStatement() {
-//    AssignStatement* assignStatement = new AssignStatement;
-//
-//    assignStatement->name = parseIdentifierExpression();
-//
-//
-//    assignStatement->token = nextToken;
-//
-//    return assignStatement;
+AssignStatement* Parser::parseAssignStatement() {
+    AssignStatement* assignStatement = new AssignStatement;
+
+    if (currentToken->tokenType != TokenType::IDENTIFIER) {
+        throw invalid_argument("parseAssignStatement: IDENTIFIER가 아닙니다.");
+    }
+    assignStatement->name = dynamic_cast<IdentifierExpression *>(parseIdentifierExpression());
+    setNextToken();
+
+    skipSpaceToken();
+
+    if (currentToken->tokenType != TokenType::ASSIGN) {
+        throw invalid_argument("parseAssignStatement: ASSIGN이 아닙니다.");
+    }
+    assignStatement->token = currentToken;
+    setNextToken();
+
+    skipSpaceToken();
+
+    assignStatement->value = parseExpression(Precedence::LOWEST);
+
+    return assignStatement;
 }
 
 ExpressionStatement* Parser::parseExpressionStatement() {

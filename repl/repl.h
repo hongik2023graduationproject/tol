@@ -43,6 +43,10 @@ private:
             case TokenType::ENDBLOCK:
                 return "ENDBLOCK";
 
+            case TokenType::COLON:
+                return "COLON";
+
+
             case TokenType::PLUS:
                 return "PLUS";
             case TokenType::MINUS:

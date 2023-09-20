@@ -312,6 +312,11 @@ Expression* Parser::parseIfExpression() {
     ifExpression->token = currentToken;
     setNextToken();
 
+    if (currentToken->tokenType != TokenType::COLON) {
+        throw invalid_argument("parseIfExpression: COLON이 아닙니다.");
+    }
+    setNextToken();
+
     skipSpaceToken();
 
     if (currentToken->tokenType != TokenType::LPAREN) {
@@ -347,8 +352,10 @@ Expression* Parser::parseIfExpression() {
 //    setNextToken();
 
     if (nextToken->tokenType == TokenType::ELSE) {
+        // 나중에 검사 엄밀히 할 것(필수!)
         setNextToken(); // current: ENDBLOCK, next: ELSE
-        setNextToken(); // current: ELSE,     next: NEW_LINE
+        setNextToken(); // current: ELSE, next: COLON
+        setNextToken(); // current: COLON,     next: NEW_LINE
         setNextToken(); // current: NEW_LINE, next: STARTBLOCK
 
         ifExpression->alternative = parseBlockStatement();

@@ -13,7 +13,10 @@ vector<Token*> Lexer::run(const string &code) {
     initialization();
 
     while (currentReadPoint < characters.size()) {
-        if (characters[currentReadPoint] == "=") {
+        if (characters[currentReadPoint] == ":") {
+            tokens.push_back(new Token{TokenType::COLON, characters[currentReadPoint]});
+        }
+        else if (characters[currentReadPoint] == "=") {
             if (characters[nextReadPoint] == "=") {
                 tokens.push_back(new Token{TokenType::EQUAL, characters[currentReadPoint] + characters[nextReadPoint]});
                 currentReadPoint++;

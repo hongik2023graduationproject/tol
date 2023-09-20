@@ -12,9 +12,9 @@ public:
     BlockStatement* alternative{};
 
     string String() override {
-        string s = "if " + condition->String() + " " + "{\n" + consequence->String() + "}";
+        string s = "if: " + condition->String() + " " + "{\n" + consequence->String() + "}";
         if (alternative != nullptr) {
-            s += " else {\n" + alternative->String() + "}";
+            s += " else: {\n" + alternative->String() + "}";
         }
         return s;
     }

@@ -12,6 +12,8 @@ enum class TokenType {
     STARTBLOCK,
     ENDBLOCK,
 
+
+    COLON,          // :
     // 기호
     PLUS,           // +
     MINUS,          // -

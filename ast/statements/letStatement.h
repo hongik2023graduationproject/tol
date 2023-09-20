@@ -8,11 +8,12 @@
 class LetStatement : public Statement {
 public:
     Token* token{};
+    bool isConst{};
     IdentifierExpression* name;
     Expression* expression;
 
     string String() override {
-        return token->literal + " " + name->String() + " = " + expression->String();
+        return "[" + token->literal + "] " + name->String() + " = " + expression->String();
     };
 };
 

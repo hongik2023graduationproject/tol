@@ -48,7 +48,7 @@ void Parser::skipSpaceToken() {
 }
 
 Statement* Parser::parseStatement() {
-    if (currentToken->tokenType == TokenType::LET) {
+    if (currentToken->tokenType == TokenType::LBRACKET) {
         return parseLetStatement();
     }
     else if (currentToken->tokenType == TokenType::RETURN) {
@@ -68,10 +68,25 @@ Statement* Parser::parseStatement() {
 LetStatement* Parser::parseLetStatement() {
     LetStatement* letStatement = new LetStatement;
 
-    if (currentToken->tokenType != TokenType::LET) {
-        throw invalid_argument("parseLetStatement: 토큰 타입이 LET이 아닙니다.");
+    if (currentToken->tokenType != TokenType::LBRACKET) {
+        throw invalid_argument("parseLetStatement: 토큰 타입이 LBRACKET이 아닙니다.");
+    }
+    setNextToken();
+
+    if (currentToken->tokenType != TokenType::INT) {
+        throw invalid_argument("parseLetStatement: 토큰 타입이 자료형이 아닙니다.");
     }
     letStatement->token = currentToken;
+    setNextToken();
+
+    letStatement->isConst = (currentToken->tokenType == TokenType::BANG);
+    if (currentToken->tokenType == TokenType::BANG) {
+        setNextToken();
+    }
+
+    if (currentToken->tokenType != TokenType::RBRACKET) {
+        throw invalid_argument("parseLetStatement: 토큰 타입이 RBRACKET이 아닙니다.");
+    }
     setNextToken();
 
     skipSpaceToken();

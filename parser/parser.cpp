@@ -4,22 +4,23 @@ Program* Parser::run(vector<Token*> inputToken) {
     this->tokens = std::move(inputToken);
     initialization();
 
-    while (currentReadPoint < tokens.size()) {
-        if (tokens[currentReadPoint]->tokenType == TokenType::END_OF_FILE) {
-            break;
-        }
-        if (tokens[currentReadPoint]->tokenType == TokenType::NEW_LINE) {
-            setNextToken();
-            continue;
-        }
 
-        try {
-            Statement* statement = parseStatement(); // parseStatement가 끝나면 currentToken의 타입은 NEW_LINE이 된다.
-            program->statements.push_back(statement);
-            setNextToken(); // NEW_LINE 스킵
-        } catch (const exception& e) {
-            cout << e.what() << endl;
+    try {
+        while (currentReadPoint < tokens.size()) {
+            if (tokens[currentReadPoint]->tokenType == TokenType::END_OF_FILE) {
+                break;
+            }
+            if (tokens[currentReadPoint]->tokenType == TokenType::NEW_LINE) {
+                setNextToken();
+                continue;
+            }
+
+                Statement* statement = parseStatement(); // parseStatement가 끝나면 currentToken의 타입은 NEW_LINE이 된다.
+                program->statements.push_back(statement);
+                setNextToken(); // NEW_LINE 스킵
         }
+    } catch (const exception& e) {
+        cout << e.what() << endl;
     }
 
     return program;
@@ -196,6 +197,11 @@ ExpressionStatement* Parser::parseExpressionStatement() {
 BlockStatement* Parser::parseBlockStatement() {
     BlockStatement* blockStatement = new BlockStatement;
 
+    if (currentToken->tokenType != TokenType::STARTBLOCK) {
+        throw invalid_argument("parseBlockStatement: STARTBLOCK이 아닙니다.");
+    }
+    setNextToken();
+
     while (currentToken->tokenType != TokenType::ENDBLOCK) {
         Statement* statement = parseStatement();
         blockStatement->statements.push_back(statement);
@@ -220,8 +226,7 @@ Expression* Parser::parseExpression(Precedence precedence) {
     }
 
     // RBRACKET은 if문 같은 경우에 해당
-    // NOTICE: "변수 a = 3]" 같은 코드도 문제가 없을 여지가 있음
-    while ((nextToken->tokenType != TokenType::NEW_LINE || nextToken->tokenType != TokenType::ENDBLOCK)&& precedence < getPrecedence[nextToken->tokenType]) {
+    while ((nextToken->tokenType != TokenType::NEW_LINE && nextToken->tokenType != TokenType::ENDBLOCK) && precedence < getPrecedence[nextToken->tokenType]) {
         if (infixParseFunctions.find(nextToken->tokenType) == infixParseFunctions.end()) {
             throw invalid_argument("parseExpression: 찾는 infixParseFunction이 존재하지 않습니다.");
         }
@@ -297,33 +302,28 @@ Expression* Parser::parseIfExpression() {
 
     skipSpaceToken();
 
-    if (currentToken->tokenType != TokenType::LBRACKET) {
-        throw invalid_argument("parseIfExpression: LBRACKET이 아닙니다.");
+    if (currentToken->tokenType != TokenType::LPAREN) {
+        throw invalid_argument("parseIfExpression: LPAREN이 아닙니다.");
     }
     setNextToken();
 
     ifExpression->condition = parseExpression(Precedence::LOWEST);
     setNextToken();
 
-    if (currentToken->tokenType != TokenType::RBRACKET) {
-        throw invalid_argument("parseIfExpression: RBRACKET이 아닙니다.");
+    if (currentToken->tokenType != TokenType::RPAREN) {
+        throw invalid_argument("parseIfExpression: RPAREN이 아닙니다.");
     }
     setNextToken();
 
-    skipSpaceToken();
-
-    if (currentToken->tokenType != TokenType::END_IF) {
-        throw invalid_argument("parseIfExpression: END_IF가 아닙니다.");
-    }
-    setNextToken();
+//    skipSpaceToken();
+//
+//    if (currentToken->tokenType != TokenType::END_IF) {
+//        throw invalid_argument("parseIfExpression: END_IF가 아닙니다.");
+//    }
+//    setNextToken();
 
     if (currentToken->tokenType != TokenType::NEW_LINE) {
         throw invalid_argument("parseIfExpression: NEW_LINE이 아닙니다.");
-    }
-    setNextToken();
-
-    if (currentToken->tokenType != TokenType::STARTBLOCK) { // STARTBLOCK
-        throw invalid_argument("parseIfExpression: STARTBLOCK이 아닙니다.");
     }
     setNextToken();
 
@@ -339,12 +339,11 @@ Expression* Parser::parseIfExpression() {
         setNextToken(); // current: ELSE,     next: NEW_LINE
         setNextToken(); // current: NEW_LINE, next: STARTBLOCK
 
-        if (currentToken->tokenType != TokenType::STARTBLOCK) {
-            throw invalid_argument("parseIfExpression: STARTBLOCK이 아닙니다.");
-        }
-        setNextToken();
-
         ifExpression->alternative = parseBlockStatement();
+
+        if (currentToken->tokenType != TokenType::ENDBLOCK) { // ENDBLOCK
+            throw invalid_argument("parseIfExpression: ENDBLOCK이 아닙니다.");
+        }
     }
 
     return ifExpression;

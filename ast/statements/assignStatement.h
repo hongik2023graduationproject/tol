@@ -11,6 +11,9 @@ public:
     IdentifierExpression *name{};
     Expression *value{};
 
+    string String() override {
+        return name->String() + " = " + value->String();
+    }
 };
 
 

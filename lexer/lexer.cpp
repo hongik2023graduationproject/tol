@@ -46,22 +46,7 @@ vector<Token*> Lexer::run(const string &code) {
             }
         }
         else if (characters[currentReadPoint] == "\t") { // 보통 tab은 개행 후에 나오므로 삭제해도 될 것으로 보임
-            int tabCount = 1;
-            while (nextReadPoint < characters.size() && characters[nextReadPoint] == "\t") {
-                currentReadPoint++;
-                nextReadPoint++;
-                tabCount++;
-            }
-
-            if (tabCount > indentLevel) {
-                for (int t = tabCount ; t != indentLevel; t--)
-                    tokens.push_back(new Token{TokenType::STARTBLOCK, ""});
-            }
-            else if (tabCount < indentLevel) {
-                for (int t = tabCount ; t != indentLevel; t++)
-                    tokens.push_back(new Token{TokenType::ENDBLOCK, ""});
-            }
-            indentLevel = tabCount;
+            // 보류
         }
         else if (characters[currentReadPoint] == " ") {
 //        int spaceCount = 1;
@@ -85,12 +70,24 @@ vector<Token*> Lexer::run(const string &code) {
             }
 
             if (tabCount > indentLevel) {
-                for (int t = tabCount ; t != indentLevel; t--)
+                int t = tabCount;
+                tokens.push_back(new Token{TokenType::STARTBLOCK, ""});
+                t--;
+
+                for (; t != indentLevel; t--) {
+                    tokens.push_back(new Token{TokenType::NEW_LINE, "\\n"});
                     tokens.push_back(new Token{TokenType::STARTBLOCK, ""});
+                }
             }
             else if (tabCount < indentLevel) {
-                for (int t = tabCount ; t != indentLevel; t++)
+                int t = tabCount;
+                tokens.push_back(new Token{TokenType::ENDBLOCK, ""});
+                t++;
+
+                for (; t != indentLevel; t++) {
+                    tokens.push_back(new Token{TokenType::NEW_LINE, "\\n"});
                     tokens.push_back(new Token{TokenType::ENDBLOCK, ""});
+                }
             }
             indentLevel = tabCount;
         }

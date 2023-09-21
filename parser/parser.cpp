@@ -389,7 +389,8 @@ Expression* Parser::parseFunctionLiteral() {
     skipSpaceToken();
 
     functionLiteral->name = dynamic_cast<IdentifierExpression *>(parseIdentifierExpression());
-
+    setNextToken(); // skip Identifier Token
+    setNextToken(); // skip DOT token
     skipSpaceToken();
 
     if (currentToken->tokenType != TokenType::RIGHTARROW) {
@@ -404,11 +405,16 @@ Expression* Parser::parseFunctionLiteral() {
     }
     setNextToken();
 
-    if (currentToken->tokenType != TokenType::INT) {
-        throw invalid_argument("parseFunctionLiteral: 리턴 타입이 잘못되었습니다.");
+
+    // 리턴 타입이 없는 경우도 생각할 것
+    if (currentToken->tokenType != TokenType::RBRACKET) {
+        if (currentToken->tokenType != TokenType::INT) {
+            throw invalid_argument("parseFunctionLiteral: 리턴 타입이 잘못되었습니다.");
+        }
+        functionLiteral->returnType = currentToken;
+        setNextToken();
     }
-    functionLiteral->returnType = currentToken;
-    setNextToken();
+
 
     if (currentToken->tokenType != TokenType::RBRACKET) {
         throw invalid_argument("parseFunctionLiteral: RBRACKET이 아닙니다.");
@@ -437,7 +443,7 @@ vector<IdentifierExpression*> Parser::parseFunctionParameters() {
         return identifiers;
     }
 
-    while (nextToken->tokenType != TokenType::COMMA) {
+    while (nextToken->tokenType == TokenType::COMMA) {
         IdentifierExpression* identifier = dynamic_cast<IdentifierExpression*>(parseIdentifierExpression());
         identifiers.push_back(identifier);
 
@@ -446,6 +452,10 @@ vector<IdentifierExpression*> Parser::parseFunctionParameters() {
         setNextToken(); // current: COMMA, next: SPACE
         setNextToken(); // current: SPACE, next: identifier
     }
+
+    IdentifierExpression* identifier = dynamic_cast<IdentifierExpression*>(parseIdentifierExpression());
+    identifiers.push_back(identifier);
+    setNextToken(); // current: identifier, next: SPACE
 
     return identifiers;
 }

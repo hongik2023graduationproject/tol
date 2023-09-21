@@ -19,9 +19,9 @@ public:
         string s = "함수: ";
 
         for (auto& parameter : parameters) {
-            s += parameter->String() + " ";
+            s += parameter->String() + ", ";
         }
-        s += token->literal + "\n";
+        s += name->String() + ".\n";
 
         s += blockStatement->String();
         return s;

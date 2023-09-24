@@ -9,19 +9,18 @@
 class FunctionExpression : public Expression {
 public:
     Token* token{};
-    vector<IdentifierExpression*> parameters;
-    IdentifierExpression* returnType;
-    BlockStatement* body;
+    IdentifierExpression* name;
+    vector<Expression*> arguments;
 
     string String() override {
-        string ret;
-        ret += "[";
-        for (auto& parameter : parameters)
-            ret += parameter->String() + ", ";
-        ret += "] -> [" + returnType->String() + "]";
+        string s;
+        for (auto& it : arguments)
+            s += it->String() + ", ";
+        s += name->String() + ".";
 
-        return ret;
+        return s;
     }
 };
+
 
 #endif //TOLELOM_FUNCTIONEXPRESSION_H

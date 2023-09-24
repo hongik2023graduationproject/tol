@@ -21,9 +21,10 @@ public:
         for (auto& parameter : parameters) {
             s += parameter->String() + ", ";
         }
-        s += name->String() + ".\n";
+        s += name->String() + ". {\n";
 
         s += blockStatement->String();
+        s += "}";
         return s;
     }
 };

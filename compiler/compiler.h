@@ -5,6 +5,7 @@
 #include "../code/code.h"
 #include "../object/object.h"
 #include "../ast/node.h"
+#include "../ast/program.h"
 #include "../endian/endian.h"
 
 
@@ -25,6 +26,7 @@ public:
     vector<Instruction> instructions;
     vector<Object*> constants;
 private:
+    void compile(Node* node);
     BytecodeTemp ReturnBytecode();
 };
 

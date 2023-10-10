@@ -31,12 +31,6 @@ vector<byte> Endian::intToByte(int value) {
     if (!isBigEndianComputer)
         reverse(byteArray.begin(), byteArray.end());
 
-//    // 바이트 배열 출력 테스트용
-//    for (int i = 0; i < sizeof(int); i++) {
-//        std::cout << std::hex << static_cast<int>(byteArray[i]) << " ";
-//    }
-//    std::cout << std::endl;
-
     return byteArray;
 }
 

@@ -7,6 +7,8 @@
 #include <vector>
 #include <memory>
 
+#include "../endian/endian.h"
+
 
 using namespace std;
 using Instruction = vector<byte>;
@@ -14,7 +16,7 @@ using Opcode = byte;
 using Bytecode = vector<Instruction>;
 
 enum class OpcodeType {
-    OpConstant,
+    OpConstant = 1,
 };
 
 
@@ -26,7 +28,7 @@ public:
 };
 
 map<OpcodeType, Definition> definitions = {
-        {OpcodeType::OpConstant, Definition{"OpConstant", vector<int>{2}}},
+        {OpcodeType::OpConstant, Definition{"OpConstant", vector<int>{4}}},
 };
 
 Definition findDefinition(OpcodeType opType) {
@@ -36,8 +38,13 @@ Definition findDefinition(OpcodeType opType) {
     throw invalid_argument("정의된 opcode가 없습니다.");
 }
 
+void applyOperand(Instruction* instruction, int offset, int size, vector<byte> operand) {
+    for (int point = 0; point < size; ++point)
+        (*instruction)[point + offset] = operand[point];
+}
 
 Instruction* makeInstruction(OpcodeType opType, const vector<int>& operands) {
+    Endian endian{};
     Definition definition = findDefinition(opType); // throw
 
     int instructionLength = 1;
@@ -51,18 +58,12 @@ Instruction* makeInstruction(OpcodeType opType, const vector<int>& operands) {
     int offset = 1;
     for (int i = 0; i < (int)operands.size(); ++i) {
         int width = definition.operandWidths[i];
-        switch (width) {
-            case 2:
-//                instruction[offset] = operands[i];
-                break;
-        }
+        applyOperand(instruction, offset, width, endian.intToByte(operands[i]));
         offset += width;
     }
 
     return instruction;
 }
-
-
 
 
 long long readOperands(Definition definition, Instruction instruction) {

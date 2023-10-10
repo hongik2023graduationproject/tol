@@ -1,21 +1,16 @@
 #include <iostream>
 #include "repl/repl.h"
-#include "endian/endian.h"
-#include "code/code.h"
+//#include "compiler/compiler.h"
+#include "code/codeTest.h"
 
 
 
 int main() {
-    Endian endian;
-    cout << "Endian Type: " << endian.checkBigEndianComputer() << endl;
+//    Compiler compiler;
+//    cout << "Endian Type: " << compiler.endian.checkBigEndianComputer() << endl;
 
-    byte t = static_cast<byte>(5);
-
-    Instruction* testInstruction = makeInstruction(OpcodeType::OpConstant, vector<int>{65534});
-    for (auto& it : *testInstruction) {
-        cout << static_cast<int>(it) << ' ';
-    }
-    cout << endl;
+    CodeTest codeTest;
+    codeTest.codeTest();
 
     Repl repl;
 //    repl.lexerTest();

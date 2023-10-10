@@ -45,4 +45,8 @@ add_executable(tolelom main.cpp
         compiler/compilerTest.cpp
         compiler/compilerTest.h
         endian/endian.h
+        code/codeTest.h
+        endian/endian.cpp
+        code/codeTest.cpp
+        code/code.cpp
 )

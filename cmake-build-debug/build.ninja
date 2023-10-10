@@ -97,6 +97,24 @@ build CMakeFiles/tolelom.dir/compiler/compilerTest.cpp.o: CXX_COMPILER__tolelom_
   OBJECT_DIR = CMakeFiles/tolelom.dir
   OBJECT_FILE_DIR = CMakeFiles/tolelom.dir/compiler
 
+build CMakeFiles/tolelom.dir/endian/endian.cpp.o: CXX_COMPILER__tolelom_unscanned_Debug /Users/tolelom/CLionProjects/tolelom/endian/endian.cpp || cmake_object_order_depends_target_tolelom
+  DEP_FILE = CMakeFiles/tolelom.dir/endian/endian.cpp.o.d
+  FLAGS = -g -std=gnu++20 -arch arm64 -isysroot /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX14.0.sdk -fdiagnostics-color=always
+  OBJECT_DIR = CMakeFiles/tolelom.dir
+  OBJECT_FILE_DIR = CMakeFiles/tolelom.dir/endian
+
+build CMakeFiles/tolelom.dir/code/codeTest.cpp.o: CXX_COMPILER__tolelom_unscanned_Debug /Users/tolelom/CLionProjects/tolelom/code/codeTest.cpp || cmake_object_order_depends_target_tolelom
+  DEP_FILE = CMakeFiles/tolelom.dir/code/codeTest.cpp.o.d
+  FLAGS = -g -std=gnu++20 -arch arm64 -isysroot /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX14.0.sdk -fdiagnostics-color=always
+  OBJECT_DIR = CMakeFiles/tolelom.dir
+  OBJECT_FILE_DIR = CMakeFiles/tolelom.dir/code
+
+build CMakeFiles/tolelom.dir/code/code.cpp.o: CXX_COMPILER__tolelom_unscanned_Debug /Users/tolelom/CLionProjects/tolelom/code/code.cpp || cmake_object_order_depends_target_tolelom
+  DEP_FILE = CMakeFiles/tolelom.dir/code/code.cpp.o.d
+  FLAGS = -g -std=gnu++20 -arch arm64 -isysroot /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX14.0.sdk -fdiagnostics-color=always
+  OBJECT_DIR = CMakeFiles/tolelom.dir
+  OBJECT_FILE_DIR = CMakeFiles/tolelom.dir/code
+
 
 # =============================================================================
 # Link build statements for EXECUTABLE target tolelom
@@ -105,7 +123,7 @@ build CMakeFiles/tolelom.dir/compiler/compilerTest.cpp.o: CXX_COMPILER__tolelom_
 #############################################
 # Link the executable tolelom
 
-build tolelom: CXX_EXECUTABLE_LINKER__tolelom_Debug CMakeFiles/tolelom.dir/main.cpp.o CMakeFiles/tolelom.dir/repl/repl.cpp.o CMakeFiles/tolelom.dir/lexer/lexer.cpp.o CMakeFiles/tolelom.dir/utf8Converter/utf8Converter.cpp.o CMakeFiles/tolelom.dir/parser/parser.cpp.o CMakeFiles/tolelom.dir/evaluator/evaluator.cpp.o CMakeFiles/tolelom.dir/compiler/compiler.cpp.o CMakeFiles/tolelom.dir/compiler/compilerTest.cpp.o
+build tolelom: CXX_EXECUTABLE_LINKER__tolelom_Debug CMakeFiles/tolelom.dir/main.cpp.o CMakeFiles/tolelom.dir/repl/repl.cpp.o CMakeFiles/tolelom.dir/lexer/lexer.cpp.o CMakeFiles/tolelom.dir/utf8Converter/utf8Converter.cpp.o CMakeFiles/tolelom.dir/parser/parser.cpp.o CMakeFiles/tolelom.dir/evaluator/evaluator.cpp.o CMakeFiles/tolelom.dir/compiler/compiler.cpp.o CMakeFiles/tolelom.dir/compiler/compilerTest.cpp.o CMakeFiles/tolelom.dir/endian/endian.cpp.o CMakeFiles/tolelom.dir/code/codeTest.cpp.o CMakeFiles/tolelom.dir/code/code.cpp.o
   FLAGS = -g -arch arm64 -isysroot /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX14.0.sdk
   OBJECT_DIR = CMakeFiles/tolelom.dir
   POST_BUILD = :

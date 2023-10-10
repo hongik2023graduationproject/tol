@@ -1,4 +1,4 @@
-/Applications/CLion.app/Contents/bin/cmake/mac/bin/cmake -DCMAKE_BUILD_TYPE=Debug -DCMAKE_MAKE_PROGRAM=/Applications/CLion.app/Contents/bin/ninja/mac/ninja -DCMAKE_C_COMPILER=/opt/homebrew/Cellar/gcc/13.1.0/bin/aarch64-apple-darwin22-gcc-13 -DCMAKE_CXX_COMPILER=/opt/homebrew/Cellar/gcc/13.1.0/bin/aarch64-apple-darwin22-g++-13 -G Ninja -S /Users/tolelom/CLionProjects/tolelom -B /Users/tolelom/CLionProjects/tolelom/cmake-build-debug
+/Applications/CLion.app/Contents/bin/cmake/mac/bin/cmake -DCMAKE_BUILD_TYPE=Debug -DCMAKE_MAKE_PROGRAM=/Applications/CLion.app/Contents/bin/ninja/mac/ninja -DCMAKE_C_COMPILER=/opt/homebrew/Cellar/gcc/13.2.0/bin/gcc-13 -DCMAKE_CXX_COMPILER=/opt/homebrew/Cellar/gcc/13.2.0/bin/g++-13 -G Ninja -S /Users/tolelom/CLionProjects/tolelom -B /Users/tolelom/CLionProjects/tolelom/cmake-build-debug
 -- Configuring done (0.0s)
 -- Generating done (0.0s)
 -- Build files have been written to: /Users/tolelom/CLionProjects/tolelom/cmake-build-debug

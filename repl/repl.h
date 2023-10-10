@@ -4,7 +4,6 @@
 #include <iostream>
 #include <exception>
 #include <fstream>
-#include <unistd.h>
 #include "../lexer/lexer.h"
 #include "../parser/parser.h"
 #include "../evaluator/evaluator.h"

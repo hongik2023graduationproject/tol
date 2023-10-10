@@ -5,52 +5,68 @@
 #include <map>
 #include <format>
 #include <vector>
+#include <memory>
+
+
 using namespace std;
-
-using Instruction = byte*;
+using Instruction = vector<byte>;
 using Opcode = byte;
+using Bytecode = vector<Instruction>;
 
-enum class Opcodes {
+enum class OpcodeType {
     OpConstant,
-
 };
 
+
+// 도움 기능
 class Definition {
 public:
     string name;
-    int operandWidths;
+    vector<int> operandWidths;
 };
 
-map<Opcode, Definition> definitions;
+map<OpcodeType, Definition> definitions = {
+        {OpcodeType::OpConstant, Definition{"OpConstant", vector<int>{2}}},
+};
 
-Definition findDefinition(Opcode op) {
-    if (definitions.find(op) != definitions.end()) {
-        return definitions.find(op)->second;
+Definition findDefinition(OpcodeType opType) {
+    if (definitions.find(opType) != definitions.end()) {
+        return definitions.find(opType)->second;
     }
     throw invalid_argument("정의된 opcode가 없습니다.");
 }
 
 
-Instruction makeInstruction(Opcode op, const vector<byte>& operands) {
-    Definition definition = findDefinition(op);
+Instruction* makeInstruction(OpcodeType opType, const vector<int>& operands) {
+    Definition definition = findDefinition(opType); // throw
 
-    int instructionLength = (int)operands.size() + 1;
+    int instructionLength = 1;
+    for (auto operandWidth : definition.operandWidths) {
+        instructionLength += operandWidth;
+    }
 
-    Instruction instruction = new byte[instructionLength];
-    instruction[0] = op;
+    Instruction* instruction = new Instruction(instructionLength);
+    (*instruction)[0] = static_cast<byte>(opType);
 
     int offset = 1;
-    for (auto& operand : operands) {
-        int width = definition.operandWidths;
+    for (int i = 0; i < (int)operands.size(); ++i) {
+        int width = definition.operandWidths[i];
         switch (width) {
             case 2:
-                instruction[offset] = operand;
+//                instruction[offset] = operands[i];
                 break;
         }
         offset += width;
     }
 
     return instruction;
+}
+
+
+
+
+long long readOperands(Definition definition, Instruction instruction) {
+
 }
 
 #endif //TOLELOM_CODE_H

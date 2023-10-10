@@ -28,15 +28,15 @@ CMAKE_BUILD_TYPE:STRING=Debug
 CMAKE_COLOR_DIAGNOSTICS:BOOL=ON
 
 //No help, variable specified on the command line.
-CMAKE_CXX_COMPILER:UNINITIALIZED=/opt/homebrew/Cellar/gcc/13.1.0/bin/aarch64-apple-darwin22-g++-13
+CMAKE_CXX_COMPILER:UNINITIALIZED=/opt/homebrew/Cellar/gcc/13.2.0/bin/g++-13
 
 //A wrapper around 'ar' adding the appropriate '--plugin' option
 // for the GCC compiler
-CMAKE_CXX_COMPILER_AR:FILEPATH=/opt/homebrew/Cellar/gcc/13.1.0/bin/aarch64-apple-darwin22-gcc-ar-13
+CMAKE_CXX_COMPILER_AR:FILEPATH=/opt/homebrew/Cellar/gcc/13.2.0/bin/gcc-ar-13
 
 //A wrapper around 'ranlib' adding the appropriate '--plugin' option
 // for the GCC compiler
-CMAKE_CXX_COMPILER_RANLIB:FILEPATH=/opt/homebrew/Cellar/gcc/13.1.0/bin/aarch64-apple-darwin22-gcc-ranlib-13
+CMAKE_CXX_COMPILER_RANLIB:FILEPATH=/opt/homebrew/Cellar/gcc/13.2.0/bin/gcc-ranlib-13
 
 //Flags used by the CXX compiler during all build types.
 CMAKE_CXX_FLAGS:STRING=
@@ -54,15 +54,15 @@ CMAKE_CXX_FLAGS_RELEASE:STRING=-O3 -DNDEBUG
 CMAKE_CXX_FLAGS_RELWITHDEBINFO:STRING=-O2 -g -DNDEBUG
 
 //No help, variable specified on the command line.
-CMAKE_C_COMPILER:UNINITIALIZED=/opt/homebrew/Cellar/gcc/13.1.0/bin/aarch64-apple-darwin22-gcc-13
+CMAKE_C_COMPILER:UNINITIALIZED=/opt/homebrew/Cellar/gcc/13.2.0/bin/gcc-13
 
 //A wrapper around 'ar' adding the appropriate '--plugin' option
 // for the GCC compiler
-CMAKE_C_COMPILER_AR:FILEPATH=/opt/homebrew/Cellar/gcc/13.1.0/bin/aarch64-apple-darwin22-gcc-ar-13
+CMAKE_C_COMPILER_AR:FILEPATH=/opt/homebrew/Cellar/gcc/13.2.0/bin/gcc-ar-13
 
 //A wrapper around 'ranlib' adding the appropriate '--plugin' option
 // for the GCC compiler
-CMAKE_C_COMPILER_RANLIB:FILEPATH=/opt/homebrew/Cellar/gcc/13.1.0/bin/aarch64-apple-darwin22-gcc-ranlib-13
+CMAKE_C_COMPILER_RANLIB:FILEPATH=/opt/homebrew/Cellar/gcc/13.2.0/bin/gcc-ranlib-13
 
 //Flags used by the C compiler during all build types.
 CMAKE_C_FLAGS:STRING=
@@ -153,7 +153,7 @@ CMAKE_OSX_DEPLOYMENT_TARGET:STRING=
 
 //The product will be built against the headers and libraries located
 // inside the indicated SDK.
-CMAKE_OSX_SYSROOT:PATH=/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX13.3.sdk
+CMAKE_OSX_SYSROOT:PATH=/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX14.0.sdk
 
 //Value Computed by CMake
 CMAKE_PROJECT_DESCRIPTION:STATIC=

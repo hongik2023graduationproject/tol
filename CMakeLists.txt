@@ -40,4 +40,9 @@ add_executable(tolelom main.cpp
         ast/expressions/functionExpression.h
         ast/literals/functionLiteral.h
         code/code.h
+        compiler/compiler.h
+        compiler/compiler.cpp
+        compiler/compilerTest.cpp
+        compiler/compilerTest.h
+        endian/endian.h
 )

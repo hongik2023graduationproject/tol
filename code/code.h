@@ -9,8 +9,8 @@
 
 #include "../endian/endian.h"
 
-
 using namespace std;
+
 using Instruction = vector<byte>;
 using Opcode = byte;
 using Bytecode = vector<Instruction>;
@@ -20,7 +20,6 @@ enum class OpcodeType {
 };
 
 
-// 도움 기능
 class Definition {
 public:
     string name;
@@ -29,7 +28,7 @@ public:
 
 class Code {
 public:
-    void applyOperand(Instruction* instruction, int offset, int size, vector<byte> operand);
+    static void applyOperand(Instruction* instruction, int offset, int size, vector<byte> operand);
     Instruction* makeInstruction(OpcodeType opType, const vector<int>& operands);
     Definition findDefinition(OpcodeType opType);
 

@@ -17,7 +17,7 @@ using namespace std;
 // 컴파일러가 만들어낸 Instructions와 컴파일러가 평가한 Constants를 담는다.
 class BytecodeTemp {
 public:
-    vector<Instruction> instructions;
+    vector<Instruction*> instructions;
     vector<Object*> constants;
 };
 
@@ -28,11 +28,14 @@ public:
     Bytecode* run(Node* node);
 
     Code code;
-    vector<Instruction> instructions;
+    vector<Instruction*> instructions;
     vector<Object*> constants;
 private:
     void compile(Node* node);
     BytecodeTemp ReturnBytecode();
+    int addConstant(Object* object);
+    int addInstruction(Instruction* instruction);
+    int emit(OpcodeType opcode, vector<int> operands);
 };
 
 

@@ -23,10 +23,29 @@ void Compiler::compile(Node *node) {
         compile(infixExpression->left);
     }
     else if (IntegerLiteral* integerLiteral = dynamic_cast<IntegerLiteral*>(node)) {
-
+         Integer* integer  = new Integer;
+         integer->value = integerLiteral->value;
+         emit(OpcodeType::OpConstant, vector<int>{addConstant(integer)});
     }
 }
 
 BytecodeTemp Compiler::ReturnBytecode() {
     return BytecodeTemp{instructions, constants};
+}
+
+int Compiler::addConstant(Object* object) {
+    constants.push_back(object);
+    return constants.size() - 1;
+}
+
+int Compiler::emit(OpcodeType opcode, vector<int> operands) {
+    Instruction* instruction = code.makeInstruction(opcode, operands);
+    int pos = addInstruction(instruction);
+    return pos;
+}
+
+int Compiler::addInstruction(Instruction* instruction) {
+    int posNewInstruction = instructions.size();
+    instructions.push_back(instruction);
+    return posNewInstruction;
 }

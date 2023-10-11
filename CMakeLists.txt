@@ -49,4 +49,6 @@ add_executable(tolelom main.cpp
         endian/endian.cpp
         code/codeTest.cpp
         code/code.cpp
+        vm/virtualMachine.cpp
+        vm/virtualMachine.h
 )

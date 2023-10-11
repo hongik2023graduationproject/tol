@@ -10,7 +10,7 @@ void CompilerTest::run() {
 }
 
 
-void CompilerTest::testInstructions(vector<Instruction> instructions, vector<Instruction> expectedInstructions) {
+void CompilerTest::testInstructions(vector<Instruction*> instructions, vector<Instruction*> expectedInstructions) {
     if (instructions.size() != expectedInstructions.size())
         throw invalid_argument("testInstructions: ");
 

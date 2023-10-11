@@ -12,13 +12,13 @@ using namespace std;
 class CompilerTest {
 public:
     string input;
-    vector<Instruction> expectedInstructions;
+    vector<Instruction*> expectedInstructions;
     Lexer lexer;
     Parser parser;
     Compiler compiler;
 
     void run();
-    void testInstructions(vector<Instruction> instructions, vector<Instruction> expectedInstructions);
+    void testInstructions(vector<Instruction*> instructions, vector<Instruction*> expectedInstructions);
 
 };
 
@@ -27,7 +27,7 @@ public:
 class TestIntegerArithmetic : public CompilerTest {
 public:
     string input = "1 + 2";
-    vector<Instruction> expectedInstructions {
+    vector<Instruction*> expectedInstructions {
             compiler.code.makeInstruction(OpcodeType::OpConstant, vector<int>{0}),
             compiler.code.makeInstruction(OpcodeType::OpConstant, vector<int>{1}),
     };

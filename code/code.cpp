@@ -5,6 +5,7 @@ void Code::applyOperand(Instruction* instruction, int offset, int size, vector<b
         (*instruction)[point + offset] = operand[point];
 }
 
+
 Instruction* Code::makeInstruction(OpcodeType opType, const vector<int>& operands) {
     Endian endian{};
     Definition definition = findDefinition(opType); // throw

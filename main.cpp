@@ -6,16 +6,17 @@
 
 
 int main() {
-    Compiler compiler;
-    cout << "Endian Type: " << compiler.endian.checkBigEndianComputer() << endl;
+//    Compiler compiler;
+//    cout << "Endian Type: " << compiler.endian.checkBigEndianComputer() << endl;
 
-    CodeTest codeTest;
-    codeTest.codeTest();
+//    CodeTest codeTest;
+//    codeTest.codeTest();
 
     Repl repl;
 //    repl.lexerTest();
 //    repl.parserTest();
 //    repl.run();
+    repl.runWithVM();
     return 0;
 }
 

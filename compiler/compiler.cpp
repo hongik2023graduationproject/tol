@@ -7,6 +7,8 @@ Bytecode Compiler::run(Node* node) {
     catch (const exception& e) {
         cout << e.what() << endl;
     }
+
+    return Bytecode{instructions, constants};
 }
 
 void Compiler::compile(Node *node) {

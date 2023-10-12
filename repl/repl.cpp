@@ -18,7 +18,9 @@ void Repl::runWithVM() {
 
     Program* program = parser.run(tokens);
 
+    Bytecode bytecode = compiler.run(program);
 
+    vm.run(bytecode);
 }
 
 void Repl::lexerTest() {

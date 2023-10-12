@@ -7,6 +7,8 @@
 #include "../lexer/lexer.h"
 #include "../parser/parser.h"
 #include "../evaluator/evaluator.h"
+#include "../compiler/compiler.h"
+#include "../vm/virtualMachine.h"
 #include "../token/tokenType.h"
 using namespace std;
 
@@ -20,6 +22,8 @@ private:
     Lexer lexer;
     Parser parser;
     Evaluator evaluator;
+    Compiler compiler;
+    VirtualMachine vm;
 
     string readInputFile();
     static std::string printTokenType(TokenType tokenType) {

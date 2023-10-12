@@ -35,7 +35,7 @@ private:
     Bytecode ReturnBytecode();
     int addConstant(Object* object);
     int addInstruction(Instruction* instruction);
-    int emit(OpcodeType opcode, vector<int> operands);
+    int emit(OpcodeType opcode, vector<int> operands = vector<int>{});
 };
 
 

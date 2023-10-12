@@ -24,6 +24,7 @@ private:
 
     Object* stackTop();
     void push(Object* object);
+    Object* pop();
 };
 
 

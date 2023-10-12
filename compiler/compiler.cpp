@@ -20,6 +20,11 @@ void Compiler::compile(Node *node) {
     }
     else if (InfixExpression* infixExpression = dynamic_cast<InfixExpression*>(node)) {
         compile(infixExpression->left);
+        compile(infixExpression->right);
+
+        if (infixExpression->token->tokenType == TokenType::PLUS) {
+            emit(OpcodeType::OpAdd);
+        }
     }
     else if (IntegerLiteral* integerLiteral = dynamic_cast<IntegerLiteral*>(node)) {
          Integer* integer  = new Integer;

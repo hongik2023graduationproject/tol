@@ -11,6 +11,16 @@ void Repl::run() {
     cout << evaluated->print() << endl;
 }
 
+void Repl::runWithVM() {
+    string code = readInputFile();
+
+    vector<Token*> tokens = lexer.run(code);
+
+    Program* program = parser.run(tokens);
+
+
+}
+
 void Repl::lexerTest() {
     string input = readInputFile();
 

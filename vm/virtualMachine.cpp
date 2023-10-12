@@ -27,6 +27,17 @@ void VirtualMachine::run(Bytecode bytecode) {
         if (opcode == OpcodeType::OpConstant) {
             int constIndex = endian.byteToInt(vector<byte>(instructions[ip + 1]->begin() + 1, instructions[ip + 1]->begin() + 5));
         }
+        else if (opcode == OpcodeType::OpAdd) {
+            Object* right = pop();
+            Object* left = pop();
+
+            Integer* rightInteger = dynamic_cast<Integer*>(right);
+            Integer* leftInteger = dynamic_cast<Integer*>(left);
+
+            Integer* resultInteger = new Integer;
+            resultInteger->value = leftInteger->value + rightInteger->value;
+            push(resultInteger);
+        }
     }
 }
 
@@ -46,4 +57,11 @@ void VirtualMachine::push(Object *object) {
 
     stack[stackPointer] = object;
     stackPointer++;
+}
+
+Object* VirtualMachine::pop() {
+    Object* object = stack[stackPointer - 1];
+    stackPointer--;
+
+    return object;
 }

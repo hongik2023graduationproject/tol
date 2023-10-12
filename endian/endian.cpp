@@ -17,3 +17,12 @@ vector<byte> Endian::intToByte(int value) {
 
     return byteArray;
 }
+
+int Endian::byteToInt(vector<std::byte> bytes) {
+    if (!isBigEndianComputer)
+        reverse(bytes.begin(), bytes.end());
+
+    int intValue;
+    std::memcpy(&intValue, bytes.data(), sizeof(int));
+    return intValue;
+}

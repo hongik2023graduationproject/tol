@@ -16,6 +16,8 @@ using Opcode = byte;
 
 enum class OpcodeType {
     OpConstant = 1,
+    OpAdd,
+
 };
 
 
@@ -33,6 +35,7 @@ public:
 
     map<OpcodeType, Definition> definitions = {
             {OpcodeType::OpConstant, Definition{"OpConstant", vector<int>{4}}},
+            {OpcodeType::OpAdd, Definition{"OpAdd", vector<int>{}}},
     };
 };
 

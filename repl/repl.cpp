@@ -23,6 +23,8 @@ void Repl::runWithVM() {
     Bytecode bytecode = compiler.run(program);
 
     vm.run(bytecode);
+
+    cout << vm.stack[vm.stackPointer - 1]->print() << endl;
 }
 
 void Repl::lexerTest() {

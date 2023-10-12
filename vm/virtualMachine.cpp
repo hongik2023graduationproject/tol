@@ -18,14 +18,13 @@ void VirtualMachine::run(Bytecode bytecode) {
     instructions = bytecode.instructions;
     constants = bytecode.constants;
     stack.resize(StackSize);
-    stack.clear();
     stackPointer = 0;
 
     for (int ip = 0; ip < int(instructions.size()); ++ip) { // ip = instruction pointer
         OpcodeType opcode = static_cast<OpcodeType>(int((*instructions[ip])[0]));
 
         if (opcode == OpcodeType::OpConstant) {
-            int constIndex = endian.byteToInt(vector<byte>(instructions[ip + 1]->begin() + 1, instructions[ip + 1]->begin() + 5));
+            int constIndex = endian.byteToInt(vector<byte>(instructions[ip]->begin() + 1, instructions[ip]->begin() + 4));
             push(constants[constIndex]);
         }
         else if (opcode == OpcodeType::OpAdd) {

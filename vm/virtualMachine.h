@@ -12,12 +12,14 @@ class VirtualMachine {
 public:
     void testIntegerObject(long long expected, Object* object);
     void run(Bytecode bytecode);
+
+    // 디버깅 용으로 public에 나둠 나중에 private로 옮길 것
+    vector<Object*> stack;
+    int stackPointer;
 private:
     vector<Object*> constants;
     vector<Instruction*> instructions;
 
-    vector<Object*> stack;
-    int stackPointer;
 
     const int StackSize = 2048;
     Endian endian;

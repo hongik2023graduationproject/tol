@@ -24,7 +24,7 @@ void VirtualMachine::run(Bytecode bytecode) {
         OpcodeType opcode = static_cast<OpcodeType>(int((*instructions[ip])[0]));
 
         if (opcode == OpcodeType::OpConstant) {
-            int constIndex = endian.byteToInt(vector<byte>(instructions[ip]->begin() + 1, instructions[ip]->begin() + 4));
+            int constIndex = endian.byteToInt(vector<byte>(instructions[ip]->begin() + 1, instructions[ip]->begin() + 5));
             push(constants[constIndex]);
         }
         else if (opcode == OpcodeType::OpAdd) {

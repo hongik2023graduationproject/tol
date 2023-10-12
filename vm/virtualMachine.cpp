@@ -26,6 +26,7 @@ void VirtualMachine::run(Bytecode bytecode) {
 
         if (opcode == OpcodeType::OpConstant) {
             int constIndex = endian.byteToInt(vector<byte>(instructions[ip + 1]->begin() + 1, instructions[ip + 1]->begin() + 5));
+            push(constants[constIndex]);
         }
         else if (opcode == OpcodeType::OpAdd) {
             Object* right = pop();

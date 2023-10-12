@@ -7,8 +7,9 @@ void Repl::run() {
 
     Program* program = parser.run(tokens);
 
-    Object *evaluated = evaluator.run(program);
-    cout << evaluated->print() << endl;
+    vector<Object*> evaluated = evaluator.run(program);
+    for (auto object : evaluated)
+        cout << object->print() << endl;
 }
 
 void Repl::runWithVM() {

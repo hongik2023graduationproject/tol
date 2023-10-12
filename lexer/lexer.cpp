@@ -131,7 +131,7 @@ vector<Token*> Lexer::run(const string &code) {
         else if (isLetter(characters[currentReadPoint])) { // isNumber가 먼저 있어서 숫자로 시작하는 문자열은 존재하지 않는다. 혼동의 여지가 있으니 나중에 정리하는 것도 추천
             string letter = readLetter();
             if (keywords.find(letter) != keywords.end()) {
-                tokens.push_back(new Token(keywords.find(letter)->second, letter));
+                tokens.push_back(new Token{keywords.find(letter)->second, letter});
             }
             else {
                 tokens.push_back(new Token{TokenType::IDENTIFIER, letter});

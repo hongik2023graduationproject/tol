@@ -1,6 +1,6 @@
 #include "evaluator.h"
 
-Object* Evaluator::run(Program *program) {
+vector<Object*> Evaluator::run(Program *program) {
     Environment* environment = new Environment;
     return evalProgram(program->statements, environment);
 }
@@ -54,18 +54,18 @@ Object* Evaluator::eval(Node* node, Environment* environment) {
 }
 
 // 이게 되나??
-Object* Evaluator::evalProgram(const vector<Statement*>& statements, Environment* environment) {
-    Object* object;
+vector<Object*> Evaluator::evalProgram(const vector<Statement*>& statements, Environment* environment) {
+    vector<Object*> objects;
 
     for (auto &statement : statements) {
-        object = eval(statement, environment);
+        objects.push_back(eval(statement, environment));
 
-        if (ReturnValue* returnValue = dynamic_cast<ReturnValue*>(object)) {
-            return returnValue->value;
-        }
+//        if (ReturnValue* returnValue = dynamic_cast<ReturnValue*>(object)) {
+//            return returnValue->value;
+//        }
     }
 
-    return object;
+    return objects;
 }
 
 Object* Evaluator::evalPrefixExpression(Token* token, Object *right) {

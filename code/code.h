@@ -13,7 +13,6 @@ using namespace std;
 
 using Instruction = vector<byte>;
 using Opcode = byte;
-using Bytecode = vector<Instruction>;
 
 enum class OpcodeType {
     OpConstant = 1,

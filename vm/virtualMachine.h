@@ -4,14 +4,26 @@
 #include "../lexer/lexer.h"
 #include "../parser/parser.h"
 #include "../object/object.h"
+#include "../code/code.h"
+#include "../compiler/compiler.h"
+#include "../endian/endian.h"
 
 class VirtualMachine {
 public:
     void testIntegerObject(long long expected, Object* object);
-
+    void run(Bytecode bytecode);
 private:
-    Lexer lexer;
-    Parser parser;
+    vector<Object*> constants;
+    vector<Instruction*> instructions;
+
+    vector<Object*> stack;
+    int stackPointer;
+
+    const int StackSize = 2048;
+    Endian endian;
+
+    Object* stackTop();
+    void push(Object* object);
 };
 
 

@@ -1,13 +1,12 @@
 #include "compiler.h"
 
-Bytecode* Compiler::run(Node* node) {
+Bytecode Compiler::run(Node* node) {
     try {
         compile(node);
     }
     catch (const exception& e) {
         cout << e.what() << endl;
     }
-    return nullptr;
 }
 
 void Compiler::compile(Node *node) {
@@ -29,8 +28,8 @@ void Compiler::compile(Node *node) {
     }
 }
 
-BytecodeTemp Compiler::ReturnBytecode() {
-    return BytecodeTemp{instructions, constants};
+Bytecode Compiler::ReturnBytecode() {
+    return Bytecode{instructions, constants};
 }
 
 int Compiler::addConstant(Object* object) {

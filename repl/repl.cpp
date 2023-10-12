@@ -52,7 +52,7 @@ void Repl::parserTest() {
 }
 
 string Repl::readInputFile() {
-    string fileName = "./main.txt";
+    string fileName = "./main.tol";
     string input;
     ifstream inputStream(fileName);
 

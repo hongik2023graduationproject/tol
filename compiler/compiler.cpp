@@ -28,6 +28,18 @@ void Compiler::compile(Node *node) {
         if (infixExpression->token->tokenType == TokenType::PLUS) {
             emit(OpcodeType::OpAdd);
         }
+        else if (infixExpression->token->tokenType == TokenType::MINUS) {
+            emit(OpcodeType::OpSub);
+        }
+        else if (infixExpression->token->tokenType == TokenType::ASTERISK) {
+            emit(OpcodeType::OpMul);
+        }
+        else if (infixExpression->token->tokenType == TokenType::SLASH) {
+            emit(OpcodeType::OpDiv);
+        }
+        else {
+            throw invalid_argument("");
+        }
     }
     else if (IntegerLiteral* integerLiteral = dynamic_cast<IntegerLiteral*>(node)) {
          Integer* integer  = new Integer;

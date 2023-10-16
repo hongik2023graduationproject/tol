@@ -27,16 +27,8 @@ void VirtualMachine::run(Bytecode bytecode) {
             int constIndex = endian.byteToInt(vector<byte>(instructions[ip]->begin() + 1, instructions[ip]->begin() + 5));
             push(constants[constIndex]);
         }
-        else if (opcode == OpcodeType::OpAdd) {
-            Object* right = pop();
-            Object* left = pop();
-
-            Integer* rightInteger = dynamic_cast<Integer*>(right);
-            Integer* leftInteger = dynamic_cast<Integer*>(left);
-
-            Integer* resultInteger = new Integer;
-            resultInteger->value = leftInteger->value + rightInteger->value;
-            push(resultInteger);
+        else if (opcode == OpcodeType::OpAdd || opcode == OpcodeType::OpSub || opcode == OpcodeType::OpMul || opcode == OpcodeType::OpDiv) {
+            executeBinaryOperation(opcode);
         }
         else if (opcode == OpcodeType::OpPop) {
             pop();
@@ -71,4 +63,37 @@ Object* VirtualMachine::pop() {
 
 Object* VirtualMachine::lastPoppedElement() {
     return stack[stackPointer];
+}
+
+void VirtualMachine::executeBinaryOperation(OpcodeType opcode) {
+    Object* right = pop();
+    Object* left = pop();
+
+    if (left->type == ObjectType::INTEGER && right->type == ObjectType::INTEGER) {
+        return executeBinaryIntegerOperation(opcode, dynamic_cast<Integer*>(left), dynamic_cast<Integer*>(right));
+    }
+}
+
+void VirtualMachine::executeBinaryIntegerOperation(OpcodeType opcode, Integer* left, Integer* right) {
+    long long leftValue = left->value;
+    long long rightValue = right->value;
+
+    long long returnValue;
+    switch (opcode) {
+        case OpcodeType::OpAdd:
+            returnValue = leftValue + rightValue;
+            break;
+        case OpcodeType::OpSub:
+            returnValue = leftValue - rightValue;
+            break;
+        case OpcodeType::OpMul:
+            returnValue = leftValue * rightValue;
+            break;
+        case OpcodeType::OpDiv:
+            returnValue = leftValue / rightValue;
+            break;
+    }
+
+
+    push(new Integer{returnValue});
 }

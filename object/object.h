@@ -19,6 +19,9 @@ public:
     ObjectType type = ObjectType::INTEGER;
     long long value{};
 
+    Integer() = default;
+    Integer(long long value) : value(value) {};
+
     string print() final {
         return to_string(value);
     }

@@ -30,6 +30,9 @@ private:
     Object* stackTop();
     void push(Object* object);
     Object* pop();
+
+    void executeBinaryOperation(OpcodeType opcode);
+    void executeBinaryIntegerOperation(OpcodeType opcode, Integer* left, Integer* right);
 };
 
 

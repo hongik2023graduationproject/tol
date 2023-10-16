@@ -16,10 +16,11 @@ using Opcode = byte;
 
 enum class OpcodeType {
     OpConstant = 1,
-    OpAdd,
     OpPop,
-
-
+    OpAdd,
+    OpSub,
+    OpMul,
+    OpDiv,
 };
 
 
@@ -37,8 +38,11 @@ public:
 
     map<OpcodeType, Definition> definitions = {
             {OpcodeType::OpConstant, Definition{"OpConstant", vector<int>{4}}},
-            {OpcodeType::OpAdd, Definition{"OpAdd", vector<int>{}}},
             {OpcodeType::OpPop, Definition{"OpPop", vector<int>{}}},
+            {OpcodeType::OpAdd, Definition{"OpAdd", vector<int>{}}},
+            {OpcodeType::OpSub, Definition{"ObSub", vector<int>{}}},
+            {OpcodeType::OpMul, Definition{"ObSub", vector<int>{}}},
+            {OpcodeType::OpDiv, Definition{"ObSub", vector<int>{}}},
     };
 };
 

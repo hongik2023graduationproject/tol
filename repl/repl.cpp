@@ -24,7 +24,7 @@ void Repl::runWithVM() {
 
     vm.run(bytecode);
 
-    cout << vm.stack[vm.stackPointer - 1]->print() << endl;
+    cout << vm.lastPoppedElement()->print() << endl;
 }
 
 void Repl::lexerTest() {

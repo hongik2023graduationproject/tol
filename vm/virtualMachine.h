@@ -13,6 +13,9 @@ public:
     void testIntegerObject(long long expected, Object* object);
     void run(Bytecode bytecode);
 
+
+    Object* lastPoppedElement();
+
     // 디버깅 용으로 public에 나둠 나중에 private로 옮길 것
     vector<Object*> stack;
     int stackPointer;

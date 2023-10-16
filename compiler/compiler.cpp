@@ -19,6 +19,7 @@ void Compiler::compile(Node *node) {
     }
     else if (ExpressionStatement* expressionStatement = dynamic_cast<ExpressionStatement*>(node)) {
         compile(expressionStatement->expression);
+        emit(OpcodeType::OpPop);
     }
     else if (InfixExpression* infixExpression = dynamic_cast<InfixExpression*>(node)) {
         compile(infixExpression->left);

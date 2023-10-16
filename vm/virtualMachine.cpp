@@ -38,6 +38,9 @@ void VirtualMachine::run(Bytecode bytecode) {
             resultInteger->value = leftInteger->value + rightInteger->value;
             push(resultInteger);
         }
+        else if (opcode == OpcodeType::OpPop) {
+            pop();
+        }
     }
 }
 
@@ -64,4 +67,8 @@ Object* VirtualMachine::pop() {
     stackPointer--;
 
     return object;
+}
+
+Object* VirtualMachine::lastPoppedElement() {
+    return stack[stackPointer];
 }

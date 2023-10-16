@@ -21,6 +21,9 @@ enum class OpcodeType {
     OpSub,
     OpMul,
     OpDiv,
+    OpTrue,
+    OpFalse,
+
 };
 
 
@@ -43,6 +46,8 @@ public:
             {OpcodeType::OpSub, Definition{"ObSub", vector<int>{}}},
             {OpcodeType::OpMul, Definition{"ObSub", vector<int>{}}},
             {OpcodeType::OpDiv, Definition{"ObSub", vector<int>{}}},
+            {OpcodeType::OpTrue, Definition{"OpTrue", vector<int>{}}},
+            {OpcodeType::OpFalse, Definition{"OpFalse", vector<int>{}}},
     };
 };
 

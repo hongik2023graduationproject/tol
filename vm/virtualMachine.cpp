@@ -33,6 +33,12 @@ void VirtualMachine::run(Bytecode bytecode) {
         else if (opcode == OpcodeType::OpPop) {
             pop();
         }
+        else if (opcode == OpcodeType::OpTrue) {
+            push(TRUE);
+        }
+        else if (opcode == OpcodeType::OpFalse) {
+            push(FALSE);
+        }
     }
 }
 

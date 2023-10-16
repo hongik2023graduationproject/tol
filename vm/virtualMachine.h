@@ -23,6 +23,9 @@ private:
     vector<Object*> constants;
     vector<Instruction*> instructions;
 
+    // boolean 상수화 (const가 안되네..)
+    Boolean* TRUE = new Boolean{true};
+    Boolean* FALSE = new Boolean{false};
 
     const int StackSize = 2048;
     Endian endian;

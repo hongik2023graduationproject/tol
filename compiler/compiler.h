@@ -10,6 +10,7 @@
 #include "../ast/statements/expressionStatement.h"
 #include "../ast/expressions/infixExpression.h"
 #include "../ast/literals/integerLiteral.h"
+#include "../ast/literals/booleanLiteral.h"
 #include "../endian/endian.h"
 
 using namespace std;

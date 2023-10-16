@@ -46,6 +46,14 @@ void Compiler::compile(Node *node) {
          integer->value = integerLiteral->value;
          emit(OpcodeType::OpConstant, vector<int>{addConstant(integer)});
     }
+    else if (BooleanLiteral* booleanLiteral = dynamic_cast<BooleanLiteral*>(node)) {
+        if (booleanLiteral->value) {
+            emit(OpcodeType::OpTrue);
+        }
+        else {
+            emit(OpcodeType::OpFalse);
+        }
+    }
 }
 
 Bytecode Compiler::ReturnBytecode() {

@@ -50,6 +50,20 @@ void Compiler::compile(Node *node) {
             throw invalid_argument("");
         }
     }
+    else if (PrefixExpression* prefixExpression = dynamic_cast<PrefixExpression*>(node)) {
+        compile(prefixExpression->right);
+
+        switch (prefixExpression->token->tokenType) {
+            case TokenType::BANG:
+                emit(OpcodeType::OpBang);
+                break;
+            case TokenType::MINUS:
+                emit(OpcodeType::OpMinus);
+                break;
+            default:
+                throw invalid_argument("");
+        }
+    }
     else if (IntegerLiteral* integerLiteral = dynamic_cast<IntegerLiteral*>(node)) {
          Integer* integer  = new Integer;
          integer->value = integerLiteral->value;

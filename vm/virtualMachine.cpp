@@ -42,6 +42,12 @@ void VirtualMachine::run(Bytecode bytecode) {
         else if (opcode == OpcodeType::OpFalse) {
             push(FALSE);
         }
+        else if (opcode == OpcodeType::OpBang) {
+            executeBangOperator();
+        }
+        else if (opcode == OpcodeType::OpMinus) {
+            executeMinusOperator();
+        }
     }
 }
 
@@ -146,4 +152,30 @@ Boolean* VirtualMachine::nativeBoolToBooleanObject(bool input) {
         return TRUE;
     else
         return FALSE;
+}
+
+void VirtualMachine::executeBangOperator() {
+    Object* operand = pop();
+
+    if (operand == TRUE) {
+        return push(FALSE);
+    }
+    else if (operand == FALSE) {
+        return push(TRUE);
+    }
+    else { // ???
+        return push(FALSE);
+    }
+}
+
+void VirtualMachine::executeMinusOperator() {
+    Object* operand = pop();
+
+    if (operand->type == ObjectType::INTEGER) {
+        long long value = -dynamic_cast<Integer*>(operand)->value;
+        return push(new Integer(value));
+    }
+    else {
+        throw invalid_argument("");
+    }
 }

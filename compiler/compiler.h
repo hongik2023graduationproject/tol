@@ -9,6 +9,7 @@
 #include "../ast/program.h"
 #include "../ast/statements/expressionStatement.h"
 #include "../ast/expressions/infixExpression.h"
+#include "../ast/expressions/prefixExpression.h"
 #include "../ast/literals/integerLiteral.h"
 #include "../ast/literals/booleanLiteral.h"
 #include "../endian/endian.h"

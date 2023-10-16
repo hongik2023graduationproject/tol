@@ -26,6 +26,9 @@ enum class OpcodeType {
     OpEqual,
     OpNotEqual,
     OpLessThan,
+    OpMinus,
+    OpBang,
+
 };
 
 
@@ -53,6 +56,8 @@ public:
             {OpcodeType::OpEqual, Definition{"OpEqual", vector<int>{}}},
             {OpcodeType::OpNotEqual, Definition{"OpNotEqual", vector<int>{}}},
             {OpcodeType::OpLessThan, Definition{"OpLessThan", vector<int>{}}},
+            {OpcodeType::OpMinus, Definition{"OpMinus", vector<int>{}}},
+            {OpcodeType::OpBang, Definition{"OpBang", vector<int>{}}},
     };
 };
 

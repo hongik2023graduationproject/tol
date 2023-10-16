@@ -23,7 +23,9 @@ enum class OpcodeType {
     OpDiv,
     OpTrue,
     OpFalse,
-
+    OpEqual,
+    OpNotEqual,
+    OpLessThan,
 };
 
 
@@ -48,6 +50,9 @@ public:
             {OpcodeType::OpDiv, Definition{"ObSub", vector<int>{}}},
             {OpcodeType::OpTrue, Definition{"OpTrue", vector<int>{}}},
             {OpcodeType::OpFalse, Definition{"OpFalse", vector<int>{}}},
+            {OpcodeType::OpEqual, Definition{"OpEqual", vector<int>{}}},
+            {OpcodeType::OpNotEqual, Definition{"OpNotEqual", vector<int>{}}},
+            {OpcodeType::OpLessThan, Definition{"OpLessThan", vector<int>{}}},
     };
 };
 

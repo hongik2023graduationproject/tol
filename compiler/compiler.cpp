@@ -37,6 +37,15 @@ void Compiler::compile(Node *node) {
         else if (infixExpression->token->tokenType == TokenType::SLASH) {
             emit(OpcodeType::OpDiv);
         }
+        else if (infixExpression->token->tokenType == TokenType::LESS_THAN) {
+            emit(OpcodeType::OpLessThan);
+        }
+        else if (infixExpression->token->tokenType == TokenType::EQUAL) {
+            emit(OpcodeType::OpEqual);
+        }
+        else if (infixExpression->token->tokenType == TokenType::NOT_EQUAL) {
+            emit(OpcodeType::OpNotEqual);
+        }
         else {
             throw invalid_argument("");
         }

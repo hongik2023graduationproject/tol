@@ -30,6 +30,9 @@ void VirtualMachine::run(Bytecode bytecode) {
         else if (opcode == OpcodeType::OpAdd || opcode == OpcodeType::OpSub || opcode == OpcodeType::OpMul || opcode == OpcodeType::OpDiv) {
             executeBinaryOperation(opcode);
         }
+        else if (opcode == OpcodeType::OpEqual || opcode == OpcodeType::OpNotEqual || opcode == OpcodeType::OpLessThan) {
+            executeComparison(opcode);
+        }
         else if (opcode == OpcodeType::OpPop) {
             pop();
         }
@@ -100,6 +103,47 @@ void VirtualMachine::executeBinaryIntegerOperation(OpcodeType opcode, Integer* l
             break;
     }
 
-
     push(new Integer{returnValue});
+}
+
+void VirtualMachine::executeComparison(OpcodeType opcode) {
+    Object* right = pop();
+    Object* left = pop();
+
+    if (left->type == ObjectType::INTEGER && right->type == ObjectType::INTEGER) {
+        return executeIntegerComparison(opcode, dynamic_cast<Integer*>(left), dynamic_cast<Integer*>(right));
+    }
+
+    // boolean끼리 연산
+    switch (opcode) {
+        case OpcodeType::OpEqual:
+            return push(nativeBoolToBooleanObject(left == right));
+        case OpcodeType::OpNotEqual:
+            return push(nativeBoolToBooleanObject(left != right));
+        default:
+            throw invalid_argument("");
+    }
+}
+
+void VirtualMachine::executeIntegerComparison(OpcodeType opcode, Integer *left, Integer *right) {
+    long long leftValue = left->value;
+    long long rightValue = right->value;
+
+    switch (opcode) {
+        case OpcodeType::OpEqual:
+            return push(nativeBoolToBooleanObject(leftValue == rightValue));
+        case OpcodeType::OpNotEqual:
+            return push(nativeBoolToBooleanObject(leftValue != rightValue));
+        case OpcodeType::OpLessThan:
+            return push(nativeBoolToBooleanObject(leftValue < rightValue));
+        default:
+            throw invalid_argument("");
+    }
+}
+
+Boolean* VirtualMachine::nativeBoolToBooleanObject(bool input) {
+    if (input)
+        return TRUE;
+    else
+        return FALSE;
 }

@@ -18,6 +18,7 @@ void VirtualMachine::run(Bytecode bytecode) {
     instructions = bytecode.instructions;
     constants = bytecode.constants;
     stack.resize(StackSize);
+    globals.resize(GlobalsSize);
     stackPointer = 0;
 
     for (int ip = 0; ip < int(instructions.size()); ++ip) { // ip = instruction pointer
@@ -47,6 +48,14 @@ void VirtualMachine::run(Bytecode bytecode) {
         }
         else if (opcode == OpcodeType::OpMinus) {
             executeMinusOperator();
+        }
+        else if (opcode == OpcodeType::OpSetGlobal) {
+            int globalIndex = endian.byteToInt(vector<byte>(instructions[ip]->begin() + 1, instructions[ip]->begin() + 5));
+            globals[globalIndex] = pop();
+        }
+        else if (opcode == OpcodeType::OpGetGlobal) {
+            int globalIndex = endian.byteToInt(vector<byte>(instructions[ip]->begin() + 1, instructions[ip]->begin() + 5));
+            push(globals[globalIndex]);
         }
     }
 }

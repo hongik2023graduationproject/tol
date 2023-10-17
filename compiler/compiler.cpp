@@ -77,6 +77,15 @@ void Compiler::compile(Node *node) {
             emit(OpcodeType::OpFalse);
         }
     }
+    else if (LetStatement* letStatement = dynamic_cast<LetStatement*>(node)) {
+        compile(letStatement->expression);
+        Symbol symbol = symbolTable.Define(letStatement->name->name);
+        emit(OpcodeType::OpSetGlobal, vector<int>{symbol.index});
+    }
+    else if (IdentifierExpression* identifierExpression = dynamic_cast<IdentifierExpression*>(node)) {
+        Symbol symbol = symbolTable.Resolve(identifierExpression->name); // 오류 생길 수도 처리 필요 할 수도
+        emit(OpcodeType::OpGetGlobal, vector<int>{symbol.index});
+    }
 }
 
 Bytecode Compiler::ReturnBytecode() {

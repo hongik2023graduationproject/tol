@@ -8,6 +8,7 @@
 #include "../compiler/compiler.h"
 #include "../endian/endian.h"
 
+
 class VirtualMachine {
 public:
     void testIntegerObject(long long expected, Object* object);
@@ -20,14 +21,17 @@ public:
     vector<Object*> stack;
     int stackPointer;
 private:
+    const int GlobalsSize = 65536;
+    const int StackSize = 2048;
+
     vector<Object*> constants;
     vector<Instruction*> instructions;
+    vector<Object*> globals;
 
     // boolean 상수화 (const가 안되네..)
     Boolean* TRUE = new Boolean{true};
     Boolean* FALSE = new Boolean{false};
 
-    const int StackSize = 2048;
     Endian endian;
 
     Object* stackTop();

@@ -8,12 +8,13 @@
 #include "../ast/node.h"
 #include "../ast/program.h"
 #include "../ast/statements/expressionStatement.h"
+#include "../ast/statements/letStatement.h"
 #include "../ast/expressions/infixExpression.h"
 #include "../ast/expressions/prefixExpression.h"
 #include "../ast/literals/integerLiteral.h"
 #include "../ast/literals/booleanLiteral.h"
 #include "../endian/endian.h"
-
+#include "symbolTable.h"
 using namespace std;
 
 // 컴파일러가 만들어낸 Instructions와 컴파일러가 평가한 Constants를 담는다.
@@ -33,6 +34,8 @@ public:
     vector<Instruction*> instructions;
     vector<Object*> constants;
 private:
+    SymbolTable symbolTable;
+
     void compile(Node* node);
     Bytecode ReturnBytecode();
     int addConstant(Object* object);

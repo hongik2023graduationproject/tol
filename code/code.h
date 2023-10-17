@@ -28,6 +28,8 @@ enum class OpcodeType {
     OpLessThan,
     OpMinus,
     OpBang,
+    OpSetGlobal,
+    OpGetGlobal,
 
 };
 
@@ -58,6 +60,8 @@ public:
             {OpcodeType::OpLessThan, Definition{"OpLessThan", vector<int>{}}},
             {OpcodeType::OpMinus, Definition{"OpMinus", vector<int>{}}},
             {OpcodeType::OpBang, Definition{"OpBang", vector<int>{}}},
+            {OpcodeType::OpSetGlobal, Definition{"OpSetGlobal", vector<int>{4}}},
+            {OpcodeType::OpGetGlobal, Definition{"OpGetGlobal", vector<int>{4}}},
     };
 };
 

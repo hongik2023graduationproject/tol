@@ -22,11 +22,19 @@ private:
 
 
     const int StackSize = 2048;
+	Boolean* boolTrue, *boolFalse;
     Endian endian;
 
     Object* stackTop();
     void push(Object* object);
     Object* pop();
+
+//	Object *lastPoppedStackElement();
+void executeBinaryOperation(OpcodeType opcode);
+void executeBinaryIntegerOperation(OpcodeType opcode, Object* left, Object* right);
+void executeComparison(OpcodeType opcode);
+void executeIntegerComparison(OpcodeType opcode, Object* left, Object* right);
+Boolean* nativeBoolToBooleanObject(bool input);
 };
 
 

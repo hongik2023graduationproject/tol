@@ -19,20 +19,55 @@ void Compiler::compile(Node *node) {
     }
     else if (ExpressionStatement* expressionStatement = dynamic_cast<ExpressionStatement*>(node)) {
         compile(expressionStatement->expression);
+//		emit(OpcodeType::OpPop);
     }
     else if (InfixExpression* infixExpression = dynamic_cast<InfixExpression*>(node)) {
-        compile(infixExpression->left);
+        // Less than -> reorder
+		if(infixExpression->token->tokenType == TokenType::LESS_THAN){
+			compile(infixExpression->right);
+			compile(infixExpression->left);
+			emit(OpcodeType::OpGreaterThan);
+			return;
+		}
+
+		compile(infixExpression->left);
         compile(infixExpression->right);
 
         if (infixExpression->token->tokenType == TokenType::PLUS) {
             emit(OpcodeType::OpAdd);
         }
+		else if (infixExpression->token->tokenType == TokenType::MINUS) {
+			emit(OpcodeType::OpSub);
+		}
+		else if (infixExpression->token->tokenType == TokenType::ASTERISK) {
+			emit(OpcodeType::OpMul);
+		}
+		else if (infixExpression->token->tokenType == TokenType::SLASH) {
+			emit(OpcodeType::OpDiv);
+		}
+		else if (infixExpression->token->tokenType == TokenType::EQUAL) {
+			emit(OpcodeType::OpEqual);
+		}
+		else if (infixExpression->token->tokenType == TokenType::NOT_EQUAL) {
+			emit(OpcodeType::OpNotEqual);
+		}
+		else if (infixExpression->token->tokenType == TokenType::GREATER_THAN) {
+			emit(OpcodeType::OpGreaterThan);
+		}
     }
     else if (IntegerLiteral* integerLiteral = dynamic_cast<IntegerLiteral*>(node)) {
          Integer* integer  = new Integer;
          integer->value = integerLiteral->value;
          emit(OpcodeType::OpConstant, vector<int>{addConstant(integer)});
     }
+	else if (BooleanLiteral* booleanLiteral = dynamic_cast<BooleanLiteral*>(node)) {
+		if(booleanLiteral->value){
+			emit(OpcodeType::OpTrue);
+		}
+		else{
+			emit(OpcodeType::OpFalse);
+		}
+	}
 }
 
 Bytecode Compiler::ReturnBytecode() {

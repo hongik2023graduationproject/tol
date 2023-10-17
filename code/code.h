@@ -17,6 +17,15 @@ using Opcode = byte;
 enum class OpcodeType {
     OpConstant = 1,
     OpAdd,
+	OpPop,
+	OpSub,
+	OpMul,
+	OpDiv,
+	OpTrue,
+	OpFalse,
+	OpEqual,
+	OpNotEqual,
+	OpGreaterThan,
 
 };
 
@@ -36,7 +45,16 @@ public:
     map<OpcodeType, Definition> definitions = {
             {OpcodeType::OpConstant, Definition{"OpConstant", vector<int>{4}}},
             {OpcodeType::OpAdd, Definition{"OpAdd", vector<int>{}}},
-    };
+			{OpcodeType::OpPop, Definition{"OpPop", vector<int>{}}},
+			{OpcodeType::OpSub, Definition{"OpSub", vector<int>{}}},
+			{OpcodeType::OpMul, Definition{"OpMul", vector<int>{}}},
+			{OpcodeType::OpDiv, Definition{"OpDiv", vector<int>{}}},
+			{OpcodeType::OpTrue, Definition{"OpTrue", vector<int>{}}},
+			{OpcodeType::OpFalse, Definition{"OpFalse", vector<int>{}}},
+			{OpcodeType::OpEqual, Definition{"OpEqual", vector<int>{}}},
+			{OpcodeType::OpNotEqual, Definition{"OpNotEqual", vector<int>{}}},
+			{OpcodeType::OpGreaterThan, Definition{"OpGreaterThan", vector<int>{}}},
+	};
 };
 
 

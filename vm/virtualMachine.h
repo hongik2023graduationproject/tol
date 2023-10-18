@@ -45,6 +45,7 @@ private:
     Boolean* nativeBoolToBooleanObject(bool input);
     void executeBangOperator();
     void executeMinusOperator();
+	bool isTruthy(Object* obj);
 };
 
 

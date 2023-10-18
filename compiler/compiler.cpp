@@ -86,6 +86,31 @@ void Compiler::compile(Node *node) {
         Symbol symbol = symbolTable.Resolve(identifierExpression->name); // 오류 생길 수도 처리 필요 할 수도
         emit(OpcodeType::OpGetGlobal, vector<int>{symbol.index});
     }
+	else if (IfExpression* ifExpression = dynamic_cast<IfExpression*>(node)) {
+		compile(ifExpression->condition);
+
+		// OpJumpNotTruthy 명령어에 쓰레깃값 9999 널어서 배출
+		int jumpNotTruthyPos = emit(OpcodeType::OpJumpNotTruthy, vector<int>{9999});
+
+		compile(ifExpression->consequence);
+
+		int afterConsequencePos = instructions.size();
+		changeOperand(jumpNotTruthyPos, afterConsequencePos);
+
+		if(ifExpression->alternative != nullptr){
+			int jumpPos = emit(OpcodeType::OpJump, vector<int>{9999});
+
+			compile(ifExpression->alternative);
+
+			afterConsequencePos = instructions.size();
+			changeOperand(jumpPos, afterConsequencePos);
+		}
+	}
+	else if (BlockStatement* blockStatement = dynamic_cast<BlockStatement*>(node)){
+		for(auto statement : blockStatement->statements){
+			compile(statement);
+		}
+	}
 }
 
 Bytecode Compiler::ReturnBytecode() {
@@ -100,6 +125,9 @@ int Compiler::addConstant(Object* object) {
 int Compiler::emit(OpcodeType opcode, vector<int> operands) {
     Instruction* instruction = code.makeInstruction(opcode, operands);
     int pos = addInstruction(instruction);
+
+	setLastInstruction(opcode, pos);
+
     return pos;
 }
 
@@ -107,4 +135,32 @@ int Compiler::addInstruction(Instruction* instruction) {
     int posNewInstruction = instructions.size();
     instructions.push_back(instruction);
     return posNewInstruction;
+}
+
+void Compiler::setLastInstruction(OpcodeType opcode, int position) {
+	EmittedInstruction* previous = lastInstruction;
+	EmittedInstruction* last = new EmittedInstruction{opcode, position};
+
+	delete previousInstruction;
+	previousInstruction = previous;
+	lastInstruction = last;
+}
+
+bool Compiler::lastInstructionIsPop() {
+	return lastInstruction->opcode == OpcodeType::OpPop;
+}
+
+void Compiler::removeLastInstruction() {
+	instructions.pop_back(); // remove last instruction(OpPop)
+}
+
+void Compiler::replaceInstruction(int position, Instruction *newInstruction) {
+	instructions[position] = newInstruction;
+}
+
+void Compiler::changeOperand(int opPos, int operand) {
+	OpcodeType opcode = OpcodeType(instructions[opPos]->at(0));
+	Instruction* newInstruction = code.makeInstruction(opcode, vector<int>{operand});
+
+	replaceInstruction(opPos, newInstruction);
 }

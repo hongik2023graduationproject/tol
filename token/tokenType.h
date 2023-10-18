@@ -33,6 +33,7 @@ enum class TokenType {
     LBRACKET,       // [
     RBRACKET,       // ]
     LESS_THAN,      // <
+	GREATER_THAN,	// >
 
     // 예약어
     LET,            // LET

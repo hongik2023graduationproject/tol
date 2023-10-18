@@ -125,6 +125,9 @@ vector<Token*> Lexer::run(const string &code) {
         else if (characters[currentReadPoint] == "<") {
             tokens.push_back(new Token{TokenType::LESS_THAN, characters[currentReadPoint]});
         }
+		else if (characters[currentReadPoint] == ">") {
+			tokens.push_back(new Token{TokenType::GREATER_THAN, characters[currentReadPoint]});
+		}
         else if (isNumber(characters[currentReadPoint])) {
             tokens.push_back(new Token{TokenType::INTEGER, readNumber()});
         }

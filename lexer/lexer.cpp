@@ -125,6 +125,9 @@ vector<Token*> Lexer::run(const string &code) {
         else if (characters[currentReadPoint] == "<") {
             tokens.push_back(new Token{TokenType::LESS_THAN, characters[currentReadPoint]});
         }
+        else if (characters[currentReadPoint] == "\"") {
+            tokens.push_back(new Token{TokenType::STRING, readString()});
+        }
         else if (isNumber(characters[currentReadPoint])) {
             tokens.push_back(new Token{TokenType::INTEGER, readNumber()});
         }
@@ -174,4 +177,25 @@ string Lexer::readNumber() {
         number += characters[currentReadPoint];
     }
     return number;
+}
+
+
+// 코드 리팩토링 할 수 있을 거 같은데
+string Lexer::readString() {
+    // 포인터 이전시킬 때 큰 따옴표가 맞는 지 확인해야할 것
+    currentReadPoint++;
+    nextReadPoint++;
+
+    string s;
+    while (nextReadPoint < characters.size() && characters[currentReadPoint] != "\"") {
+        s += characters[currentReadPoint];
+
+        currentReadPoint++;
+        nextReadPoint++;
+    }
+
+    currentReadPoint++;
+    nextReadPoint++;
+
+    return s;
 }

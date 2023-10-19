@@ -40,6 +40,8 @@ private:
                 return "INTEGER";
             case TokenType::FLOAT:
                 return "FLOAT";
+            case TokenType::STRING:
+                return "STRING";
             case TokenType::SPACE:
                 return "SPACE";
             case TokenType::TAB:

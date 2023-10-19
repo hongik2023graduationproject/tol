@@ -13,10 +13,10 @@ int main() {
 //    codeTest.codeTest();
 
     Repl repl;
-//    repl.lexerTest();
+    repl.lexerTest();
 //    repl.parserTest();
 //    repl.run();
-    repl.runWithVM();
+//    repl.runWithVM();
     return 0;
 }
 

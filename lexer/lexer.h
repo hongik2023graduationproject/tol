@@ -26,6 +26,7 @@ private:
     string readNumber();
     static bool isLetter(const string &character);
     string readLetter();
+    string readString();
 
     map<string, TokenType> keywords = {
             {"정수", TokenType::INT},

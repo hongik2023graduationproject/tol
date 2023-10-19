@@ -8,6 +8,7 @@ enum class TokenType {
     IDENTIFIER,     // 사과
     INTEGER,        // 1, 2, 3
     FLOAT,          // 1.0, 1.5, 2.0
+    STRING,
     SPACE,          // ' '
     TAB,            // '\t'
     STARTBLOCK,

@@ -20,16 +20,19 @@ Object* Evaluator::eval(Node* node, Environment* environment) {
 //    }
     else if (IntegerLiteral* integerLiteral = dynamic_cast<IntegerLiteral*>(node)) {
         Integer* integer = new Integer;
+        integer->type = ObjectType::INTEGER;
         integer->value = integerLiteral->value;
         return integer;
     }
     else if (StringLiteral* stringLiteral = dynamic_cast<StringLiteral*>(node)) {
         String* string = new String;
+        string->type = ObjectType::STRING;
         string->value = stringLiteral->value;
         return string;
     }
     else if (BooleanLiteral* booleanLiteral = dynamic_cast<BooleanLiteral*>(node)) {
         Boolean* boolean = new Boolean;
+        boolean->type = ObjectType::BOOLEAN;
         boolean->value = booleanLiteral->value;
         return boolean;
     }
@@ -45,6 +48,7 @@ Object* Evaluator::eval(Node* node, Environment* environment) {
     else if (ReturnStatement* returnStatement = dynamic_cast<ReturnStatement*>(node)) {
         Object* value = eval(returnStatement->returnValue, environment);
         ReturnValue* returnValue = new ReturnValue;
+        returnValue->type = ObjectType::RETURN_VALUE_OBJECT;
         returnValue->value = value;
         return returnValue;
     }
@@ -100,6 +104,7 @@ Object* Evaluator::evalBangOperatorExpression(Object *right) {
 Object* Evaluator::evalMinusPrefixOperatorExpression(Object *right) {
     if (Integer* integer = dynamic_cast<Integer*>(right)) {
         Integer* newInteger = new Integer;
+        newInteger->type = ObjectType::INTEGER;
         newInteger->value = -(integer->value);
         delete integer;
         return newInteger;
@@ -110,7 +115,6 @@ Object* Evaluator::evalMinusPrefixOperatorExpression(Object *right) {
 }
 
 Object* Evaluator::evalInfixExpression(Token* token, Object *left, Object *right) {
-    cout << (int)left->type << ' ' << (int)dynamic_cast<String*>(right)->type << endl;
     if (left->type == ObjectType::INTEGER && right->type == ObjectType::INTEGER) {
         return evalIntegerInfixExpression(token, left, right);
     }

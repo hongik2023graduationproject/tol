@@ -7,18 +7,17 @@
 
 class Object {
 public:
-    ObjectType type = ObjectType::RETURN_VALUE_OBJECT;
+    ObjectType type = {};
 
     virtual string print() = 0;
 };
 
 class Integer : public Object{
 public:
-    ObjectType type = ObjectType::INTEGER;
     long long value{};
 
     Integer() = default;
-    Integer(long long value) : value(value) {};
+    Integer(long long value) : value(value) { type = ObjectType::INTEGER; };
 
     string print() final {
         return to_string(value);
@@ -27,11 +26,10 @@ public:
 
 class String : public Object {
 public:
-    ObjectType type = ObjectType::STRING;
     string value{};
 
     String() = default;
-    String(string s) : value(std::move(s)) {};
+    String(string s) : value(std::move(s)) { type = ObjectType::INTEGER; };
 
     string print() final {
         return value;
@@ -40,11 +38,10 @@ public:
 
 class Boolean : public Object {
 public:
-    ObjectType type = ObjectType::BOOLEAN;
     bool value{};
 
     Boolean() = default;
-    explicit Boolean(bool value) : value(value) {};
+    explicit Boolean(bool value) : value(value) { type = ObjectType::BOOLEAN; };
 
     string print() final {
         return to_string(value);
@@ -53,7 +50,6 @@ public:
 
 class ReturnValue : public Object {
 public:
-    ObjectType type = ObjectType::RETURN_VALUE_OBJECT;
     Object* value{};
 
     string print() final {

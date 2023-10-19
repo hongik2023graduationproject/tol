@@ -1,8 +1,11 @@
+#include <utility>
+
 #ifndef TOLELOM_OBJECT_H
 #define TOLELOM_OBJECT_H
 
 enum class ObjectType {
     INTEGER,
+    STRING,
     BOOLEAN,
     RETURN_VALUE_OBJECT
 };
@@ -24,6 +27,19 @@ public:
 
     string print() final {
         return to_string(value);
+    }
+};
+
+class String : public Object {
+public:
+    ObjectType type = ObjectType::STRING;
+    string value{};
+
+    String() = default;
+    String(string s) : value(std::move(s)) {};
+
+    string print() final {
+        return value;
     }
 };
 

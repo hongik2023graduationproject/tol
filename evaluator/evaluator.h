@@ -12,6 +12,7 @@
 #include "../ast/expressions/prefixExpression.h"
 #include "../ast/expressions/infixExpression.h"
 #include "../ast/literals/integerLiteral.h"
+#include "../ast/literals/stringLiteral.h"
 #include "../ast/literals/booleanLiteral.h"
 #include "../object/object.h"
 #include "../object/environment.h"

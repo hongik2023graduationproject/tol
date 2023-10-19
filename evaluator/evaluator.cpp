@@ -23,6 +23,11 @@ Object* Evaluator::eval(Node* node, Environment* environment) {
         integer->value = integerLiteral->value;
         return integer;
     }
+    else if (StringLiteral* stringLiteral = dynamic_cast<StringLiteral*>(node)) {
+        String* string = new String;
+        string->value = stringLiteral->value;
+        return string;
+    }
     else if (BooleanLiteral* booleanLiteral = dynamic_cast<BooleanLiteral*>(node)) {
         Boolean* boolean = new Boolean;
         boolean->value = booleanLiteral->value;

@@ -181,8 +181,9 @@ string Lexer::readNumber() {
 
 
 // 코드 리팩토링 할 수 있을 거 같은데
+// 추가로 매 번 += 하는 것보다 한 번 쭉 읽어서 한 번에 옮기는 게 효율적 일 것
 string Lexer::readString() {
-    // 포인터 이전시킬 때 큰 따옴표가 맞는 지 확인해야할 것
+    // 포인터 이전 시킬 때 큰 따옴표가 맞는 지 확인해야 할 것
     currentReadPoint++;
     nextReadPoint++;
 

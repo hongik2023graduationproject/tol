@@ -53,4 +53,5 @@ add_executable(tolelom main.cpp
         vm/virtualMachine.h
         compiler/symbolTable.cpp
         compiler/symbolTable.h
+        ast/literals/stringLiteral.h
 )

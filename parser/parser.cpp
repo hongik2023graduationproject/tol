@@ -364,6 +364,10 @@ Expression* Parser::parseIntegerLiteral() {
     return new IntegerLiteral{currentToken, stoll(currentToken->literal)};
 }
 
+Expression* Parser::parseStringLiteral() {
+    return new StringLiteral{currentToken, currentToken->literal};
+}
+
 Expression* Parser::parseBooleanLiteral() {
     return new BooleanLiteral{currentToken, (currentToken->tokenType == TokenType::TRUE)};
 }

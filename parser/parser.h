@@ -22,6 +22,7 @@
 #include "../ast/statements/blockStatement.h"
 
 #include "../ast/literals/integerLiteral.h"
+#include "../ast/literals/stringLiteral.h"
 #include "../ast/literals/booleanLiteral.h"
 #include "../ast/literals/functionLiteral.h"
 
@@ -43,6 +44,7 @@ private:
     std::map<TokenType, prefixParseFunction> prefixParseFunctions = {
             {TokenType::IDENTIFIER, &Parser::parseIdentifierExpression},
             {TokenType::INTEGER, &Parser::parseIntegerLiteral},
+            {TokenType::STRING, &Parser::parseStringLiteral},
             {TokenType::BANG, &Parser::parsePrefixExpression},
             {TokenType::MINUS, &Parser::parsePrefixExpression},
             {TokenType::TRUE, &Parser::parseBooleanLiteral},
@@ -101,6 +103,7 @@ private:
     Expression* parseIntegerLiteral();
     Expression* parseBooleanLiteral();
     Expression* parseFunctionLiteral();
+    Expression* parseStringLiteral();
 
     vector<IdentifierExpression*> parseFunctionParameters();
 };

@@ -195,8 +195,5 @@ string Lexer::readString() {
         nextReadPoint++;
     }
 
-    currentReadPoint++;
-    nextReadPoint++;
-
     return s;
 }

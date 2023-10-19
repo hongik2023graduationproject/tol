@@ -110,8 +110,12 @@ Object* Evaluator::evalMinusPrefixOperatorExpression(Object *right) {
 }
 
 Object* Evaluator::evalInfixExpression(Token* token, Object *left, Object *right) {
+    cout << (int)left->type << ' ' << (int)dynamic_cast<String*>(right)->type << endl;
     if (left->type == ObjectType::INTEGER && right->type == ObjectType::INTEGER) {
         return evalIntegerInfixExpression(token, left, right);
+    }
+    else if (left->type == ObjectType::STRING && right->type == ObjectType::STRING) {
+        return evalStringInfixExpression(token, left, right);
     }
 }
 
@@ -153,10 +157,19 @@ Object* Evaluator::evalIntegerInfixExpression(Token* token, Object *left, Object
 
     delete leftInteger;
     delete rightInteger;
+}
 
+Object* Evaluator::evalStringInfixExpression(Token *token, Object *left, Object *right) {
+    String* leftString = static_cast<String*>(left);
+    String* rightString = static_cast<String*>(right);
+
+    if (token->tokenType == TokenType::PLUS) {
+        return new String(leftString->value + rightString->value);
+    }
 }
 
 Object* Evaluator::evalIdentifier(IdentifierExpression* identifier, Environment* environment) {
     Object* value = environment->get(identifier->name);
     return value;
 }
+

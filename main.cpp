@@ -4,7 +4,6 @@
 #include "code/codeTest.h"
 
 
-
 int main() {
 //    Compiler compiler;
 //    cout << "Endian Type: " << compiler.endian.checkBigEndianComputer() << endl;

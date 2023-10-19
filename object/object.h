@@ -1,18 +1,13 @@
-#include <utility>
-
 #ifndef TOLELOM_OBJECT_H
 #define TOLELOM_OBJECT_H
 
-enum class ObjectType {
-    INTEGER,
-    STRING,
-    BOOLEAN,
-    RETURN_VALUE_OBJECT
-};
+#include <utility>
+
+#include "objectType.h"
 
 class Object {
 public:
-    ObjectType type{};
+    ObjectType type = ObjectType::RETURN_VALUE_OBJECT;
 
     virtual string print() = 0;
 };

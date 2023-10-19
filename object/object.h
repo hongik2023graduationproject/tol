@@ -16,7 +16,7 @@ class Integer : public Object{
 public:
     long long value{};
 
-    Integer() = default;
+    Integer() { type = ObjectType::INTEGER; };
     Integer(long long value) : value(value) { type = ObjectType::INTEGER; };
 
     string print() final {
@@ -28,8 +28,8 @@ class String : public Object {
 public:
     string value{};
 
-    String() = default;
-    String(string s) : value(std::move(s)) { type = ObjectType::INTEGER; };
+    String() { type = ObjectType::STRING; };
+    String(string s) : value(std::move(s)) { type = ObjectType::STRING; };
 
     string print() final {
         return value;

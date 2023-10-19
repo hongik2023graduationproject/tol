@@ -48,7 +48,7 @@ Object* Evaluator::eval(Node* node, Environment* environment) {
     else if (ReturnStatement* returnStatement = dynamic_cast<ReturnStatement*>(node)) {
         Object* value = eval(returnStatement->returnValue, environment);
         ReturnValue* returnValue = new ReturnValue;
-        returnValue->type = ObjectType::RETURN_VALUE_OBJECT;
+        returnValue->type = ObjectType::RETURN_VALUE;
         returnValue->value = value;
         return returnValue;
     }

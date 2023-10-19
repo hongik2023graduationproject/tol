@@ -7,7 +7,7 @@ enum class ObjectType {
     INTEGER,
     STRING,
     BOOLEAN,
-    RETURN_VALUE_OBJECT
+    RETURN_VALUE
 };
 
 

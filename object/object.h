@@ -5,6 +5,11 @@
 
 #include "objectType.h"
 
+
+class Object;
+
+using BuiltinFunction = Object* (*)(vector<Object*> args);
+
 class Object {
 public:
     ObjectType type = {};
@@ -54,6 +59,17 @@ public:
 
     string print() final {
         return value->print();
+    }
+};
+
+
+
+class Builtin : public Object {
+public:
+    BuiltinFunction fn;
+
+    string print() {
+        return "builtin function";
     }
 };
 

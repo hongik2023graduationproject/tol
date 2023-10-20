@@ -14,9 +14,9 @@ Program* Parser::run(vector<Token*> inputToken) {
                 continue;
             }
 
-                Statement* statement = parseStatement(); // parseStatement가 끝나면 currentToken의 타입은 NEW_LINE이 된다.
-                program->statements.push_back(statement);
-                setNextToken(); // NEW_LINE 스킵
+            Statement* statement = parseStatement(); // parseStatement가 끝나면 currentToken의 타입은 NEW_LINE이 된다.
+            program->statements.push_back(statement);
+            setNextToken(); // NEW_LINE 스킵
         }
     } catch (const exception& e) {
         cout << e.what() << endl;
@@ -198,10 +198,6 @@ AssignStatement* Parser::parseAssignStatement() {
 
 ExpressionStatement* Parser::parseExpressionStatement() {
     ExpressionStatement* expressionStatement = new ExpressionStatement{currentToken, parseExpression(Precedence::LOWEST)};
-
-//    while (currentToken->tokenType != TokenType::NEW_LINE) {
-//        setNextToken();
-//    }
 
     return expressionStatement;
 }
@@ -437,6 +433,38 @@ Expression* Parser::parseFunctionLiteral() {
     }
 
     return functionLiteral;
+}
+
+Expression* Parser::parseArrayLiteral() {
+    ArrayLiteral* arrayLiteral = new ArrayLiteral;
+    arrayLiteral->token = currentToken; // "{"
+
+    arrayLiteral->elements = parseExpressionList(TokenType::RBRACE);
+
+    return arrayLiteral;
+}
+
+vector<Expression*> Parser::parseExpressionList(TokenType endTokenType) {
+    vector<Expression*> list;
+
+    if (nextToken->tokenType == endTokenType) {
+        setNextToken();
+        return list;
+    }
+
+    setNextToken();
+    list.push_back(parseExpression(Precedence::LOWEST));
+
+    while (nextToken->tokenType != endTokenType) {
+        setNextToken(); // ? ,
+        setNextToken(); // , space
+        setNextToken(); // space ?
+        list.push_back(parseExpression(Precedence::LOWEST));
+    }
+
+    setNextToken();
+
+    return list;
 }
 
 

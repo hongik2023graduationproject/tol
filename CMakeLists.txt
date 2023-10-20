@@ -55,4 +55,5 @@ add_executable(tolelom main.cpp
         compiler/symbolTable.h
         ast/literals/stringLiteral.h
         object/objectType.h
+        ast/literals/arrayLiteral.h
 )

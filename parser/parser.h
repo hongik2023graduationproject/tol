@@ -25,6 +25,7 @@
 #include "../ast/literals/stringLiteral.h"
 #include "../ast/literals/booleanLiteral.h"
 #include "../ast/literals/functionLiteral.h"
+#include "../ast/literals/arrayLiteral.h"
 
 enum class Precedence;
 
@@ -52,6 +53,7 @@ private:
             {TokenType::LPAREN, &Parser::parseGroupedExpression},
             {TokenType::IF, &Parser::parseIfExpression},
             {TokenType::FUNCTION, &Parser::parseFunctionLiteral},
+            {TokenType::LBRACE, &Parser::parseArrayLiteral},
     };
     std::map<TokenType, infixParseFunction> infixParseFunctions = {
             {TokenType::PLUS, &Parser::parseInfixExpression},
@@ -104,8 +106,10 @@ private:
     Expression* parseBooleanLiteral();
     Expression* parseFunctionLiteral();
     Expression* parseStringLiteral();
+    Expression* parseArrayLiteral();
 
     vector<IdentifierExpression*> parseFunctionParameters();
+    vector<Expression*> parseExpressionList(TokenType endTokenType);
 };
 
 

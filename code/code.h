@@ -30,6 +30,8 @@ enum class OpcodeType {
     OpBang,
     OpSetGlobal,
     OpGetGlobal,
+	OpJumpNotTruthy,
+	OpJump
 
 };
 
@@ -62,7 +64,9 @@ public:
             {OpcodeType::OpBang, Definition{"OpBang", vector<int>{}}},
             {OpcodeType::OpSetGlobal, Definition{"OpSetGlobal", vector<int>{4}}},
             {OpcodeType::OpGetGlobal, Definition{"OpGetGlobal", vector<int>{4}}},
-    };
+			{OpcodeType::OpJumpNotTruthy, Definition{"OpJumpNotTruthy", vector<int>{4}}},
+			{OpcodeType::OpJump, Definition{"OpJump", vector<int>{4}}},
+			};
 };
 
 

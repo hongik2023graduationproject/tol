@@ -16,6 +16,9 @@ vector<Token*> Lexer::run(const string &code) {
         if (characters[currentReadPoint] == ":") {
             tokens.push_back(new Token{TokenType::COLON, characters[currentReadPoint]});
         }
+		else if (characters[currentReadPoint] == ";") {
+			tokens.push_back(new Token{TokenType::SEMICOLON, characters[currentReadPoint]});
+		}
         else if (characters[currentReadPoint] == "=") {
             if (characters[nextReadPoint] == "=") {
                 tokens.push_back(new Token{TokenType::EQUAL, characters[currentReadPoint] + characters[nextReadPoint]});
@@ -128,6 +131,9 @@ vector<Token*> Lexer::run(const string &code) {
         else if (characters[currentReadPoint] == "\"") {
             tokens.push_back(new Token{TokenType::STRING, readString()});
         }
+		else if (characters[currentReadPoint] == ">") {
+			tokens.push_back(new Token{TokenType::GREATER_THAN, characters[currentReadPoint]});
+		}
         else if (isNumber(characters[currentReadPoint])) {
             tokens.push_back(new Token{TokenType::INTEGER, readNumber()});
         }

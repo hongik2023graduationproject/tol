@@ -16,6 +16,9 @@ vector<Token*> Lexer::run(const string &code) {
         if (characters[currentReadPoint] == ":") {
             tokens.push_back(new Token{TokenType::COLON, characters[currentReadPoint]});
         }
+		else if (characters[currentReadPoint] == ";") {
+			tokens.push_back(new Token{TokenType::SEMICOLON, characters[currentReadPoint]});
+		}
         else if (characters[currentReadPoint] == "=") {
             if (characters[nextReadPoint] == "=") {
                 tokens.push_back(new Token{TokenType::EQUAL, characters[currentReadPoint] + characters[nextReadPoint]});

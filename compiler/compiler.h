@@ -13,7 +13,8 @@
 #include "../ast/expressions/prefixExpression.h"
 #include "../ast/literals/integerLiteral.h"
 #include "../ast/literals/booleanLiteral.h"
-#include "../ast/expressions/ifExpression.h"
+#include "../ast/statements/ifStatement.h"
+#include "../ast/statements/loopStatement.h"
 #include "../endian/endian.h"
 #include "symbolTable.h"
 using namespace std;

@@ -86,30 +86,53 @@ void Compiler::compile(Node *node) {
         Symbol symbol = symbolTable.Resolve(identifierExpression->name); // 오류 생길 수도 처리 필요 할 수도
         emit(OpcodeType::OpGetGlobal, vector<int>{symbol.index});
     }
-	else if (IfExpression* ifExpression = dynamic_cast<IfExpression*>(node)) {
+	else if (IfStatement* ifExpression = dynamic_cast<IfStatement*>(node)) {
 		compile(ifExpression->condition);
 
 		// OpJumpNotTruthy 명령어에 쓰레깃값 9999 널어서 배출
 		int jumpNotTruthyPos = emit(OpcodeType::OpJumpNotTruthy, vector<int>{9999});
 
 		compile(ifExpression->consequence);
-
+		int jumpPos = emit(OpcodeType::OpJump, vector<int>{9999});
 		int afterConsequencePos = instructions.size();
 		changeOperand(jumpNotTruthyPos, afterConsequencePos);
 
 		if(ifExpression->alternative != nullptr){
-			int jumpPos = emit(OpcodeType::OpJump, vector<int>{9999});
 
 			compile(ifExpression->alternative);
 
 			afterConsequencePos = instructions.size();
-			changeOperand(jumpPos, afterConsequencePos);
 		}
+		changeOperand(jumpPos, afterConsequencePos);
 	}
 	else if (BlockStatement* blockStatement = dynamic_cast<BlockStatement*>(node)){
 		for(auto statement : blockStatement->statements){
 			compile(statement);
 		}
+	}
+	else if (LoopStatement* loopStatement = dynamic_cast<LoopStatement*>(node)){
+		if(loopStatement->initialization != nullptr){ // for loop initialization
+			compile(loopStatement->initialization);
+		}
+		int condPos; // condition evaluation 시작점
+		if(lastInstruction == nullptr){ // loop 명령어가 가장 앞머리일 경우
+			condPos = 0;
+		}
+		else{
+			condPos = lastInstruction->position + 1;
+		}
+		compile(loopStatement->condition);
+
+		// back-patching
+		int jumpNotTruthyPos = emit(OpcodeType::OpJumpNotTruthy, vector<int>{9999});
+
+		compile(loopStatement->loopBody);
+		if(loopStatement->incrementation != nullptr){
+			compile(loopStatement->incrementation);
+		}
+		emit(OpcodeType::OpJump, vector<int>{condPos});
+		int afterLoopPos = instructions.size();
+		changeOperand(jumpNotTruthyPos, afterLoopPos);
 	}
 }
 

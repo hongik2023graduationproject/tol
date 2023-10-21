@@ -16,7 +16,7 @@ int main() {
 //    repl.lexerTest();
 //    repl.parserTest();
 //    repl.run();
-    repl.runWithVM();
+	repl.runWithVM();
     return 0;
 }
 

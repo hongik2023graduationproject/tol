@@ -37,6 +37,7 @@ private:
             {"만약", TokenType::IF},
             {"라면", TokenType::END_IF},
             {"아니면", TokenType::ELSE},
+			{"반복", TokenType::LOOP},
 
     };
 };

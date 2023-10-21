@@ -1,10 +1,10 @@
-#ifndef TOLELOM_IFEXPRESSION_H
-#define TOLELOM_IFEXPRESSION_H
+#ifndef TOLELOM_IFSTATEMENT_H
+#define TOLELOM_IFSTATEMENT_H
 
-#include "expression.h"
-#include "../statements/blockStatement.h"
+#include "../statements/statement.h"
+#include "blockStatement.h"
 
-class IfExpression : public Expression {
+class IfStatement : public Statement {
 public:
     Token* token{};
     Expression* condition{};
@@ -20,4 +20,4 @@ public:
     }
 };
 
-#endif //TOLELOM_IFEXPRESSION_H
+#endif //TOLELOM_IFSTATEMENT_H

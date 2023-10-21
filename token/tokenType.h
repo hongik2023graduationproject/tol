@@ -15,6 +15,7 @@ enum class TokenType {
 
 
     COLON,          // :
+	SEMICOLON,		// ;
     RIGHTARROW,     // ->
     COMMA,          // ,
     // 기호
@@ -46,6 +47,7 @@ enum class TokenType {
     IF,             // 만약
     END_IF,         // 라면
     ELSE,           // 아니면
+	LOOP,			// 반복
 
 };
 

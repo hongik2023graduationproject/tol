@@ -60,6 +60,12 @@ Statement* Parser::parseStatement() {
     else if (currentToken->tokenType == TokenType::IDENTIFIER) {
         return parseAssignStatement();
     }
+	else if (currentToken->tokenType == TokenType::IF) {
+		return parseIfStatement();
+	}
+	else if (currentToken->tokenType == TokenType::LOOP) {
+		return parseLoopStatement();
+	}
     else {
         return parseExpressionStatement();
     }
@@ -295,51 +301,51 @@ Expression* Parser::parseGroupedExpression() {
     return expression;
 }
 
-Expression* Parser::parseIfExpression() {
-    IfExpression* ifExpression = new IfExpression;
+IfStatement* Parser::parseIfStatement() {
+    IfStatement* ifStatement = new IfStatement;
 
     if (currentToken->tokenType != TokenType::IF) {
-        throw invalid_argument("parseIfExpression: IF가 아닙니다.");
+        throw invalid_argument("parseIfStatement: IF가 아닙니다.");
     }
-    ifExpression->token = currentToken;
+	ifStatement->token = currentToken;
     setNextToken();
 
     if (currentToken->tokenType != TokenType::COLON) {
-        throw invalid_argument("parseIfExpression: COLON이 아닙니다.");
+        throw invalid_argument("parseIfStatement: COLON이 아닙니다.");
     }
     setNextToken();
 
     skipSpaceToken();
 
     if (currentToken->tokenType != TokenType::LPAREN) {
-        throw invalid_argument("parseIfExpression: LPAREN이 아닙니다.");
+        throw invalid_argument("parseIfStatement: LPAREN이 아닙니다.");
     }
     setNextToken();
 
-    ifExpression->condition = parseExpression(Precedence::LOWEST);
+	ifStatement->condition = parseExpression(Precedence::LOWEST);
     setNextToken();
 
     if (currentToken->tokenType != TokenType::RPAREN) {
-        throw invalid_argument("parseIfExpression: RPAREN이 아닙니다.");
+        throw invalid_argument("parseIfStatement: RPAREN이 아닙니다.");
     }
     setNextToken();
 
 //    skipSpaceToken();
 //
 //    if (currentToken->tokenType != TokenType::END_IF) {
-//        throw invalid_argument("parseIfExpression: END_IF가 아닙니다.");
+//        throw invalid_argument("parseIfStatement: END_IF가 아닙니다.");
 //    }
 //    setNextToken();
 
     if (currentToken->tokenType != TokenType::NEW_LINE) {
-        throw invalid_argument("parseIfExpression: NEW_LINE이 아닙니다.");
+        throw invalid_argument("parseIfStatement: NEW_LINE이 아닙니다.");
     }
     setNextToken();
 
-    ifExpression->consequence = parseBlockStatement();
+	ifStatement->consequence = parseBlockStatement();
 
     if (currentToken->tokenType != TokenType::ENDBLOCK) { // ENDBLOCK
-        throw invalid_argument("parseIfExpression: ENDBLOCK이 아닙니다.");
+        throw invalid_argument("parseIfStatement: ENDBLOCK이 아닙니다.");
     }
 //    setNextToken();
 
@@ -350,14 +356,82 @@ Expression* Parser::parseIfExpression() {
         setNextToken(); // current: COLON,     next: NEW_LINE
         setNextToken(); // current: NEW_LINE, next: STARTBLOCK
 
-        ifExpression->alternative = parseBlockStatement();
+        ifStatement->alternative = parseBlockStatement();
 
         if (currentToken->tokenType != TokenType::ENDBLOCK) { // ENDBLOCK
-            throw invalid_argument("parseIfExpression: ENDBLOCK이 아닙니다.");
+            throw invalid_argument("parseIfStatement: ENDBLOCK이 아닙니다.");
         }
     }
 
-    return ifExpression;
+    return ifStatement;
+}
+
+LoopStatement* Parser::parseLoopStatement() {
+	LoopStatement* loopStatement = new LoopStatement;
+
+	if (currentToken->tokenType != TokenType::LOOP) {
+		throw invalid_argument("parseLoopStatement: LOOP가 아닙니다.");
+	}
+	loopStatement->token = currentToken;
+	setNextToken();
+
+	if (currentToken->tokenType != TokenType::COLON) {
+		throw invalid_argument("parseLoopStatement: COLON이 아닙니다.");
+	}
+	setNextToken();
+
+	skipSpaceToken();
+
+	if (currentToken->tokenType != TokenType::LPAREN) {
+		throw invalid_argument("parseLoopStatement: LPAREN이 아닙니다.");
+	}
+	setNextToken();
+
+	Statement* firstStatement = parseStatement(); // for와 while의 분기점
+	if(ExpressionStatement* expressionStatement = dynamic_cast<ExpressionStatement*>(firstStatement)){
+		// 첫 Statement가 ExpressionStatement면 while로 처리
+		loopStatement->condition = expressionStatement->expression;
+	}
+	else{ // for
+		loopStatement->initialization = firstStatement;
+
+		setNextToken();
+		if (currentToken->tokenType != TokenType::SEMICOLON) {
+			throw invalid_argument("parseLoopStatement: SEMICOLON이 아닙니다.");
+		}
+		setNextToken();
+		skipSpaceToken();
+
+		loopStatement->condition = parseExpression(Precedence::LOWEST);
+
+		setNextToken();
+		if (currentToken->tokenType != TokenType::SEMICOLON) {
+			throw invalid_argument("parseLoopStatement: SEMICOLON이 아닙니다.");
+		}
+		setNextToken();
+		skipSpaceToken();
+
+		loopStatement->incrementation = parseStatement();
+	}
+	setNextToken();
+
+	if (currentToken->tokenType != TokenType::RPAREN) {
+		throw invalid_argument("parseLoopStatement: RPAREN이 아닙니다.");
+	}
+	setNextToken();
+
+	if (currentToken->tokenType != TokenType::NEW_LINE) {
+		throw invalid_argument("parseLoopStatement: NEW_LINE이 아닙니다.");
+	}
+	setNextToken();
+
+	loopStatement->loopBody = parseBlockStatement();
+
+	if (currentToken->tokenType != TokenType::ENDBLOCK) { // ENDBLOCK
+		throw invalid_argument("parseLoopStatement: ENDBLOCK이 아닙니다.");
+	}
+
+	return loopStatement;
 }
 
 Expression* Parser::parseIntegerLiteral() {
@@ -459,3 +533,4 @@ vector<IdentifierExpression*> Parser::parseFunctionParameters() {
 
     return identifiers;
 }
+

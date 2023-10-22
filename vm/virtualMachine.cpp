@@ -71,6 +71,20 @@ void VirtualMachine::run(Bytecode bytecode) {
 
             executeIndexExpression(left, index);
         }
+		else if (opcode == OpcodeType::OpJump) {
+			int position = endian.byteToInt(vector<byte>(instructions[ip]->begin() + 1, instructions[ip]->begin() + 5));
+			ip = position - 1;
+		}
+		else if (opcode == OpcodeType::OpJumpNotTruthy) {
+			int position = endian.byteToInt(vector<byte>(instructions[ip]->begin() + 1, instructions[ip]->begin() + 5));
+
+			Object* condition = pop();
+			if(!isTruthy(condition)){
+				ip = position - 1;
+			}
+
+
+		}
     }
 }
 
@@ -244,3 +258,13 @@ void VirtualMachine::executeArrayIndex(Array* left, Integer* index) {
 
     push(left->elements[i]);
 }
+
+bool VirtualMachine::isTruthy(Object *obj) {
+	if(Boolean* boolean = dynamic_cast<Boolean*>(obj)){
+		return boolean->value;
+	}
+	else{
+		return true;
+	}
+}
+

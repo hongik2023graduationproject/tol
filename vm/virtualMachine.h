@@ -51,6 +51,7 @@ private:
     void executeArrayIndex(Array* left, Integer* index);
 
     Object* buildArray(int startIndex, int endIndex);
+	bool isTruthy(Object* obj);
 };
 
 

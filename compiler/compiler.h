@@ -29,10 +29,10 @@ public:
     vector<Object*> constants;
 };
 
-class EmittedInstruction {
+class EmittedInstruction{
 public:
-    OpcodeType opcode;
-    int position;
+	OpcodeType opcode;
+	int position;
 };
 
 class Compiler {
@@ -45,18 +45,18 @@ public:
     vector<Object*> constants;
 private:
     SymbolTable symbolTable;
-    EmittedInstruction* lastInstruction, * previousInstruction;
+	EmittedInstruction* lastInstruction, * previousInstruction;
 
     void compile(Node* node);
     Bytecode ReturnBytecode();
     int addConstant(Object* object);
     int addInstruction(Instruction* instruction);
     int emit(OpcodeType opcode, vector<int> operands = vector<int>{});
-    void setLastInstruction(OpcodeType opcode, int position);
-    bool lastInstructionIsPop();
-    void removeLastInstruction();
-    void replaceInstruction(int position, Instruction* newInstruction);
-    void changeOperand(int opPos, int operand);
+	void setLastInstruction(OpcodeType opcode, int position);
+	bool lastInstructionIsPop();
+	void removeLastInstruction();
+	void replaceInstruction(int position, Instruction* newInstruction);
+	void changeOperand(int opPos, int operand);
 };
 
 

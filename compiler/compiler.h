@@ -16,6 +16,8 @@
 #include "../ast/literals/booleanLiteral.h"
 #include "../ast/literals/stringLiteral.h"
 #include "../ast/literals/arrayLiteral.h"
+#include "../ast/statements/ifStatement"
+#include "../ast/statements/loopStatement"
 #include "../endian/endian.h"
 #include "symbolTable.h"
 using namespace std;
@@ -27,6 +29,11 @@ public:
     vector<Object*> constants;
 };
 
+class EmittedInstruction {
+public:
+    OpcodeType opcode;
+    int position;
+};
 
 class Compiler {
 public:
@@ -38,12 +45,18 @@ public:
     vector<Object*> constants;
 private:
     SymbolTable symbolTable;
+    EmittedInstruction* lastInstruction, * previousInstruction;
 
     void compile(Node* node);
     Bytecode ReturnBytecode();
     int addConstant(Object* object);
     int addInstruction(Instruction* instruction);
     int emit(OpcodeType opcode, vector<int> operands = vector<int>{});
+    void setLastInstruction(OpcodeType opcode, int position);
+    bool lastInstructionIsPop();
+    void removeLastInstruction();
+    void replaceInstruction(int position, Instruction* newInstruction);
+    void changeOperand(int opPos, int operand);
 };
 
 

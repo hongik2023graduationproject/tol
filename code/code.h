@@ -30,6 +30,8 @@ enum class OpcodeType {
     OpBang,
     OpSetGlobal,
     OpGetGlobal,
+    OpJumpNotTruthy,
+    OpJump,
     OpArray,
     OpIndex,
 };
@@ -63,6 +65,8 @@ public:
             {OpcodeType::OpBang, Definition{"OpBang", vector<int>{}}},
             {OpcodeType::OpSetGlobal, Definition{"OpSetGlobal", vector<int>{4}}},
             {OpcodeType::OpGetGlobal, Definition{"OpGetGlobal", vector<int>{4}}},
+            {OpcodeType::OpJumpNotTruthy, Definition{"OpJumpNotTruthy", vector<int>{4}}},
+            {OpcodeType::OpJump, Definition{"OpJump", vector<int>{4}}},
             {OpcodeType::OpArray, Definition{"OpArray", vector<int>{2}}}, // 배열의 최대 크기 65535
             {OpcodeType::OpIndex, Definition{"OpIndex", vector<int>{}}},
     };

@@ -11,9 +11,11 @@
 #include "../ast/statements/letStatement.h"
 #include "../ast/expressions/infixExpression.h"
 #include "../ast/expressions/prefixExpression.h"
+#include "../ast/expressions/indexExpression.h"
 #include "../ast/literals/integerLiteral.h"
 #include "../ast/literals/booleanLiteral.h"
 #include "../ast/literals/stringLiteral.h"
+#include "../ast/literals/arrayLiteral.h"
 #include "../endian/endian.h"
 #include "symbolTable.h"
 using namespace std;

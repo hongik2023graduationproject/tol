@@ -91,6 +91,20 @@ void Compiler::compile(Node *node) {
         Symbol symbol = symbolTable.Resolve(identifierExpression->name); // 오류 생길 수도 처리 필요 할 수도
         emit(OpcodeType::OpGetGlobal, vector<int>{symbol.index});
     }
+    else if (ArrayLiteral* arrayLiteral = dynamic_cast<ArrayLiteral*>(node)) {
+        for (auto element : arrayLiteral->elements) {
+            compile(element);
+        }
+
+        emit(OpcodeType::OpArray, vector<int>{(int)arrayLiteral->elements.size()});
+    }
+    else if (IndexExpression* indexExpression = dynamic_cast<IndexExpression*>(node)) {
+        compile(indexExpression->left);
+
+        compile(indexExpression->index);
+
+        emit(OpcodeType::OpIndex);
+    }
 }
 
 Bytecode Compiler::ReturnBytecode() {

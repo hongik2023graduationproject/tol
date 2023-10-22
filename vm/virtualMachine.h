@@ -46,6 +46,11 @@ private:
     Boolean* nativeBoolToBooleanObject(bool input);
     void executeBangOperator();
     void executeMinusOperator();
+
+    void executeIndexExpression(Object* left, Object* index);
+    void executeArrayIndex(Array* left, Integer* index);
+
+    Object* buildArray(int startIndex, int endIndex);
 };
 
 

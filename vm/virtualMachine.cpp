@@ -57,6 +57,20 @@ void VirtualMachine::run(Bytecode bytecode) {
             int globalIndex = endian.byteToInt(vector<byte>(instructions[ip]->begin() + 1, instructions[ip]->begin() + 5));
             push(globals[globalIndex]);
         }
+        else if (opcode == OpcodeType::OpArray) {
+            int numElements = endian.byteToInt(vector<byte>(instructions[ip]->begin() + 1, instructions[ip]->begin() + 5));
+
+            Object* array = buildArray(stackPointer - numElements, stackPointer);
+            stackPointer -= numElements;
+
+            push(array);
+        }
+        else if (opcode == OpcodeType::OpIndex) {
+            Object* index = pop();
+            Object* left  = pop();
+
+            executeIndexExpression(left, index);
+        }
     }
 }
 
@@ -199,4 +213,34 @@ void VirtualMachine::executeMinusOperator() {
     else {
         throw invalid_argument("");
     }
+}
+
+
+Object* VirtualMachine::buildArray(int startIndex, int endIndex) {
+    vector<Object*> elements(endIndex - startIndex);
+
+    for (int i = startIndex; i < endIndex; ++i) {
+        elements[i - startIndex] = stack[i];
+    }
+
+    return new Array{elements};
+}
+
+void VirtualMachine::executeIndexExpression(Object *left, Object *index) {
+    if (left->type == ObjectType::ARRAY && index->type == ObjectType::INTEGER) {
+        return executeArrayIndex(static_cast<Array*>(left), static_cast<Integer*>(index));
+    }
+    else {
+        throw invalid_argument("");
+    }
+}
+
+void VirtualMachine::executeArrayIndex(Array* left, Integer* index) {
+    int m = left->elements.size() - 1;
+    long long i = index->value;
+    if (i < 0 || m < i) {
+        throw invalid_argument("");
+    }
+
+    push(left->elements[i]);
 }

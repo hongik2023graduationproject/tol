@@ -73,4 +73,23 @@ public:
     }
 };
 
+
+class Array : public Object {
+public:
+    vector<Object*> elements;
+
+    Array() = default;
+    Array(vector<Object*> elements) : elements(elements) {};
+
+    string print() {
+        string s = "[";
+        for (auto element : elements) {
+            s += element->print() + ",";
+        }
+        s += "]";
+
+        return s;
+    }
+};
+
 #endif //TOLELOM_OBJECT_H

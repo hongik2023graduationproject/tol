@@ -2,10 +2,10 @@
 
 int main() {
     Repl repl;
-//    repl.lexerTest();
+    repl.lexerTest();
 //    repl.parserTest();
 //    repl.runWithEvaluator();
-    repl.runWithVM();
+//    repl.runWithVM();
 
     return 0;
 }

@@ -4,11 +4,12 @@
 #include <string>
 #include "tokenType.h"
 
+using namespace std;
+
 class Token {
 public:
     TokenType tokenType;
-    std::string literal;
-
+    string literal;
 };
 
 

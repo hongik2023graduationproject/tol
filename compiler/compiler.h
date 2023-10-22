@@ -16,8 +16,8 @@
 #include "../ast/literals/booleanLiteral.h"
 #include "../ast/literals/stringLiteral.h"
 #include "../ast/literals/arrayLiteral.h"
-#include "../ast/statements/ifStatement"
-#include "../ast/statements/loopStatement"
+#include "../ast/statements/ifStatement.h"
+#include "../ast/statements/loopStatement.h"
 #include "../endian/endian.h"
 #include "symbolTable.h"
 using namespace std;

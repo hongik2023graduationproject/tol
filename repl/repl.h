@@ -1,20 +1,19 @@
 #ifndef TOLELOM_REPL_H
 #define TOLELOM_REPL_H
 
-#include <iostream>
 #include <exception>
 #include <fstream>
+
 #include "../lexer/lexer.h"
 #include "../parser/parser.h"
 #include "../evaluator/evaluator.h"
 #include "../compiler/compiler.h"
 #include "../vm/virtualMachine.h"
-#include "../token/tokenType.h"
 using namespace std;
 
 class Repl {
 public:
-    void run();
+    void runWithEvaluator();
     void runWithVM();
     void parserTest();
     void lexerTest();
@@ -25,7 +24,9 @@ private:
     Compiler compiler;
     VirtualMachine vm;
 
-    string readInputFile();
+    static string readInputFile();
+
+    // 사실 이 함수의 위치가 여기가 적합하지 않다...
     static std::string printTokenType(TokenType tokenType) {
         switch (tokenType) {
             case TokenType::ILLEGAL:
@@ -109,8 +110,14 @@ private:
                 return "END_IF";
             case TokenType::ELSE:
                 return "ELSE";
+            case TokenType::SEMICOLON:
+                return "SEMICOLON";
+            case TokenType::GREATER_THAN:
+                return "GREATER_THAN";
+            case TokenType::LOOP:
+                return "LOOP";
         }
-        return "??";
+        return "알수없음";
     }
 };
 

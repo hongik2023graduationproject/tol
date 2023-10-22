@@ -12,6 +12,7 @@
 #include "../ast/expressions/integerExpression.h"
 #include "../ast/expressions/infixExpression.h"
 #include "../ast/expressions/prefixExpression.h"
+#include "../ast/expressions/indexExpression.h"
 #include "../ast/statements/ifStatement.h"
 #include "../ast/statements/loopStatement.h"
 
@@ -52,7 +53,6 @@ private:
             {TokenType::TRUE, &Parser::parseBooleanLiteral},
             {TokenType::FALSE, &Parser::parseBooleanLiteral},
             {TokenType::LPAREN, &Parser::parseGroupedExpression},
-            {TokenType::IF, &Parser::parseIfExpression},
             {TokenType::FUNCTION, &Parser::parseFunctionLiteral},
             {TokenType::LBRACE, &Parser::parseArrayLiteral},
     };
@@ -106,7 +106,6 @@ private:
     Expression* parsePrefixExpression();
     Expression* parseGroupedExpression();
     Expression* parseInfixExpression(Expression* left);
-    Expression* parseIfExpression();
     Expression* parseIndexExpression(Expression* left);
 
     Expression* parseIntegerLiteral();

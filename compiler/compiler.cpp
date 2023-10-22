@@ -77,6 +77,11 @@ void Compiler::compile(Node *node) {
             emit(OpcodeType::OpFalse);
         }
     }
+    else if (StringLiteral* stringLiteral = dynamic_cast<StringLiteral*>(node)) {
+        String* str = new String;
+        str->value = stringLiteral->value;
+        emit(OpcodeType::OpConstant, vector<int>{addConstant(str)});
+    }
     else if (LetStatement* letStatement = dynamic_cast<LetStatement*>(node)) {
         compile(letStatement->expression);
         Symbol symbol = symbolTable.Define(letStatement->name->name);

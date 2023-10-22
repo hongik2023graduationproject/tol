@@ -96,6 +96,9 @@ void VirtualMachine::executeBinaryOperation(OpcodeType opcode) {
     if (left->type == ObjectType::INTEGER && right->type == ObjectType::INTEGER) {
         return executeBinaryIntegerOperation(opcode, dynamic_cast<Integer*>(left), dynamic_cast<Integer*>(right));
     }
+    else if (left->type == ObjectType::STRING && right->type == ObjectType::STRING) {
+        return executeBinaryStringOperation(opcode, dynamic_cast<String*>(left), dynamic_cast<String*>(right));
+    }
 }
 
 void VirtualMachine::executeBinaryIntegerOperation(OpcodeType opcode, Integer* left, Integer* right) {
@@ -120,6 +123,15 @@ void VirtualMachine::executeBinaryIntegerOperation(OpcodeType opcode, Integer* l
 
     push(new Integer{returnValue});
 }
+
+void VirtualMachine::executeBinaryStringOperation(OpcodeType opcode, String *left, String *right) {
+    if (opcode != OpcodeType::OpAdd) {
+        throw invalid_argument("");
+    }
+
+    return push(new String{left->value + right->value});
+}
+
 
 void VirtualMachine::executeComparison(OpcodeType opcode) {
     Object* right = pop();

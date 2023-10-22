@@ -13,6 +13,7 @@
 #include "../ast/expressions/infixExpression.h"
 #include "../ast/expressions/prefixExpression.h"
 #include "../ast/expressions/ifExpression.h"
+#include "../ast/expressions/indexExpression.h"
 
 #include "../ast/statements/letStatement.h"
 #include "../ast/statements/returnStatement.h"
@@ -63,6 +64,7 @@ private:
             {TokenType::EQUAL, &Parser::parseInfixExpression},
             {TokenType::NOT_EQUAL, &Parser::parseInfixExpression},
             {TokenType::LESS_THAN, &Parser::parseInfixExpression},
+            {TokenType::LBRACKET, &Parser::parseIndexExpression},
     };
     enum class Precedence {
         LOWEST,
@@ -71,7 +73,8 @@ private:
         SUM,            // +
         PRODUCT,        // *
         PREFIX,         // -X, !X
-        CALL            // myFunction(x)
+        CALL,           // myFunction(x)
+        INDEX,          // array[index]
     };
     std::map<TokenType, Precedence> getPrecedence = {
             {TokenType::EQUAL, Precedence::EQUALS},
@@ -81,6 +84,7 @@ private:
             {TokenType::MINUS, Precedence::SUM},
             {TokenType::ASTERISK, Precedence::PRODUCT},
             {TokenType::SLASH, Precedence::PRODUCT},
+            {TokenType::LBRACKET, Precedence::INDEX},
     };
 
     void initialization();
@@ -101,6 +105,7 @@ private:
     Expression* parseGroupedExpression();
     Expression* parseInfixExpression(Expression* left);
     Expression* parseIfExpression();
+    Expression* parseIndexExpression(Expression* left);
 
     Expression* parseIntegerLiteral();
     Expression* parseBooleanLiteral();

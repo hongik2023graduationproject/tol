@@ -57,7 +57,7 @@ Statement* Parser::parseStatement() {
 //    else if (currentToken->tokenType == TokenType::INT) {
 //        return parseIntegerStatement();
 //    }
-    else if (currentToken->tokenType == TokenType::IDENTIFIER) {
+    else if (currentToken->tokenType == TokenType::IDENTIFIER && nextToken->tokenType == TokenType::SPACE) { // SPACE는 임시
         return parseAssignStatement();
     }
     else {
@@ -157,6 +157,7 @@ Expression* Parser::parseIdentifierExpression() {
 
     IdentifierExpression* identifierExpression = new IdentifierExpression{currentToken, currentToken->literal};
 
+
     return identifierExpression;
 }
 
@@ -234,7 +235,7 @@ Expression* Parser::parseExpression(Precedence precedence) {
     }
 
     // RBRACKET은 if문 같은 경우에 해당
-    while ((nextToken->tokenType != TokenType::NEW_LINE && nextToken->tokenType != TokenType::ENDBLOCK) && precedence < getPrecedence[nextToken->tokenType]) {
+    while ((nextToken->tokenType != TokenType::NEW_LINE && nextToken->tokenType != TokenType::ENDBLOCK && nextToken->tokenType != TokenType::RBRACKET) && precedence < getPrecedence[nextToken->tokenType]) {
         if (infixParseFunctions.find(nextToken->tokenType) == infixParseFunctions.end()) {
             throw invalid_argument("parseExpression: 찾는 infixParseFunction이 존재하지 않습니다.");
         }
@@ -355,6 +356,20 @@ Expression* Parser::parseIfExpression() {
 
     return ifExpression;
 }
+
+Expression* Parser::parseIndexExpression(Expression* left) {
+    IndexExpression* indexExpression = new IndexExpression;
+    indexExpression->token = currentToken;
+    indexExpression->left = left;
+
+    setNextToken();
+    indexExpression->index = parseExpression(Precedence::LOWEST);
+
+    setNextToken(); // ']'
+
+    return indexExpression;
+}
+
 
 Expression* Parser::parseIntegerLiteral() {
     return new IntegerLiteral{currentToken, stoll(currentToken->literal)};

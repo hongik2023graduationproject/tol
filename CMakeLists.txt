@@ -56,4 +56,5 @@ add_executable(tolelom main.cpp
         ast/literals/stringLiteral.h
         object/objectType.h
         ast/literals/arrayLiteral.h
+        ast/expressions/indexExpression.h
 )

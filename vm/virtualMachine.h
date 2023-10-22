@@ -40,6 +40,7 @@ private:
 
     void executeBinaryOperation(OpcodeType opcode);
     void executeBinaryIntegerOperation(OpcodeType opcode, Integer* left, Integer* right);
+    void executeBinaryStringOperation(OpcodeType opcode, String* left, String* right);
     void executeComparison(OpcodeType opcode);
     void executeIntegerComparison(OpcodeType opcode, Integer* left, Integer* right);
     Boolean* nativeBoolToBooleanObject(bool input);

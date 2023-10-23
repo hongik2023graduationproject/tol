@@ -1,7 +1,6 @@
 #ifndef TOLELOM_UTF8CONVERTER_H
 #define TOLELOM_UTF8CONVERTER_H
 
-
 #include <string>
 #include <vector>
 

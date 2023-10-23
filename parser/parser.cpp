@@ -129,34 +129,6 @@ ReturnStatement* Parser::parseReturnStatement() {
     return returnStatement;
 }
 
-IntegerStatement* Parser::parseIntegerStatement() {
-//    if (currentToken->tokenType != TokenType::INT)
-//        throw invalid_argument("parseIntegerStatement: 토큰 타입이 INT가 아닙니다.");
-//
-//    IntegerStatement* integerStatement = new IntegerStatement;
-//    integerStatement->token = currentToken;
-//    setNextToken();
-//
-//    skipSpaceToken();
-//
-//    integerStatement->identifierExpression = parseIdentifierExpression();
-//    setNextToken();
-//
-//    skipSpaceToken();
-//
-//    if (currentToken->tokenType != TokenType::ASSIGN)
-//        throw invalid_argument("parseIntegerStatement: 토큰 타입이 ASSIGN이 아닙니다.");
-//    integerStatement->equal = currentToken;
-//    setNextToken();
-//
-//    skipSpaceToken();
-//
-//    integerStatement->Expression = parseExpression(Precedence::LOWEST);
-//    setNextToken();
-//
-//    return integerStatement;
-}
-
 Expression* Parser::parseIdentifierExpression() {
     if (currentToken->tokenType != TokenType::IDENTIFIER)
         throw invalid_argument("parseIdentifierExpression: 토큰 타입이 IDENTIFIER가 아닙니다.");
@@ -281,14 +253,12 @@ Expression* Parser::parseInfixExpression(Expression *left) {
 }
 
 Expression* Parser::parseGroupedExpression() {
-    Expression* expression = new Expression;
-
     if (currentToken->tokenType != TokenType::LPAREN) {
         throw invalid_argument("parseGroupedExpression: LPAREN이 아닙니다.");
     }
     setNextToken();
 
-    expression = parseExpression(Precedence::LOWEST);
+    Expression* expression = parseExpression(Precedence::LOWEST);
 
     if (nextToken->tokenType != TokenType::RPAREN) {
         throw invalid_argument("parseGroupedExpression: RPAREN이 아닙니다.");

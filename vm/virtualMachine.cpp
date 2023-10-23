@@ -147,6 +147,8 @@ void VirtualMachine::executeBinaryIntegerOperation(OpcodeType opcode, Integer* l
         case OpcodeType::OpDiv:
             returnValue = leftValue / rightValue;
             break;
+        defalut:
+            throw invalid_argument("");
     }
 
     push(new Integer{returnValue});

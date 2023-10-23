@@ -17,9 +17,9 @@ public:
 
 class notFoundEndOfString : public LexerException {
 public:
-    notFoundEndOfString(long long line) : line(line) {};
+    explicit notFoundEndOfString(long long line) : line(line) {};
 
-    void print() const {
+    void print() const final {
         cout << line << "번 줄: 입력된 문자열의 끝을 알 수 없습니다." << endl;
     }
 private:

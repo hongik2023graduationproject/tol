@@ -13,9 +13,9 @@
 #include "../ast/expressions/infixExpression.h"
 #include "../ast/expressions/prefixExpression.h"
 #include "../ast/expressions/indexExpression.h"
+
 #include "../ast/statements/ifStatement.h"
 #include "../ast/statements/loopStatement.h"
-
 #include "../ast/statements/letStatement.h"
 #include "../ast/statements/returnStatement.h"
 #include "../ast/statements/assignStatement.h"
@@ -94,7 +94,6 @@ private:
     LetStatement* parseLetStatement();
     ReturnStatement* parseReturnStatement();
     AssignStatement* parseAssignStatement();
-    IntegerStatement* parseIntegerStatement();
     ExpressionStatement* parseExpressionStatement();
     BlockStatement* parseBlockStatement();
 	IfStatement* parseIfStatement();

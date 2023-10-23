@@ -4,7 +4,6 @@
 #include <map>
 #include <string>
 #include <vector>
-
 #include "../token/token.h"
 #include "../utf8Converter/utf8Converter.h"
 #include "../exception/exception.h"

@@ -7,6 +7,7 @@
 #include <map>
 #include "../lexer/lexer.h"
 #include "../token/token.h"
+#include "../exception/exception.h"
 #include "../ast/program.h"
 #include "../ast/expressions/identifierExpression.h"
 #include "../ast/expressions/integerExpression.h"
@@ -89,7 +90,7 @@ private:
 
     void initialization();
     void setNextToken();
-    void skipSpaceToken();
+    void skipToken(TokenType tokenType);
     Statement* parseStatement();
     LetStatement* parseLetStatement();
     ReturnStatement* parseReturnStatement();

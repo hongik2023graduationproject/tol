@@ -6,20 +6,21 @@ Program* Parser::run(vector<Token*> inputToken) {
 
     try {
         while (currentReadPoint < tokens.size()) {
-            if (tokens[currentReadPoint]->tokenType == TokenType::END_OF_FILE) {
+            if (currentToken->tokenType == TokenType::END_OF_FILE) {
                 break;
             }
-            if (tokens[currentReadPoint]->tokenType == TokenType::NEW_LINE) {
+            else if (currentToken->tokenType == TokenType::NEW_LINE) {
                 setNextToken();
                 continue;
             }
-
-            Statement* statement = parseStatement(); // parseStatement가 끝나면 currentToken의 타입은 NEW_LINE이 된다.
-            program->statements.push_back(statement);
-            setNextToken(); // NEW_LINE 스킵
+            else {
+                Statement *statement = parseStatement();
+                program->statements.push_back(statement);
+                skipToken(TokenType::NEW_LINE);
+            }
         }
-    } catch (const exception& e) {
-        cout << e.what() << endl;
+    } catch (const CustomException& e) {
+        e.print();
     }
 
     return program;
@@ -40,9 +41,9 @@ void Parser::setNextToken() {
     nextToken = nextReadPoint < tokens.size() ? tokens[nextReadPoint] : nullptr;
 }
 
-void Parser::skipSpaceToken() {
-    if (currentToken->tokenType != TokenType::SPACE) {
-        throw invalid_argument("skipSpaceToken: SPACE 토큰이 없습니다.");
+void Parser::skipToken(TokenType tokenType) {
+    if (currentToken->tokenType != tokenType) {
+        throw invalid_argument("");
     }
     setNextToken();
 }
@@ -95,7 +96,7 @@ LetStatement* Parser::parseLetStatement() {
     }
     setNextToken();
 
-    skipSpaceToken();
+    skipToken(TokenType::SPACE);
 
     if (currentToken->tokenType != TokenType::IDENTIFIER) {
         throw invalid_argument("parseLetStatement: 토큰 타입이 IDENTIFIER가 아닙니다.");
@@ -103,14 +104,14 @@ LetStatement* Parser::parseLetStatement() {
     letStatement->name = dynamic_cast<IdentifierExpression*>(parseIdentifierExpression());
     setNextToken();
 
-    skipSpaceToken();
+    skipToken(TokenType::SPACE);
 
     if (currentToken->tokenType != TokenType::ASSIGN) {
         throw invalid_argument("parseLetStatement: 토큰 타입이 ASSIGN이 아닙니다.");
     }
     setNextToken();
 
-    skipSpaceToken();
+    skipToken(TokenType::SPACE);
 
     letStatement->expression = parseExpression(Precedence::LOWEST);
 
@@ -122,7 +123,7 @@ ReturnStatement* Parser::parseReturnStatement() {
     returnStatement->token = currentToken;
     setNextToken();
 
-    skipSpaceToken();
+    skipToken(TokenType::SPACE);
 
     returnStatement->returnValue = parseExpression(Precedence::LOWEST);
 
@@ -160,7 +161,7 @@ AssignStatement* Parser::parseAssignStatement() {
     assignStatement->name = dynamic_cast<IdentifierExpression *>(parseIdentifierExpression());
     setNextToken();
 
-    skipSpaceToken();
+    skipToken(TokenType::SPACE);
 
     if (currentToken->tokenType != TokenType::ASSIGN) {
         throw invalid_argument("parseAssignStatement: ASSIGN이 아닙니다.");
@@ -168,7 +169,7 @@ AssignStatement* Parser::parseAssignStatement() {
     assignStatement->token = currentToken;
     setNextToken();
 
-    skipSpaceToken();
+    skipToken(TokenType::SPACE);
 
     assignStatement->value = parseExpression(Precedence::LOWEST);
 
@@ -245,7 +246,7 @@ Expression* Parser::parseInfixExpression(Expression *left) {
     Precedence precedence = getPrecedence[currentToken->tokenType];
     setNextToken();
 
-    skipSpaceToken();
+    skipToken(TokenType::SPACE);
 
     infixExpression->right = parseExpression(precedence);
 
@@ -282,7 +283,7 @@ IfStatement* Parser::parseIfStatement() {
     }
     setNextToken();
 
-    skipSpaceToken();
+    skipToken(TokenType::SPACE);
 
     if (currentToken->tokenType != TokenType::LPAREN) {
         throw invalid_argument("parseIfStatement: LPAREN이 아닙니다.");
@@ -347,7 +348,7 @@ LoopStatement* Parser::parseLoopStatement() {
 	}
 	setNextToken();
 
-	skipSpaceToken();
+    skipToken(TokenType::SPACE);
 
 	if (currentToken->tokenType != TokenType::LPAREN) {
 		throw invalid_argument("parseLoopStatement: LPAREN이 아닙니다.");
@@ -367,7 +368,7 @@ LoopStatement* Parser::parseLoopStatement() {
 			throw invalid_argument("parseLoopStatement: SEMICOLON이 아닙니다.");
 		}
 		setNextToken();
-		skipSpaceToken();
+        skipToken(TokenType::SPACE);
 
 		loopStatement->condition = parseExpression(Precedence::LOWEST);
 
@@ -376,7 +377,7 @@ LoopStatement* Parser::parseLoopStatement() {
 			throw invalid_argument("parseLoopStatement: SEMICOLON이 아닙니다.");
 		}
 		setNextToken();
-		skipSpaceToken();
+        skipToken(TokenType::SPACE);
 
 		loopStatement->incrementation = parseStatement();
 	}
@@ -441,23 +442,23 @@ Expression* Parser::parseFunctionLiteral() {
     }
     setNextToken();
 
-    skipSpaceToken();
+    skipToken(TokenType::SPACE);
 
     functionLiteral->parameters = parseFunctionParameters();
 
-    skipSpaceToken();
+    skipToken(TokenType::SPACE);
 
     functionLiteral->name = dynamic_cast<IdentifierExpression *>(parseIdentifierExpression());
     setNextToken(); // skip Identifier Token
     setNextToken(); // skip DOT token
-    skipSpaceToken();
+    skipToken(TokenType::SPACE);
 
     if (currentToken->tokenType != TokenType::RIGHTARROW) {
         throw invalid_argument("parseFunctionLiteral: RIGHT ARROW가 아닙니다.");
     }
     setNextToken();
 
-    skipSpaceToken();
+    skipToken(TokenType::SPACE);
 
     if (currentToken->tokenType != TokenType::LBRACKET) {
         throw invalid_argument("parseFunctionLiteral: LBRACKET이 아닙니다.");

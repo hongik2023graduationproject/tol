@@ -25,55 +25,55 @@ vector<Token*> Lexer::run(const string &code) {
 void Lexer::tokenizing() {
     while (currentReadPoint < characters.size()) {
         if (characters[currentReadPoint] == ":") {
-            tokens.push_back(new Token{TokenType::COLON, characters[currentReadPoint]});
+            tokens.push_back(new Token{TokenType::COLON, characters[currentReadPoint], line});
         }
         else if (characters[currentReadPoint] == ";") {
-            tokens.push_back(new Token{TokenType::SEMICOLON, characters[currentReadPoint]});
+            tokens.push_back(new Token{TokenType::SEMICOLON, characters[currentReadPoint], line});
         }
         else if (characters[currentReadPoint] == "=") {
             if (characters[nextReadPoint] == "=") {
-                tokens.push_back(new Token{TokenType::EQUAL, characters[currentReadPoint] + characters[nextReadPoint]});
+                tokens.push_back(new Token{TokenType::EQUAL, characters[currentReadPoint] + characters[nextReadPoint], line});
                 currentReadPoint++;
                 nextReadPoint++;
             }
             else {
-                tokens.push_back(new Token{TokenType::ASSIGN, characters[currentReadPoint]});
+                tokens.push_back(new Token{TokenType::ASSIGN, characters[currentReadPoint], line});
             }
         }
         else if (characters[currentReadPoint] == ",") {
-            tokens.push_back(new Token{TokenType::COMMA, characters[currentReadPoint]});
+            tokens.push_back(new Token{TokenType::COMMA, characters[currentReadPoint], line});
         }
         else if (characters[currentReadPoint] == "+") {
-            tokens.push_back(new Token{TokenType::PLUS, characters[currentReadPoint]});
+            tokens.push_back(new Token{TokenType::PLUS, characters[currentReadPoint], line});
         }
         else if (characters[currentReadPoint] == "-") {
             if (characters[nextReadPoint] == ">") {
-                tokens.push_back(new Token{TokenType::RIGHTARROW, characters[currentReadPoint] + characters[nextReadPoint]});
+                tokens.push_back(new Token{TokenType::RIGHTARROW, characters[currentReadPoint] + characters[nextReadPoint], line});
                 currentReadPoint++;
                 nextReadPoint++;
             }
             else {
-                tokens.push_back(new Token{TokenType::MINUS, characters[currentReadPoint]});
+                tokens.push_back(new Token{TokenType::MINUS, characters[currentReadPoint], line});
             }
         }
         else if (characters[currentReadPoint] == "*") {
-            tokens.push_back(new Token{TokenType::ASTERISK, characters[currentReadPoint]});
+            tokens.push_back(new Token{TokenType::ASTERISK, characters[currentReadPoint], line});
         }
         else if (characters[currentReadPoint] == "/") {
-            tokens.push_back(new Token{TokenType::SLASH, characters[currentReadPoint]});
+            tokens.push_back(new Token{TokenType::SLASH, characters[currentReadPoint], line});
         }
         else if (characters[currentReadPoint] == "!") {
             if (characters[nextReadPoint] == "=") {
-                tokens.push_back(new Token{TokenType::NOT_EQUAL, characters[currentReadPoint] + characters[nextReadPoint]});
+                tokens.push_back(new Token{TokenType::NOT_EQUAL, characters[currentReadPoint] + characters[nextReadPoint], line});
                 currentReadPoint++;
                 nextReadPoint++;
             }
             else {
-                tokens.push_back(new Token{TokenType::BANG, characters[currentReadPoint]});
+                tokens.push_back(new Token{TokenType::BANG, characters[currentReadPoint], line});
             }
         }
         else if (characters[currentReadPoint] == "\t") {
-            tokens.push_back(new Token{TokenType::TAB, characters[currentReadPoint]});
+            tokens.push_back(new Token{TokenType::TAB, characters[currentReadPoint], line});
         }
         else if (characters[currentReadPoint] == " ") {
 //            int spaceCount = 1;
@@ -84,7 +84,7 @@ void Lexer::tokenizing() {
 //                    token = new Token(TokenType::TAB, "\t");
 //                }
 //            }
-            tokens.push_back(new Token{TokenType::SPACE, characters[currentReadPoint]});
+            tokens.push_back(new Token{TokenType::SPACE, characters[currentReadPoint], line});
         }
         else if (characters[currentReadPoint] == "\n") {
             int tabCount = 0;
@@ -96,68 +96,68 @@ void Lexer::tokenizing() {
 
             if (tabCount > indentLevel) {
                 for (; tabCount != indentLevel; tabCount--) {
-                    tokens.push_back(new Token{TokenType::NEW_LINE, "\\n"});
-                    tokens.push_back(new Token{TokenType::STARTBLOCK, ""});
+                    tokens.push_back(new Token{TokenType::NEW_LINE, "\\n", line});
+                    tokens.push_back(new Token{TokenType::STARTBLOCK, "", line});
                 }
             }
             else if (tabCount < indentLevel) {
                 for (; tabCount != indentLevel; tabCount++) {
-                    tokens.push_back(new Token{TokenType::NEW_LINE, "\\n"});
-                    tokens.push_back(new Token{TokenType::ENDBLOCK, ""});
+                    tokens.push_back(new Token{TokenType::NEW_LINE, "\\n", line});
+                    tokens.push_back(new Token{TokenType::ENDBLOCK, "", line});
                 }
             }
             else {
-                tokens.push_back(new Token{TokenType::NEW_LINE, "\\n"});
+                tokens.push_back(new Token{TokenType::NEW_LINE, "\\n", line});
             }
             indentLevel = tabCount;
             line++;
         }
         else if (characters[currentReadPoint] == "(") {
-            tokens.push_back(new Token{TokenType::LPAREN, characters[currentReadPoint]});
+            tokens.push_back(new Token{TokenType::LPAREN, characters[currentReadPoint], line});
         }
         else if (characters[currentReadPoint] == ")") {
-            tokens.push_back(new Token{TokenType::RPAREN, characters[currentReadPoint]});
+            tokens.push_back(new Token{TokenType::RPAREN, characters[currentReadPoint], line});
         }
         else if (characters[currentReadPoint] == "{") {
-            tokens.push_back(new Token{TokenType::LBRACE, characters[currentReadPoint]});
+            tokens.push_back(new Token{TokenType::LBRACE, characters[currentReadPoint], line});
         }
         else if (characters[currentReadPoint] == "}") {
-            tokens.push_back(new Token{TokenType::RBRACE, characters[currentReadPoint]});
+            tokens.push_back(new Token{TokenType::RBRACE, characters[currentReadPoint], line});
         }
         else if (characters[currentReadPoint] == "[") {
-            tokens.push_back(new Token{TokenType::LBRACKET, characters[currentReadPoint]});
+            tokens.push_back(new Token{TokenType::LBRACKET, characters[currentReadPoint], line});
         }
         else if (characters[currentReadPoint] == "]") {
-            tokens.push_back(new Token{TokenType::RBRACKET, characters[currentReadPoint]});
+            tokens.push_back(new Token{TokenType::RBRACKET, characters[currentReadPoint], line});
         }
         else if (characters[currentReadPoint] == "<") {
-            tokens.push_back(new Token{TokenType::LESS_THAN, characters[currentReadPoint]});
+            tokens.push_back(new Token{TokenType::LESS_THAN, characters[currentReadPoint], line});
         }
         else if (characters[currentReadPoint] == ">") {
-            tokens.push_back(new Token{TokenType::GREATER_THAN, characters[currentReadPoint]});
+            tokens.push_back(new Token{TokenType::GREATER_THAN, characters[currentReadPoint], line});
         }
         else if (characters[currentReadPoint] == "\"") {
-            tokens.push_back(new Token{TokenType::STRING, readString()});
+            tokens.push_back(new Token{TokenType::STRING, readString(), line});
         }
         else if (isNumber(characters[currentReadPoint])) {
-            tokens.push_back(new Token{TokenType::INTEGER, readNumber()});
+            tokens.push_back(new Token{TokenType::INTEGER, readNumber(), line});
         }
         else if (isLetter(characters[currentReadPoint])) { // isNumber가 먼저 있어서 숫자로 시작하는 문자열은 존재하지 않는다. 혼동의 여지가 있으니 나중에 정리하는 것도 추천
             string letter = readLetter();
             if (keywords.find(letter) != keywords.end()) {
-                tokens.push_back(new Token{keywords.find(letter)->second, letter});
+                tokens.push_back(new Token{keywords.find(letter)->second, letter, line});
             }
             else {
-                tokens.push_back(new Token{TokenType::IDENTIFIER, letter});
+                tokens.push_back(new Token{TokenType::IDENTIFIER, letter, line});
             }
         }
         else {
-            tokens.push_back(new Token{TokenType::ILLEGAL, characters[currentReadPoint]});
+            tokens.push_back(new Token{TokenType::ILLEGAL, characters[currentReadPoint], line});
         }
         currentReadPoint++;
         nextReadPoint++;
     }
-    tokens.push_back(new Token{TokenType::END_OF_FILE, ""});
+    tokens.push_back(new Token{TokenType::END_OF_FILE, "", line});
 }
 
 
@@ -202,7 +202,7 @@ string Lexer::readString() {
     }
 
     if (characters[currentReadPoint] != "\"") {
-        throw notFoundEndOfString(line);
+        throw NotFoundEndOfString(line);
     }
 
     return s;

@@ -43,6 +43,7 @@ private:
             {"라면", TokenType::END_IF},
             {"아니면", TokenType::ELSE},
 			{"반복", TokenType::LOOP},
+            {"문자", TokenType::STR},
     };
 };
 

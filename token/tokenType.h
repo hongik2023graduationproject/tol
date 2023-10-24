@@ -41,6 +41,7 @@ enum class TokenType {
     LET,            // LET
     INT,            // 정수
     실수,            // 실수
+    STR,            // 문자열
     FUNCTION,       // 함수
     RETURN,         // return
     TRUE,           // true

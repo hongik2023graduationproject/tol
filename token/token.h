@@ -82,6 +82,8 @@ public:
                 return "INT";
             case TokenType::실수:
                 return "실수";
+            case TokenType::STR:
+                return "문자열";
             case TokenType::FUNCTION:
                 return "FUNCTION";
             case TokenType::LET:

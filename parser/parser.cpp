@@ -10,7 +10,7 @@ Program* Parser::run(vector<Token*> inputToken) {
                 break;
             }
             else if (currentToken->tokenType == TokenType::NEW_LINE) {
-                setNextToken();
+                skipToken(TokenType::NEW_LINE);
                 continue;
             }
             else {
@@ -55,9 +55,6 @@ Statement* Parser::parseStatement() {
     else if (currentToken->tokenType == TokenType::RETURN) {
         return parseReturnStatement();
     }
-//    else if (currentToken->tokenType == TokenType::INT) {
-//        return parseIntegerStatement();
-//    }
     else if (currentToken->tokenType == TokenType::IDENTIFIER && nextToken->tokenType == TokenType::SPACE) { // SPACE는 임시
         return parseAssignStatement();
     }
@@ -75,12 +72,9 @@ Statement* Parser::parseStatement() {
 LetStatement* Parser::parseLetStatement() {
     LetStatement* letStatement = new LetStatement;
 
-    if (currentToken->tokenType != TokenType::LBRACKET) {
-        throw invalid_argument("parseLetStatement: 토큰 타입이 LBRACKET이 아닙니다.");
-    }
-    setNextToken();
+    skipToken(TokenType::LBRACKET); // [
 
-    if (currentToken->tokenType != TokenType::INT) {
+    if (currentToken->tokenType != TokenType::INT ) {
         throw invalid_argument("parseLetStatement: 토큰 타입이 자료형이 아닙니다.");
     }
     letStatement->token = currentToken;

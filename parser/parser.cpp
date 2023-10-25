@@ -51,7 +51,7 @@ void Parser::setNextToken() {
 
 void Parser::skipToken(TokenType tokenType) {
     if (currentToken->tokenType != tokenType) {
-        throw invalid_argument("");
+        throw NotFoundToken(currentToken->line, tokenType, currentToken);
     }
     setNextToken();
 }
@@ -84,7 +84,7 @@ LetStatement* Parser::parseLetStatement() {
 
     // type token
     if (currentToken->tokenType != TokenType::INT && currentToken->tokenType != TokenType::STR) {
-        throw invalid_argument("parseLetStatement: 토큰 타입이 자료형이 아닙니다.");
+        throw NotFoundToken(currentToken->line, TokenType::INT ,currentToken);
     }
     letStatement->token = currentToken;
     setNextToken();
@@ -100,7 +100,7 @@ LetStatement* Parser::parseLetStatement() {
 
     // identifier
     if (currentToken->tokenType != TokenType::IDENTIFIER) {
-        throw invalid_argument("parseLetStatement: 토큰 타입이 IDENTIFIER가 아닙니다.");
+        throw NotFoundToken(currentToken->line, TokenType::IDENTIFIER, currentToken);
     }
     letStatement->name = dynamic_cast<IdentifierExpression*>(parseIdentifierExpression());
     setNextToken();
@@ -131,7 +131,7 @@ AssignStatement* Parser::parseAssignStatement() {
     AssignStatement* assignStatement = new AssignStatement;
 
     if (currentToken->tokenType != TokenType::IDENTIFIER) {
-        throw invalid_argument("parseAssignStatement: IDENTIFIER가 아닙니다.");
+        throw NotFoundToken(currentToken->line, TokenType::IDENTIFIER, currentToken);
     }
     assignStatement->name = dynamic_cast<IdentifierExpression *>(parseIdentifierExpression());
     assignStatement->token = currentToken;
@@ -152,7 +152,7 @@ IfStatement* Parser::parseIfStatement() {
     IfStatement* ifStatement = new IfStatement;
 
     if (currentToken->tokenType != TokenType::IF) {
-        throw invalid_argument("parseIfStatement: IF가 아닙니다.");
+        throw NotFoundToken(currentToken->line, TokenType::IF, currentToken);
     }
     ifStatement->token = currentToken;
     setNextToken();
@@ -184,7 +184,7 @@ LoopStatement* Parser::parseLoopStatement() {
     LoopStatement* loopStatement = new LoopStatement;
 
     if (currentToken->tokenType != TokenType::LOOP) {
-        throw invalid_argument("parseLoopStatement: LOOP가 아닙니다.");
+        throw NotFoundToken(currentToken->line, TokenType::LOOP, currentToken);
     }
     loopStatement->token = currentToken;
     setNextToken();
@@ -230,7 +230,7 @@ BlockStatement* Parser::parseBlockStatement() {
     BlockStatement* blockStatement = new BlockStatement;
 
     if (currentToken->tokenType != TokenType::STARTBLOCK) {
-        throw invalid_argument("parseBlockStatement: STARTBLOCK이 아닙니다.");
+        throw NotFoundToken(currentToken->line, TokenType::STARTBLOCK, currentToken);
     }
     setNextToken();
 
@@ -254,7 +254,7 @@ BlockStatement* Parser::parseBlockStatement() {
 
 Expression* Parser::parseIdentifierExpression() {
     if (currentToken->tokenType != TokenType::IDENTIFIER)
-        throw invalid_argument("parseIdentifierExpression: 토큰 타입이 IDENTIFIER가 아닙니다.");
+        throw NotFoundToken(currentToken->line, TokenType::IDENTIFIER, currentToken);
 
     IdentifierExpression* identifierExpression = new IdentifierExpression{currentToken, currentToken->literal};
     return identifierExpression;
@@ -262,7 +262,7 @@ Expression* Parser::parseIdentifierExpression() {
 
 Expression* Parser::parseExpression(Precedence precedence) {
     if (prefixParseFunctions.find(currentToken->tokenType) == prefixParseFunctions.end()) {
-        throw invalid_argument("parseExpression: 찾는 prefixParseFunction이 존재하지 않습니다.");
+        throw NotFoundPrefixFunction(currentToken);
     }
 
     prefixParseFunction prefixFunction = prefixParseFunctions[currentToken->tokenType];
@@ -276,9 +276,9 @@ Expression* Parser::parseExpression(Precedence precedence) {
     // RBRACKET은 if문 같은 경우에 해당
     while ((nextToken->tokenType != TokenType::NEW_LINE && nextToken->tokenType != TokenType::ENDBLOCK && nextToken->tokenType != TokenType::RBRACKET) && precedence < getPrecedence[nextToken->tokenType]) {
         if (infixParseFunctions.find(nextToken->tokenType) == infixParseFunctions.end()) {
-            throw invalid_argument("parseExpression: 찾는 infixParseFunction이 존재하지 않습니다.");
+            throw NotFoundInfixFunction(nextToken);
         }
-        infixParseFunction  infixFunction = infixParseFunctions[nextToken->tokenType];
+        infixParseFunction infixFunction = infixParseFunctions[nextToken->tokenType];
         setNextToken();
 
         leftExpression = (this->*infixFunction)(leftExpression);

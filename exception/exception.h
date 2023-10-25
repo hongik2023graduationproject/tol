@@ -39,18 +39,39 @@ public:
 
 class NotFoundToken : public ParserException {
 public:
-    NotFoundToken(long long line, TokenType type, Token token) : line(line), type(type), token(std::move(token)) {};
+    NotFoundToken(long long line, TokenType type, Token* token) : line(line), type(type), token(token) {};
 
     void print() const final {
-        cout << line << "번 줄: 예상되는 토큰이 존재하지 않습니다. 예상 토큰: " << Token::printTokenType(type) << " 현재 토큰: " << Token::printTokenType(token.tokenType) << endl;
+        cout << line << "번 줄: 예상되는 토큰이 존재하지 않습니다. 예상 토큰: " << Token::printTokenType(type) << " 현재 토큰: " << Token::printTokenType(token->tokenType) << endl;
     }
 
 private:
     long long line;
     TokenType type;
-    Token token;
+    Token* token;
 };
 
+class NotFoundPrefixFunction : public ParserException {
+public:
+    NotFoundPrefixFunction(Token* token) : token(token) {};
 
+    void print() const final {
+        cout << token->line << "번 줄: prefix function이 존재하지 않습니다. 현재 토큰: " << Token::printTokenType(token->tokenType) << endl;
+    }
+private:
+    Token* token;
+};
+
+class NotFoundInfixFunction : public ParserException {
+public:
+    NotFoundInfixFunction(Token* token) : token(token) {};
+
+    void print() const final {
+        cout << token->line << "번 줄: infix function이 존재하지 않습니다. 현재 토큰: " << Token::printTokenType(token->tokenType) << endl;
+    }
+
+private:
+    Token* token;
+};
 
 #endif //TOLELOM_EXCEPTION_H

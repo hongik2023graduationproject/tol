@@ -1,5 +1,8 @@
 #include "parser.h"
 
+// statement는 끝까지 처리 (마지막에 EOF 두 번)
+// expression은 마지막 처리 x (중위 연산자 처리에 필요)
+
 Program* Parser::run(vector<Token*> inputToken) {
     this->tokens = std::move(inputToken);
     initialization();
@@ -16,7 +19,8 @@ Program* Parser::run(vector<Token*> inputToken) {
             else {
                 Statement *statement = parseStatement();
                 program->statements.push_back(statement);
-                skipToken(TokenType::NEW_LINE);
+                if (currentToken->tokenType == TokenType::NEW_LINE)
+                    skipToken(TokenType::NEW_LINE);
             }
         }
     } catch (const CustomException& e) {
@@ -30,15 +34,19 @@ void Parser::initialization() {
     program = new Program;
     currentReadPoint = 0;
     nextReadPoint = 1;
+    nextnextReadPoint = 2;
     currentToken = tokens[currentReadPoint];
     nextToken = tokens[nextReadPoint];
+    nextnextToken = tokens[nextnextReadPoint];
 }
 
 void Parser::setNextToken() {
     currentReadPoint++;
     nextReadPoint++;
+    nextnextReadPoint++;
     currentToken = nextToken;
-    nextToken = nextReadPoint < tokens.size() ? tokens[nextReadPoint] : nullptr;
+    nextToken = nextnextToken;
+    nextnextToken = nextnextReadPoint < tokens.size() ? tokens[nextnextReadPoint] : nullptr;
 }
 
 void Parser::skipToken(TokenType tokenType) {
@@ -55,7 +63,7 @@ Statement* Parser::parseStatement() {
     else if (currentToken->tokenType == TokenType::RETURN) {
         return parseReturnStatement();
     }
-    else if (currentToken->tokenType == TokenType::IDENTIFIER && nextToken->tokenType == TokenType::SPACE) { // SPACE는 임시
+    else if (currentToken->tokenType == TokenType::IDENTIFIER && nextToken->tokenType == TokenType::SPACE && nextnextToken->tokenType == TokenType::ASSIGN) {
         return parseAssignStatement();
     }
 	else if (currentToken->tokenType == TokenType::IF) {
@@ -74,24 +82,23 @@ LetStatement* Parser::parseLetStatement() {
 
     skipToken(TokenType::LBRACKET); // [
 
-    if (currentToken->tokenType != TokenType::INT ) {
+    // type token
+    if (currentToken->tokenType != TokenType::INT && currentToken->tokenType != TokenType::STR) {
         throw invalid_argument("parseLetStatement: 토큰 타입이 자료형이 아닙니다.");
     }
     letStatement->token = currentToken;
     setNextToken();
 
+    // const check
     letStatement->isConst = (currentToken->tokenType == TokenType::BANG);
     if (currentToken->tokenType == TokenType::BANG) {
         setNextToken();
     }
 
-    if (currentToken->tokenType != TokenType::RBRACKET) {
-        throw invalid_argument("parseLetStatement: 토큰 타입이 RBRACKET이 아닙니다.");
-    }
-    setNextToken();
+    skipToken(TokenType::RBRACKET); // ]
+    skipToken(TokenType::SPACE); // ' '
 
-    skipToken(TokenType::SPACE);
-
+    // identifier
     if (currentToken->tokenType != TokenType::IDENTIFIER) {
         throw invalid_argument("parseLetStatement: 토큰 타입이 IDENTIFIER가 아닙니다.");
     }
@@ -99,16 +106,12 @@ LetStatement* Parser::parseLetStatement() {
     setNextToken();
 
     skipToken(TokenType::SPACE);
-
-    if (currentToken->tokenType != TokenType::ASSIGN) {
-        throw invalid_argument("parseLetStatement: 토큰 타입이 ASSIGN이 아닙니다.");
-    }
-    setNextToken();
-
+    skipToken(TokenType::ASSIGN);
     skipToken(TokenType::SPACE);
 
     letStatement->expression = parseExpression(Precedence::LOWEST);
 
+    setNextToken();
     return letStatement;
 }
 
@@ -124,28 +127,6 @@ ReturnStatement* Parser::parseReturnStatement() {
     return returnStatement;
 }
 
-Expression* Parser::parseIdentifierExpression() {
-    if (currentToken->tokenType != TokenType::IDENTIFIER)
-        throw invalid_argument("parseIdentifierExpression: 토큰 타입이 IDENTIFIER가 아닙니다.");
-
-    IdentifierExpression* identifierExpression = new IdentifierExpression{currentToken, currentToken->literal};
-
-
-    return identifierExpression;
-}
-
-Expression* Parser::parseIntegerExpression() {
-    if (currentToken->tokenType == TokenType::IDENTIFIER) { // identifier type checking eval 단계에서 하기
-
-    }
-    if (currentToken->tokenType != TokenType::INTEGER)
-        throw invalid_argument("parseIntegerExpression: 토큰 타입이 INTEGER가 아닙니다.");
-
-    IntegerExpression* integerExpression = new IntegerExpression{currentToken, stoll(currentToken->literal)};
-
-    return integerExpression;
-}
-
 AssignStatement* Parser::parseAssignStatement() {
     AssignStatement* assignStatement = new AssignStatement;
 
@@ -153,26 +134,95 @@ AssignStatement* Parser::parseAssignStatement() {
         throw invalid_argument("parseAssignStatement: IDENTIFIER가 아닙니다.");
     }
     assignStatement->name = dynamic_cast<IdentifierExpression *>(parseIdentifierExpression());
-    setNextToken();
-
-    skipToken(TokenType::SPACE);
-
-    if (currentToken->tokenType != TokenType::ASSIGN) {
-        throw invalid_argument("parseAssignStatement: ASSIGN이 아닙니다.");
-    }
     assignStatement->token = currentToken;
     setNextToken();
 
     skipToken(TokenType::SPACE);
+    skipToken(TokenType::ASSIGN);
+    skipToken(TokenType::SPACE);
 
     assignStatement->value = parseExpression(Precedence::LOWEST);
 
+    setNextToken();
     return assignStatement;
+}
+
+
+IfStatement* Parser::parseIfStatement() {
+    IfStatement* ifStatement = new IfStatement;
+
+    if (currentToken->tokenType != TokenType::IF) {
+        throw invalid_argument("parseIfStatement: IF가 아닙니다.");
+    }
+    ifStatement->token = currentToken;
+    setNextToken();
+
+    skipToken(TokenType::COLON);
+    skipToken(TokenType::SPACE);
+    skipToken(TokenType::LPAREN);
+
+    ifStatement->condition = parseExpression(Precedence::LOWEST);
+    setNextToken();
+
+    skipToken(TokenType::RPAREN);
+    skipToken(TokenType::NEW_LINE);
+
+    ifStatement->consequence = parseBlockStatement();
+
+    if (currentToken->tokenType == TokenType::ELSE) {
+        skipToken(TokenType::ELSE);
+        skipToken(TokenType::COLON);
+        skipToken(TokenType::NEW_LINE);
+
+        ifStatement->alternative = parseBlockStatement();
+    }
+
+    return ifStatement;
+}
+
+LoopStatement* Parser::parseLoopStatement() {
+    LoopStatement* loopStatement = new LoopStatement;
+
+    if (currentToken->tokenType != TokenType::LOOP) {
+        throw invalid_argument("parseLoopStatement: LOOP가 아닙니다.");
+    }
+    loopStatement->token = currentToken;
+    setNextToken();
+
+    skipToken(TokenType::COLON);
+    skipToken(TokenType::SPACE);
+    skipToken(TokenType::LPAREN);
+
+    Statement* firstStatement = parseStatement(); // for와 while의 분기점
+    if(ExpressionStatement* expressionStatement = dynamic_cast<ExpressionStatement*>(firstStatement)){ // while
+        loopStatement->condition = expressionStatement->expression;
+    }
+    else{ // for
+        loopStatement->initialization = firstStatement;
+
+        skipToken(TokenType::SEMICOLON);
+        skipToken(TokenType::SPACE);
+
+        loopStatement->condition = parseExpression(Precedence::LOWEST);
+        setNextToken();
+
+        skipToken(TokenType::SEMICOLON);
+        skipToken(TokenType::SPACE);
+
+        loopStatement->incrementation = parseAssignStatement();
+    }
+
+    skipToken(TokenType::RPAREN);
+    skipToken(TokenType::NEW_LINE);
+
+    loopStatement->loopBody = parseBlockStatement();
+
+    return loopStatement;
 }
 
 ExpressionStatement* Parser::parseExpressionStatement() {
     ExpressionStatement* expressionStatement = new ExpressionStatement{currentToken, parseExpression(Precedence::LOWEST)};
-
+    setNextToken();
     return expressionStatement;
 }
 
@@ -187,11 +237,27 @@ BlockStatement* Parser::parseBlockStatement() {
     while (currentToken->tokenType != TokenType::ENDBLOCK) {
         Statement* statement = parseStatement();
         blockStatement->statements.push_back(statement);
-        setNextToken();
-        setNextToken();// NEW_LINE 스킵
+        if (currentToken->tokenType == TokenType::NEW_LINE)
+            skipToken(TokenType::NEW_LINE);
     }
 
+    skipToken(TokenType::ENDBLOCK);
     return blockStatement;
+}
+
+
+
+
+
+
+
+
+Expression* Parser::parseIdentifierExpression() {
+    if (currentToken->tokenType != TokenType::IDENTIFIER)
+        throw invalid_argument("parseIdentifierExpression: 토큰 타입이 IDENTIFIER가 아닙니다.");
+
+    IdentifierExpression* identifierExpression = new IdentifierExpression{currentToken, currentToken->literal};
+    return identifierExpression;
 }
 
 Expression* Parser::parseExpression(Precedence precedence) {
@@ -202,7 +268,7 @@ Expression* Parser::parseExpression(Precedence precedence) {
     prefixParseFunction prefixFunction = prefixParseFunctions[currentToken->tokenType];
     Expression* leftExpression = (this->*prefixFunction)();
 
-    // infix 연산자가 있을 때는 SPACE가 있다고 가정, infix 연산자가 없을 때 SPACE가 있는 경우는 없는 지 고민할 것
+    // infix 연산자가 있을 때는 SPACE가 있다고 가정
     if (nextToken->tokenType == TokenType::SPACE) { // SPACE가 아니면 NEW_LINE이 와야할 것 (코드 한 줄의 끝에 의미 없는 공백이 오면 안됨)
         setNextToken();
     }
@@ -224,7 +290,6 @@ Expression* Parser::parseExpression(Precedence precedence) {
 Expression* Parser::parsePrefixExpression() {
     PrefixExpression* prefixExpression = new PrefixExpression;
     prefixExpression->token = currentToken;
-
     setNextToken();
 
     prefixExpression->right = parseExpression(Precedence::PREFIX);
@@ -248,163 +313,21 @@ Expression* Parser::parseInfixExpression(Expression *left) {
 }
 
 Expression* Parser::parseGroupedExpression() {
-    if (currentToken->tokenType != TokenType::LPAREN) {
-        throw invalid_argument("parseGroupedExpression: LPAREN이 아닙니다.");
-    }
-    setNextToken();
-
+    skipToken(TokenType::LPAREN);
     Expression* expression = parseExpression(Precedence::LOWEST);
-
-    if (nextToken->tokenType != TokenType::RPAREN) {
-        throw invalid_argument("parseGroupedExpression: RPAREN이 아닙니다.");
-    }
-    setNextToken();
-
+    skipToken(TokenType::RPAREN);
     return expression;
-}
-
-IfStatement* Parser::parseIfStatement() {
-    IfStatement* ifStatement = new IfStatement;
-
-    if (currentToken->tokenType != TokenType::IF) {
-        throw invalid_argument("parseIfStatement: IF가 아닙니다.");
-    }
-	ifStatement->token = currentToken;
-    setNextToken();
-
-    if (currentToken->tokenType != TokenType::COLON) {
-        throw invalid_argument("parseIfStatement: COLON이 아닙니다.");
-    }
-    setNextToken();
-
-    skipToken(TokenType::SPACE);
-
-    if (currentToken->tokenType != TokenType::LPAREN) {
-        throw invalid_argument("parseIfStatement: LPAREN이 아닙니다.");
-    }
-    setNextToken();
-
-	ifStatement->condition = parseExpression(Precedence::LOWEST);
-    setNextToken();
-
-    if (currentToken->tokenType != TokenType::RPAREN) {
-        throw invalid_argument("parseIfStatement: RPAREN이 아닙니다.");
-    }
-    setNextToken();
-
-//    skipSpaceToken();
-//
-//    if (currentToken->tokenType != TokenType::END_IF) {
-//        throw invalid_argument("parseIfStatement: END_IF가 아닙니다.");
-//    }
-//    setNextToken();
-
-    if (currentToken->tokenType != TokenType::NEW_LINE) {
-        throw invalid_argument("parseIfStatement: NEW_LINE이 아닙니다.");
-    }
-    setNextToken();
-
-	ifStatement->consequence = parseBlockStatement();
-
-    if (currentToken->tokenType != TokenType::ENDBLOCK) { // ENDBLOCK
-        throw invalid_argument("parseIfStatement: ENDBLOCK이 아닙니다.");
-    }
-//    setNextToken();
-
-    if (nextToken->tokenType == TokenType::ELSE) {
-        // 나중에 검사 엄밀히 할 것(필수!)
-        setNextToken(); // current: ENDBLOCK, next: ELSE
-        setNextToken(); // current: ELSE, next: COLON
-        setNextToken(); // current: COLON,     next: NEW_LINE
-        setNextToken(); // current: NEW_LINE, next: STARTBLOCK
-
-        ifStatement->alternative = parseBlockStatement();
-
-        if (currentToken->tokenType != TokenType::ENDBLOCK) { // ENDBLOCK
-            throw invalid_argument("parseIfStatement: ENDBLOCK이 아닙니다.");
-        }
-    }
-
-    return ifStatement;
-}
-
-LoopStatement* Parser::parseLoopStatement() {
-	LoopStatement* loopStatement = new LoopStatement;
-
-	if (currentToken->tokenType != TokenType::LOOP) {
-		throw invalid_argument("parseLoopStatement: LOOP가 아닙니다.");
-	}
-	loopStatement->token = currentToken;
-	setNextToken();
-
-	if (currentToken->tokenType != TokenType::COLON) {
-		throw invalid_argument("parseLoopStatement: COLON이 아닙니다.");
-	}
-	setNextToken();
-
-    skipToken(TokenType::SPACE);
-
-	if (currentToken->tokenType != TokenType::LPAREN) {
-		throw invalid_argument("parseLoopStatement: LPAREN이 아닙니다.");
-	}
-	setNextToken();
-
-	Statement* firstStatement = parseStatement(); // for와 while의 분기점
-	if(ExpressionStatement* expressionStatement = dynamic_cast<ExpressionStatement*>(firstStatement)){
-		// 첫 Statement가 ExpressionStatement면 while로 처리
-		loopStatement->condition = expressionStatement->expression;
-	}
-	else{ // for
-		loopStatement->initialization = firstStatement;
-
-		setNextToken();
-		if (currentToken->tokenType != TokenType::SEMICOLON) {
-			throw invalid_argument("parseLoopStatement: SEMICOLON이 아닙니다.");
-		}
-		setNextToken();
-        skipToken(TokenType::SPACE);
-
-		loopStatement->condition = parseExpression(Precedence::LOWEST);
-
-		setNextToken();
-		if (currentToken->tokenType != TokenType::SEMICOLON) {
-			throw invalid_argument("parseLoopStatement: SEMICOLON이 아닙니다.");
-		}
-		setNextToken();
-        skipToken(TokenType::SPACE);
-
-		loopStatement->incrementation = parseStatement();
-	}
-	setNextToken();
-
-	if (currentToken->tokenType != TokenType::RPAREN) {
-		throw invalid_argument("parseLoopStatement: RPAREN이 아닙니다.");
-	}
-	setNextToken();
-
-	if (currentToken->tokenType != TokenType::NEW_LINE) {
-		throw invalid_argument("parseLoopStatement: NEW_LINE이 아닙니다.");
-	}
-	setNextToken();
-
-	loopStatement->loopBody = parseBlockStatement();
-
-	if (currentToken->tokenType != TokenType::ENDBLOCK) { // ENDBLOCK
-		throw invalid_argument("parseLoopStatement: ENDBLOCK이 아닙니다.");
-	}
-
-	return loopStatement;
 }
 
 Expression* Parser::parseIndexExpression(Expression* left) {
     IndexExpression* indexExpression = new IndexExpression;
     indexExpression->token = currentToken;
     indexExpression->left = left;
-
     setNextToken();
+
     indexExpression->index = parseExpression(Precedence::LOWEST);
 
-    setNextToken(); // ']'
+    skipToken(TokenType::RBRACKET);
 
     return indexExpression;
 }
@@ -422,6 +345,73 @@ Expression* Parser::parseBooleanLiteral() {
     return new BooleanLiteral{currentToken, (currentToken->tokenType == TokenType::TRUE)};
 }
 
+
+
+Expression* Parser::parseArrayLiteral() {
+    ArrayLiteral* arrayLiteral = new ArrayLiteral;
+    arrayLiteral->token = currentToken; // "{"
+    arrayLiteral->elements = parseExpressionList(TokenType::RBRACE);
+
+    return arrayLiteral;
+}
+
+
+
+
+
+
+
+
+
+
+vector<Expression*> Parser::parseExpressionList(TokenType endTokenType) {
+    vector<Expression*> list;
+
+    if (nextToken->tokenType == endTokenType) {
+        setNextToken();
+        return list;
+    }
+
+    setNextToken();
+    list.push_back(parseExpression(Precedence::LOWEST));
+
+    while (nextToken->tokenType != endTokenType) {
+        setNextToken(); // ? ,
+        setNextToken(); // , space
+        setNextToken(); // space ?
+        list.push_back(parseExpression(Precedence::LOWEST));
+    }
+
+    setNextToken();
+
+    return list;
+}
+
+
+vector<IdentifierExpression*> Parser::parseFunctionParameters() {
+    vector<IdentifierExpression*> identifiers;
+
+    if (currentToken->tokenType == TokenType::SPACE) {
+        return identifiers;
+    }
+
+    while (nextToken->tokenType == TokenType::COMMA) {
+        IdentifierExpression* identifier = dynamic_cast<IdentifierExpression*>(parseIdentifierExpression());
+        identifiers.push_back(identifier);
+
+        // 여기도 나중에 엄밀히 검증할 것
+        setNextToken(); // current: identifier, next: COMMA
+        setNextToken(); // current: COMMA, next: SPACE
+        setNextToken(); // current: SPACE, next: identifier
+    }
+
+    IdentifierExpression* identifier = dynamic_cast<IdentifierExpression*>(parseIdentifierExpression());
+    identifiers.push_back(identifier);
+    setNextToken(); // current: identifier, next: SPACE
+
+    return identifiers;
+}
+
 Expression* Parser::parseFunctionLiteral() {
     FunctionLiteral* functionLiteral = new FunctionLiteral;
 
@@ -431,11 +421,7 @@ Expression* Parser::parseFunctionLiteral() {
     functionLiteral->token = currentToken;
     setNextToken();
 
-    if (currentToken->tokenType != TokenType::COLON) {
-        throw invalid_argument("parseFunctionLiteral: COLON이 아닙니다.");
-    }
-    setNextToken();
-
+    skipToken(TokenType::COLON);
     skipToken(TokenType::SPACE);
 
     functionLiteral->parameters = parseFunctionParameters();
@@ -488,61 +474,3 @@ Expression* Parser::parseFunctionLiteral() {
 
     return functionLiteral;
 }
-
-Expression* Parser::parseArrayLiteral() {
-    ArrayLiteral* arrayLiteral = new ArrayLiteral;
-    arrayLiteral->token = currentToken; // "{"
-
-    arrayLiteral->elements = parseExpressionList(TokenType::RBRACE);
-
-    return arrayLiteral;
-}
-
-vector<Expression*> Parser::parseExpressionList(TokenType endTokenType) {
-    vector<Expression*> list;
-
-    if (nextToken->tokenType == endTokenType) {
-        setNextToken();
-        return list;
-    }
-
-    setNextToken();
-    list.push_back(parseExpression(Precedence::LOWEST));
-
-    while (nextToken->tokenType != endTokenType) {
-        setNextToken(); // ? ,
-        setNextToken(); // , space
-        setNextToken(); // space ?
-        list.push_back(parseExpression(Precedence::LOWEST));
-    }
-
-    setNextToken();
-
-    return list;
-}
-
-
-vector<IdentifierExpression*> Parser::parseFunctionParameters() {
-    vector<IdentifierExpression*> identifiers;
-
-    if (currentToken->tokenType == TokenType::SPACE) {
-        return identifiers;
-    }
-
-    while (nextToken->tokenType == TokenType::COMMA) {
-        IdentifierExpression* identifier = dynamic_cast<IdentifierExpression*>(parseIdentifierExpression());
-        identifiers.push_back(identifier);
-
-        // 여기도 나중에 엄밀히 검증할 것
-        setNextToken(); // current: identifier, next: COMMA
-        setNextToken(); // current: COMMA, next: SPACE
-        setNextToken(); // current: SPACE, next: identifier
-    }
-
-    IdentifierExpression* identifier = dynamic_cast<IdentifierExpression*>(parseIdentifierExpression());
-    identifiers.push_back(identifier);
-    setNextToken(); // current: identifier, next: SPACE
-
-    return identifiers;
-}
-

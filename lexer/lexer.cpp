@@ -95,13 +95,13 @@ void Lexer::tokenizing() {
             }
 
             if (tabCount > indentLevel) {
-                for (; tabCount != indentLevel; tabCount--) {
+                for (int t = tabCount; t != indentLevel; t--) {
                     tokens.push_back(new Token{TokenType::NEW_LINE, "\\n", line});
                     tokens.push_back(new Token{TokenType::STARTBLOCK, "", line});
                 }
             }
             else if (tabCount < indentLevel) {
-                for (; tabCount != indentLevel; tabCount++) {
+                for (int t = tabCount; t != indentLevel; t++) {
                     tokens.push_back(new Token{TokenType::NEW_LINE, "\\n", line});
                     tokens.push_back(new Token{TokenType::ENDBLOCK, "", line});
                 }
@@ -157,6 +157,8 @@ void Lexer::tokenizing() {
         currentReadPoint++;
         nextReadPoint++;
     }
+    tokens.push_back(new Token{TokenType::END_OF_FILE, "", line});
+    tokens.push_back(new Token{TokenType::END_OF_FILE, "", line});
     tokens.push_back(new Token{TokenType::END_OF_FILE, "", line});
 }
 

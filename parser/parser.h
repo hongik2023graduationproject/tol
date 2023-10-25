@@ -39,8 +39,10 @@ private:
     vector<Token*> tokens;
     int currentReadPoint;
     int nextReadPoint;
+    int nextnextReadPoint;
     Token* currentToken;
     Token* nextToken;
+    Token* nextnextToken;
     Program* program;
 
     using prefixParseFunction = Expression* (Parser::*)();
@@ -101,7 +103,6 @@ private:
 	LoopStatement* parseLoopStatement();
 
 	Expression* parseIdentifierExpression();
-    Expression* parseIntegerExpression();
     Expression* parseExpression(Precedence precedence);
     Expression* parsePrefixExpression();
     Expression* parseGroupedExpression();

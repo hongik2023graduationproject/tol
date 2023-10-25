@@ -270,7 +270,7 @@ Expression* Parser::parseExpression(Precedence precedence) {
 
     // infix 연산자가 있을 때는 SPACE가 있다고 가정
     if (nextToken->tokenType == TokenType::SPACE) { // SPACE가 아니면 NEW_LINE이 와야할 것 (코드 한 줄의 끝에 의미 없는 공백이 오면 안됨)
-        setNextToken();
+        skipToken(TokenType::SPACE);
     }
 
     // RBRACKET은 if문 같은 경우에 해당
@@ -326,11 +326,21 @@ Expression* Parser::parseIndexExpression(Expression* left) {
     setNextToken();
 
     indexExpression->index = parseExpression(Precedence::LOWEST);
-
     skipToken(TokenType::RBRACKET);
 
     return indexExpression;
 }
+
+
+
+
+
+
+
+
+
+
+
 
 
 Expression* Parser::parseIntegerLiteral() {
@@ -344,7 +354,6 @@ Expression* Parser::parseStringLiteral() {
 Expression* Parser::parseBooleanLiteral() {
     return new BooleanLiteral{currentToken, (currentToken->tokenType == TokenType::TRUE)};
 }
-
 
 
 Expression* Parser::parseArrayLiteral() {
@@ -376,9 +385,9 @@ vector<Expression*> Parser::parseExpressionList(TokenType endTokenType) {
     list.push_back(parseExpression(Precedence::LOWEST));
 
     while (nextToken->tokenType != endTokenType) {
-        setNextToken(); // ? ,
-        setNextToken(); // , space
-        setNextToken(); // space ?
+        setNextToken();
+        skipToken(TokenType::COMMA);
+        skipToken(TokenType::SPACE);
         list.push_back(parseExpression(Precedence::LOWEST));
     }
 
@@ -398,11 +407,9 @@ vector<IdentifierExpression*> Parser::parseFunctionParameters() {
     while (nextToken->tokenType == TokenType::COMMA) {
         IdentifierExpression* identifier = dynamic_cast<IdentifierExpression*>(parseIdentifierExpression());
         identifiers.push_back(identifier);
-
-        // 여기도 나중에 엄밀히 검증할 것
         setNextToken(); // current: identifier, next: COMMA
-        setNextToken(); // current: COMMA, next: SPACE
-        setNextToken(); // current: SPACE, next: identifier
+        skipToken(TokenType::COMMA);
+        skipToken(TokenType::SPACE);
     }
 
     IdentifierExpression* identifier = dynamic_cast<IdentifierExpression*>(parseIdentifierExpression());
@@ -430,21 +437,11 @@ Expression* Parser::parseFunctionLiteral() {
 
     functionLiteral->name = dynamic_cast<IdentifierExpression *>(parseIdentifierExpression());
     setNextToken(); // skip Identifier Token
-    setNextToken(); // skip DOT token
     skipToken(TokenType::SPACE);
 
-    if (currentToken->tokenType != TokenType::RIGHTARROW) {
-        throw invalid_argument("parseFunctionLiteral: RIGHT ARROW가 아닙니다.");
-    }
-    setNextToken();
-
+    skipToken(TokenType::RIGHTARROW);
     skipToken(TokenType::SPACE);
-
-    if (currentToken->tokenType != TokenType::LBRACKET) {
-        throw invalid_argument("parseFunctionLiteral: LBRACKET이 아닙니다.");
-    }
-    setNextToken();
-
+    skipToken(TokenType::LBRACKET);
 
     // 리턴 타입이 없는 경우도 생각할 것
     if (currentToken->tokenType != TokenType::RBRACKET) {
@@ -455,22 +452,10 @@ Expression* Parser::parseFunctionLiteral() {
         setNextToken();
     }
 
-
-    if (currentToken->tokenType != TokenType::RBRACKET) {
-        throw invalid_argument("parseFunctionLiteral: RBRACKET이 아닙니다.");
-    }
-    setNextToken();
-
-    if (currentToken->tokenType != TokenType::NEW_LINE) {
-        throw invalid_argument("parseFunctionLiteral: NEW_LINE이 아닙니다.");
-    }
-    setNextToken();
+    skipToken(TokenType::RBRACKET);
+    skipToken(TokenType::NEW_LINE);
 
     functionLiteral->blockStatement = parseBlockStatement();
-
-    if (currentToken->tokenType != TokenType::ENDBLOCK) {
-        throw invalid_argument("parseFunctionLiteral: END BLOCK이 아닙니다.");
-    }
 
     return functionLiteral;
 }

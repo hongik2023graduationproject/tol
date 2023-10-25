@@ -9,6 +9,7 @@ using SymbolScope = string;
 
 //class Scopes {
     const SymbolScope GlobalScope = "Global";
+	const SymbolScope LocalScope = "Local";
 //};
 
 class Symbol {
@@ -20,8 +21,11 @@ public:
 
 class SymbolTable {
 public:
+	SymbolTable* outer{nullptr};
+
     Symbol Define(string name);
     Symbol Resolve(string name);
+	static SymbolTable* NewEnclosedSymbolTable(SymbolTable* outer);
 
     map<string, Symbol> store;
     int numberDefinitions;

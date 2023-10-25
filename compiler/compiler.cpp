@@ -1,14 +1,20 @@
 #include "compiler.h"
 
 Bytecode Compiler::run(Node* node) {
-    try {
+    // Compiler init <- 여기에 적는 것이 맞을까?
+	CompilationScope * mainScope = new CompilationScope;
+	symbolTable = new SymbolTable;
+	scopes.push_back(mainScope);
+	scopeIndex = 0;
+
+	try {
         compile(node);
     }
     catch (const exception& e) {
         cout << e.what() << endl;
     }
 
-    return Bytecode{instructions, constants};
+    return Bytecode{currentInstructions(), constants};
 }
 
 void Compiler::compile(Node *node) {
@@ -84,12 +90,22 @@ void Compiler::compile(Node *node) {
     }
     else if (LetStatement* letStatement = dynamic_cast<LetStatement*>(node)) {
         compile(letStatement->expression);
-        Symbol symbol = symbolTable.Define(letStatement->name->name);
-        emit(OpcodeType::OpSetGlobal, vector<int>{symbol.index});
+        Symbol symbol = symbolTable->Define(letStatement->name->name);
+        if (symbol.scope == GlobalScope) {
+			emit(OpcodeType::OpSetGlobal, vector<int>{symbol.index});
+		}
+		else {
+			emit(OpcodeType::OpSetLocal, vector<int>{symbol.index});
+		}
     }
     else if (IdentifierExpression* identifierExpression = dynamic_cast<IdentifierExpression*>(node)) {
-        Symbol symbol = symbolTable.Resolve(identifierExpression->name); // 오류 생길 수도 처리 필요 할 수도
-        emit(OpcodeType::OpGetGlobal, vector<int>{symbol.index});
+        Symbol symbol = symbolTable->Resolve(identifierExpression->name); // 오류 생길 수도 처리 필요 할 수도
+		if (symbol.scope == GlobalScope) {
+			emit(OpcodeType::OpGetGlobal, vector<int>{symbol.index});
+		}
+		else {
+			emit(OpcodeType::OpGetLocal, vector<int>{symbol.index});
+		}
     }
 	else if (IfStatement* ifExpression = dynamic_cast<IfStatement*>(node)) {
 		compile(ifExpression->condition);
@@ -99,14 +115,14 @@ void Compiler::compile(Node *node) {
 
 		compile(ifExpression->consequence);
 		int jumpPos = emit(OpcodeType::OpJump, vector<int>{9999});
-		int afterConsequencePos = instructions.size();
+		int afterConsequencePos = currentInstructions().size();
 		changeOperand(jumpNotTruthyPos, afterConsequencePos);
 
 		if(ifExpression->alternative != nullptr){
 
 			compile(ifExpression->alternative);
 
-			afterConsequencePos = instructions.size();
+			afterConsequencePos = currentInstructions().size();
 		}
 		changeOperand(jumpPos, afterConsequencePos);
 	}
@@ -120,11 +136,11 @@ void Compiler::compile(Node *node) {
 			compile(loopStatement->initialization);
 		}
 		int condPos; // condition evaluation 시작점
-		if(lastInstruction == nullptr){ // loop 명령어가 가장 앞머리일 경우
+		if(scopes[scopeIndex]->lastInstruction == nullptr){ // loop 명령어가 가장 앞머리일 경우
 			condPos = 0;
 		}
 		else{
-			condPos = lastInstruction->position + 1;
+			condPos = scopes[scopeIndex]->lastInstruction->position + 1;
 		}
 		compile(loopStatement->condition);
 
@@ -136,7 +152,7 @@ void Compiler::compile(Node *node) {
 			compile(loopStatement->incrementation);
 		}
 		emit(OpcodeType::OpJump, vector<int>{condPos});
-		int afterLoopPos = instructions.size();
+		int afterLoopPos = currentInstructions().size();
 		changeOperand(jumpNotTruthyPos, afterLoopPos);
 	}
     else if (ArrayLiteral* arrayLiteral = dynamic_cast<ArrayLiteral*>(node)) {
@@ -153,10 +169,39 @@ void Compiler::compile(Node *node) {
 
         emit(OpcodeType::OpIndex);
     }
+	else if (FunctionLiteral* functionLiteral = dynamic_cast<FunctionLiteral*>(node)) {
+		enterScope();
+
+		compile(functionLiteral->blockStatement);
+
+		if(!lastInstructionIs(OpcodeType::OpReturnValue)) {
+			emit(OpcodeType::OpReturn);
+		}
+
+		vector<Instruction *> instructions = leaveScope();
+		CompiledFunction * compiledFn = new CompiledFunction(instructions);
+
+		// 함수 리터럴을 배출
+		emit(OpcodeType::OpConstant, vector<int>(addConstant(compiledFn)));
+
+		// 함수 이름과 literal assign 과정
+		Symbol symbol = symbolTable->Define(functionLiteral->name->name);
+		emit(OpcodeType::OpSetGlobal, vector<int>{symbol.index});
+	}
+	else if (ReturnStatement* returnStatement = dynamic_cast<ReturnStatement*>(node)) {
+		compile(returnStatement->returnValue);
+
+		emit(OpcodeType::OpReturnValue);
+	}
+	else if (FunctionExpression* functionExpression = dynamic_cast<FunctionExpression*>(node)) {
+		compile(functionExpression->functionBody);
+
+		emit(OpcodeType::OpCall);
+	}
 }
 
 Bytecode Compiler::ReturnBytecode() {
-    return Bytecode{instructions, constants};
+    return Bytecode{currentInstructions(), constants};
 }
 
 int Compiler::addConstant(Object* object) {
@@ -174,35 +219,62 @@ int Compiler::emit(OpcodeType opcode, vector<int> operands) {
 }
 
 int Compiler::addInstruction(Instruction* instruction) {
-    int posNewInstruction = instructions.size();
-    instructions.push_back(instruction);
+    int posNewInstruction = currentInstructions().size();
+	currentInstructions().push_back(instruction);
+
     return posNewInstruction;
 }
 
 void Compiler::setLastInstruction(OpcodeType opcode, int position) {
-	EmittedInstruction* previous = lastInstruction;
+	EmittedInstruction* previous = scopes[scopeIndex]->lastInstruction;
 	EmittedInstruction* last = new EmittedInstruction{opcode, position};
 
-	delete previousInstruction;
-	previousInstruction = previous;
-	lastInstruction = last;
+	delete scopes[scopeIndex]->previousInstruction;
+	scopes[scopeIndex]->previousInstruction = previous;
+	scopes[scopeIndex]->lastInstruction = last;
 }
 
-bool Compiler::lastInstructionIsPop() {
-	return lastInstruction->opcode == OpcodeType::OpPop;
+bool Compiler::lastInstructionIs(OpcodeType opcode) {
+	if(currentInstructions().size() == 0){
+		return false;
+	}
+
+	return scopes[scopeIndex]->lastInstruction->opcode == opcode;
 }
 
 void Compiler::removeLastInstruction() {
-	instructions.pop_back(); // remove last instruction(OpPop)
+	// instructions.pop_back(); // remove last instruction(OpPop)
 }
 
 void Compiler::replaceInstruction(int position, Instruction *newInstruction) {
-	instructions[position] = newInstruction;
+	currentInstructions().at(position) = newInstruction;
 }
 
 void Compiler::changeOperand(int opPos, int operand) {
-	OpcodeType opcode = OpcodeType(instructions[opPos]->at(0));
+	OpcodeType opcode = OpcodeType(currentInstructions().at(opPos)->at(0));
 	Instruction* newInstruction = code.makeInstruction(opcode, vector<int>{operand});
 
 	replaceInstruction(opPos, newInstruction);
+}
+
+vector<Instruction*>& Compiler::currentInstructions() {
+	return scopes[scopeIndex]->instructions;
+}
+
+void Compiler::enterScope() {
+	CompilationScope* scope = new CompilationScope;
+	scopes.push_back(scope);
+	scopeIndex++;
+
+	symbolTable = SymbolTable::NewEnclosedSymbolTable(symbolTable);
+}
+
+vector<Instruction *> Compiler::leaveScope() {
+	auto instructions = currentInstructions();
+	scopes.pop_back();
+	scopeIndex--;
+
+
+
+	return instructions;
 }

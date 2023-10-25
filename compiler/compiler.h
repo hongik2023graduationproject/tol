@@ -12,12 +12,15 @@
 #include "../ast/expressions/infixExpression.h"
 #include "../ast/expressions/prefixExpression.h"
 #include "../ast/expressions/indexExpression.h"
+#include "../ast/expressions/FunctionExpression.h"
 #include "../ast/literals/integerLiteral.h"
 #include "../ast/literals/booleanLiteral.h"
 #include "../ast/literals/stringLiteral.h"
 #include "../ast/literals/arrayLiteral.h"
+#include "../ast/literals/functionLiteral.h"
 #include "../ast/statements/ifStatement.h"
 #include "../ast/statements/loopStatement.h"
+#include "../ast/statements/returnStatement.h"
 #include "../endian/endian.h"
 #include "symbolTable.h"
 using namespace std;
@@ -35,17 +38,27 @@ public:
 	int position;
 };
 
+
+class CompilationScope {
+public:
+	vector<Instruction*> instructions;
+	EmittedInstruction* lastInstruction, * previousInstruction;
+
+};
+
 class Compiler {
 public:
     Endian endian;
     Bytecode run(Node* node);
 
     Code code;
-    vector<Instruction*> instructions;
+//    vector<Instruction*> instructions;
     vector<Object*> constants;
 private:
-    SymbolTable symbolTable;
-	EmittedInstruction* lastInstruction, * previousInstruction;
+    SymbolTable* symbolTable; // Scope 구현을 위해 포인터로 변경
+//	EmittedInstruction* lastInstruction, * previousInstruction;
+	vector<CompilationScope*> scopes;
+	int scopeIndex;
 
     void compile(Node* node);
     Bytecode ReturnBytecode();
@@ -53,10 +66,13 @@ private:
     int addInstruction(Instruction* instruction);
     int emit(OpcodeType opcode, vector<int> operands = vector<int>{});
 	void setLastInstruction(OpcodeType opcode, int position);
-	bool lastInstructionIsPop();
+	bool lastInstructionIs(OpcodeType opcode);
 	void removeLastInstruction();
 	void replaceInstruction(int position, Instruction* newInstruction);
 	void changeOperand(int opPos, int operand);
+	vector<Instruction*>& currentInstructions();
+	void enterScope();
+	vector<Instruction*> leaveScope();
 };
 
 

@@ -92,4 +92,17 @@ public:
     }
 };
 
+
+class CompiledFunction : public Object {
+public:
+	vector<Instruction *> instructions;
+
+	CompiledFunction() = default;
+	CompiledFunction(vector<Instruction *> instructions) : instructions(instructions) {};
+
+	string print() {
+		return "CompiledFunction";
+	}
+};
+
 #endif //TOLELOM_OBJECT_H

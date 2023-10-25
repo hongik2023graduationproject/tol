@@ -14,6 +14,7 @@
 #include "../ast/expressions/infixExpression.h"
 #include "../ast/expressions/prefixExpression.h"
 #include "../ast/expressions/indexExpression.h"
+#include "../ast/expressions/functionExpression.h"
 
 #include "../ast/statements/ifStatement.h"
 #include "../ast/statements/loopStatement.h"
@@ -58,6 +59,7 @@ private:
             {TokenType::LPAREN, &Parser::parseGroupedExpression},
             {TokenType::FUNCTION, &Parser::parseFunctionLiteral},
             {TokenType::LBRACE, &Parser::parseArrayLiteral},
+            {TokenType::COLON, &Parser::parseFunctionExpression},
     };
     std::map<TokenType, infixParseFunction> infixParseFunctions = {
             {TokenType::PLUS, &Parser::parseInfixExpression},
@@ -108,6 +110,8 @@ private:
     Expression* parseGroupedExpression();
     Expression* parseInfixExpression(Expression* left);
     Expression* parseIndexExpression(Expression* left);
+    Expression* parseFunctionExpression();
+
 
     Expression* parseIntegerLiteral();
     Expression* parseBooleanLiteral();
@@ -116,6 +120,7 @@ private:
     Expression* parseArrayLiteral();
 
     vector<IdentifierExpression*> parseFunctionParameters();
+    vector<Expression*> parseFunctionExpressionParameters();
     vector<Expression*> parseExpressionList(TokenType endTokenType);
 };
 

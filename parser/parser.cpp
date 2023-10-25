@@ -270,7 +270,7 @@ Expression* Parser::parseExpression(Precedence precedence) {
 
     // infix 연산자가 있을 때는 SPACE가 있다고 가정
     if (nextToken->tokenType == TokenType::SPACE) { // SPACE가 아니면 NEW_LINE이 와야할 것 (코드 한 줄의 끝에 의미 없는 공백이 오면 안됨)
-        skipToken(TokenType::SPACE);
+        setNextToken();
     }
 
     // RBRACKET은 if문 같은 경우에 해당
@@ -331,9 +331,33 @@ Expression* Parser::parseIndexExpression(Expression* left) {
     return indexExpression;
 }
 
+Expression* Parser::parseFunctionExpression() {
+    skipToken(TokenType::COLON);
 
+    FunctionExpression* functionExpression = new FunctionExpression;
+    functionExpression->arguments = parseFunctionExpressionParameters(); // 파라미터가 없을 경우 생각해야 함
 
+    functionExpression->function = parseExpression(Precedence::LOWEST);
 
+    return functionExpression;
+}
+
+vector<Expression*> Parser::parseFunctionExpressionParameters() {
+    vector<Expression*> expressions;
+
+    while (true) {
+        Expression* expression = parseExpression(Precedence::LOWEST);
+        expressions.push_back(expression);
+        setNextToken();
+
+        if (currentToken->tokenType != TokenType::COMMA)
+            break;
+        skipToken(TokenType::COMMA);
+        skipToken(TokenType::SPACE);
+    }
+
+    return expressions;
+}
 
 
 

@@ -12,7 +12,7 @@ public:
     string String() override {
         string s;
         for (auto& statement : statements) {
-            s += statement->String() + "\n";
+            s += "  " + statement->String() + "\n";
         }
         return s;
     }

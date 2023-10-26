@@ -9,14 +9,14 @@
 class FunctionExpression : public Expression {
 public:
     Token* token{};
-    Expression* functionBody;
+    Expression* function;
     vector<Expression*> arguments;
 
     string String() override {
         string s;
         for (auto& it : arguments)
             s += it->String() + ", ";
-        s += functionBody->String() + ".";
+        s += function->String() + ".";
 
         return s;
     }

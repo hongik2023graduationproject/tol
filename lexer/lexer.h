@@ -44,6 +44,7 @@ private:
             {"아니면", TokenType::ELSE},
 			{"반복", TokenType::LOOP},
             {"문자", TokenType::STR},
+            {"클래스", TokenType::CLASS},
     };
 };
 

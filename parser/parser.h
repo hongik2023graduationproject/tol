@@ -14,15 +14,16 @@
 #include "../ast/expressions/infixExpression.h"
 #include "../ast/expressions/prefixExpression.h"
 #include "../ast/expressions/indexExpression.h"
+#include "../ast/expressions/functionExpression.h"
 
 #include "../ast/statements/ifStatement.h"
 #include "../ast/statements/loopStatement.h"
 #include "../ast/statements/letStatement.h"
 #include "../ast/statements/returnStatement.h"
 #include "../ast/statements/assignStatement.h"
-#include "../ast/statements/integerStatement.h"
 #include "../ast/statements/expressionStatement.h"
 #include "../ast/statements/blockStatement.h"
+#include "../ast/statements/classStatement.h"
 
 #include "../ast/literals/integerLiteral.h"
 #include "../ast/literals/stringLiteral.h"
@@ -39,8 +40,10 @@ private:
     vector<Token*> tokens;
     int currentReadPoint;
     int nextReadPoint;
+    int nextnextReadPoint;
     Token* currentToken;
     Token* nextToken;
+    Token* nextnextToken;
     Program* program;
 
     using prefixParseFunction = Expression* (Parser::*)();
@@ -56,6 +59,7 @@ private:
             {TokenType::LPAREN, &Parser::parseGroupedExpression},
             {TokenType::FUNCTION, &Parser::parseFunctionLiteral},
             {TokenType::LBRACE, &Parser::parseArrayLiteral},
+            {TokenType::COLON, &Parser::parseFunctionExpression},
     };
     std::map<TokenType, infixParseFunction> infixParseFunctions = {
             {TokenType::PLUS, &Parser::parseInfixExpression},
@@ -99,14 +103,16 @@ private:
     BlockStatement* parseBlockStatement();
 	IfStatement* parseIfStatement();
 	LoopStatement* parseLoopStatement();
+    ClassStatement* parseClassStatement();
 
 	Expression* parseIdentifierExpression();
-    Expression* parseIntegerExpression();
     Expression* parseExpression(Precedence precedence);
     Expression* parsePrefixExpression();
     Expression* parseGroupedExpression();
     Expression* parseInfixExpression(Expression* left);
     Expression* parseIndexExpression(Expression* left);
+    Expression* parseFunctionExpression();
+
 
     Expression* parseIntegerLiteral();
     Expression* parseBooleanLiteral();
@@ -115,6 +121,7 @@ private:
     Expression* parseArrayLiteral();
 
     vector<IdentifierExpression*> parseFunctionParameters();
+    vector<Expression*> parseFunctionExpressionParameters();
     vector<Expression*> parseExpressionList(TokenType endTokenType);
 };
 

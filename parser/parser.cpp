@@ -85,7 +85,6 @@ LetStatement* Parser::parseLetStatement() {
 
     skipToken(TokenType::LBRACKET); // [
 
-    // type token
     if (currentToken->tokenType != TokenType::INT && currentToken->tokenType != TokenType::STR) {
         throw NotFoundToken(currentToken->line, TokenType::INT ,currentToken);
     }
@@ -95,26 +94,25 @@ LetStatement* Parser::parseLetStatement() {
     // const check
     letStatement->isConst = (currentToken->tokenType == TokenType::BANG);
     if (currentToken->tokenType == TokenType::BANG) {
-        setNextToken();
+        skipToken(TokenType::BANG);
     }
 
     skipToken(TokenType::RBRACKET); // ]
-    skipToken(TokenType::SPACE); // ' '
+    skipToken(TokenType::SPACE);
 
-    // identifier
     if (currentToken->tokenType != TokenType::IDENTIFIER) {
         throw NotFoundToken(currentToken->line, TokenType::IDENTIFIER, currentToken);
     }
     letStatement->name = dynamic_cast<IdentifierExpression*>(parseIdentifierExpression());
-    setNextToken();
+    skipToken(TokenType::IDENTIFIER);
 
     skipToken(TokenType::SPACE);
     skipToken(TokenType::ASSIGN);
     skipToken(TokenType::SPACE);
 
     letStatement->expression = parseExpression(Precedence::LOWEST);
-
     setNextToken();
+
     return letStatement;
 }
 
@@ -126,6 +124,7 @@ ReturnStatement* Parser::parseReturnStatement() {
     skipToken(TokenType::SPACE);
 
     returnStatement->returnValue = parseExpression(Precedence::LOWEST);
+    setNextToken();
 
     return returnStatement;
 }
@@ -138,15 +137,15 @@ AssignStatement* Parser::parseAssignStatement() {
     }
     assignStatement->name = dynamic_cast<IdentifierExpression *>(parseIdentifierExpression());
     assignStatement->token = currentToken;
-    setNextToken();
+    skipToken(TokenType::IDENTIFIER);
 
     skipToken(TokenType::SPACE);
     skipToken(TokenType::ASSIGN);
     skipToken(TokenType::SPACE);
 
     assignStatement->value = parseExpression(Precedence::LOWEST);
-
     setNextToken();
+
     return assignStatement;
 }
 
@@ -158,7 +157,7 @@ IfStatement* Parser::parseIfStatement() {
         throw NotFoundToken(currentToken->line, TokenType::IF, currentToken);
     }
     ifStatement->token = currentToken;
-    setNextToken();
+    skipToken(TokenType::IF);
 
     skipToken(TokenType::COLON);
     skipToken(TokenType::SPACE);
@@ -172,6 +171,12 @@ IfStatement* Parser::parseIfStatement() {
 
     ifStatement->consequence = parseBlockStatement();
 
+    // elif
+//    if (currentToken->tokenType == TokenType::ELSE && nextToken->tokenType == TokenType::SPACE && nextnextToken->tokenType == TokenType::IF) {
+//        skipToken(TokenType::ELSE);
+//        skipToken(TokenType::SPACE);
+//        ifStatement->alternative = parseBlockStatement();
+//    }
     if (currentToken->tokenType == TokenType::ELSE) {
         skipToken(TokenType::ELSE);
         skipToken(TokenType::COLON);
@@ -196,7 +201,7 @@ LoopStatement* Parser::parseLoopStatement() {
     skipToken(TokenType::SPACE);
     skipToken(TokenType::LPAREN);
 
-    Statement* firstStatement = parseStatement(); // for와 while의 분기점
+    Statement* firstStatement = parseStatement();
     if(ExpressionStatement* expressionStatement = dynamic_cast<ExpressionStatement*>(firstStatement)){ // while
         loopStatement->condition = expressionStatement->expression;
     }
@@ -476,12 +481,14 @@ Expression* Parser::parseFunctionLiteral() {
     skipToken(TokenType::COLON);
     skipToken(TokenType::SPACE);
 
-    functionLiteral->parameters = parseFunctionParameters();
-
-    skipToken(TokenType::SPACE);
+    if (nextToken->tokenType != TokenType::DOT) {
+        functionLiteral->parameters = parseFunctionParameters();
+        skipToken(TokenType::SPACE);
+    }
 
     functionLiteral->name = dynamic_cast<IdentifierExpression *>(parseIdentifierExpression());
     skipToken(TokenType::IDENTIFIER);
+    skipToken(TokenType::DOT);
     skipToken(TokenType::SPACE);
 
     skipToken(TokenType::RIGHTARROW);

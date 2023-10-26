@@ -19,6 +19,7 @@ enum class TokenType {
 	SEMICOLON,		// ;
     RIGHTARROW,     // ->
     COMMA,          // ,
+    DOT,            // .
     // 기호
     PLUS,           // +
     MINUS,          // -

@@ -46,6 +46,8 @@ public:
                 return "RIGHT ARROW";
             case TokenType::COMMA:
                 return "COMMA";
+            case TokenType::DOT:
+                return "DOT";
 
             case TokenType::PLUS:
                 return "PLUS";

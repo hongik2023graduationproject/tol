@@ -338,6 +338,7 @@ Expression* Parser::parseFunctionExpression() {
     functionExpression->arguments = parseFunctionExpressionParameters(); // 파라미터가 없을 경우 생각해야 함
 
     functionExpression->function = parseExpression(Precedence::LOWEST);
+    skipToken(TokenType::IDENTIFIER);
 
     return functionExpression;
 }

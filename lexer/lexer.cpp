@@ -43,6 +43,9 @@ void Lexer::tokenizing() {
         else if (characters[currentReadPoint] == ",") {
             tokens.push_back(new Token{TokenType::COMMA, characters[currentReadPoint], line});
         }
+        else if (characters[currentReadPoint] == ".") {
+            tokens.push_back(new Token{TokenType::DOT, characters[currentReadPoint], line});
+        }
         else if (characters[currentReadPoint] == "+") {
             tokens.push_back(new Token{TokenType::PLUS, characters[currentReadPoint], line});
         }

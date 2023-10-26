@@ -200,6 +200,10 @@ void Compiler::compile(Node *node) {
 		// 함수 이름과 literal assign 과정
 		Symbol symbol = symbolTable->Define(functionLiteral->name->name);
 		emit(OpcodeType::OpSetGlobal, vector<int>{symbol.index});
+
+		if (lastInstructionIs(OpcodeType::OpPop)) { // 함수 정의 이후 결과를 pop하는 것을 방지
+			removeLastInstruction();
+		}
 	}
 	else if (ReturnStatement* returnStatement = dynamic_cast<ReturnStatement*>(node)) {
 		compile(returnStatement->returnValue);
@@ -288,7 +292,7 @@ vector<Instruction *> Compiler::leaveScope() {
 	scopes.pop_back();
 	scopeIndex--;
 
-
+	symbolTable = symbolTable->outer;
 
 	return instructions;
 }

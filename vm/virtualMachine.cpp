@@ -93,7 +93,7 @@ void VirtualMachine::run(Bytecode bytecode) {
 			}
 		}
 		else if (opcode == OpcodeType::OpCall) {
-			if (CompiledFunction* function = dynamic_cast<CompiledFunction*>(stackTop())){
+			if (CompiledFunction* function = dynamic_cast<CompiledFunction*>(stack[stackPointer - 1])){
 				Frame* frame = new Frame(function, stackPointer);
 				pushFrame(frame);
 				stackPointer = frame->basePointer + function->numLocals;

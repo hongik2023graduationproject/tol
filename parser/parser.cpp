@@ -360,7 +360,8 @@ Expression* Parser::parseFunctionExpression() {
     skipToken(TokenType::COLON);
 
     FunctionExpression* functionExpression = new FunctionExpression;
-    functionExpression->arguments = parseFunctionExpressionParameters(); // 파라미터가 없을 경우 생각해야 함
+    if (nextToken->tokenType == TokenType::COMMA || nextToken->tokenType == TokenType::SPACE)
+        functionExpression->arguments = parseFunctionExpressionParameters(); // 파라미터가 없을 경우 생각해야 함
 
     functionExpression->function = parseExpression(Precedence::LOWEST);
     skipToken(TokenType::IDENTIFIER);

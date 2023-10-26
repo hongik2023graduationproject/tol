@@ -73,4 +73,38 @@ public:
     }
 };
 
+
+class Array : public Object {
+public:
+    vector<Object*> elements;
+
+    Array() = default;
+    Array(vector<Object*> elements) : elements(elements) {};
+
+    string print() {
+        string s = "[";
+        for (auto element : elements) {
+            s += element->print() + ",";
+        }
+        s += "]";
+
+        return s;
+    }
+};
+
+
+class CompiledFunction : public Object {
+public:
+	vector<vector<byte> *> instructions;
+	int numLocals; // count of local variables
+
+	CompiledFunction() {type = ObjectType::COMPILED_FUNCTION;};
+	CompiledFunction(vector<vector<byte> *> instructions) : instructions(instructions)
+		{type = ObjectType::COMPILED_FUNCTION;};
+
+	string print() {
+		return "CompiledFunction";
+	}
+};
+
 #endif //TOLELOM_OBJECT_H

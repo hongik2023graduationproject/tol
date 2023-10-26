@@ -6,6 +6,7 @@
 #include <vector>
 #include "../token/token.h"
 #include "../utf8Converter/utf8Converter.h"
+#include "../exception/exception.h"
 
 using namespace std;
 
@@ -20,8 +21,11 @@ private:
     int currentReadPoint;
     int nextReadPoint;
     int indentLevel;
+    long long line;
 
     void initialization();
+    void tokenizing();
+
     static bool isNumber(const std::string &character);
     string readNumber();
     static bool isLetter(const string &character);
@@ -39,7 +43,8 @@ private:
             {"라면", TokenType::END_IF},
             {"아니면", TokenType::ELSE},
 			{"반복", TokenType::LOOP},
-
+            {"문자", TokenType::STR},
+            {"클래스", TokenType::CLASS},
     };
 };
 

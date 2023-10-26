@@ -7,20 +7,23 @@
 #include <map>
 #include "../lexer/lexer.h"
 #include "../token/token.h"
+#include "../exception/exception.h"
 #include "../ast/program.h"
 #include "../ast/expressions/identifierExpression.h"
 #include "../ast/expressions/integerExpression.h"
 #include "../ast/expressions/infixExpression.h"
 #include "../ast/expressions/prefixExpression.h"
+#include "../ast/expressions/indexExpression.h"
+#include "../ast/expressions/functionExpression.h"
+
 #include "../ast/statements/ifStatement.h"
 #include "../ast/statements/loopStatement.h"
-
 #include "../ast/statements/letStatement.h"
 #include "../ast/statements/returnStatement.h"
 #include "../ast/statements/assignStatement.h"
-#include "../ast/statements/integerStatement.h"
 #include "../ast/statements/expressionStatement.h"
 #include "../ast/statements/blockStatement.h"
+#include "../ast/statements/classStatement.h"
 
 #include "../ast/literals/integerLiteral.h"
 #include "../ast/literals/stringLiteral.h"
@@ -37,8 +40,10 @@ private:
     vector<Token*> tokens;
     int currentReadPoint;
     int nextReadPoint;
+    int nextnextReadPoint;
     Token* currentToken;
     Token* nextToken;
+    Token* nextnextToken;
     Program* program;
 
     using prefixParseFunction = Expression* (Parser::*)();
@@ -54,6 +59,7 @@ private:
             {TokenType::LPAREN, &Parser::parseGroupedExpression},
             {TokenType::FUNCTION, &Parser::parseFunctionLiteral},
             {TokenType::LBRACE, &Parser::parseArrayLiteral},
+            {TokenType::COLON, &Parser::parseFunctionExpression},
     };
     std::map<TokenType, infixParseFunction> infixParseFunctions = {
             {TokenType::PLUS, &Parser::parseInfixExpression},
@@ -63,6 +69,7 @@ private:
             {TokenType::EQUAL, &Parser::parseInfixExpression},
             {TokenType::NOT_EQUAL, &Parser::parseInfixExpression},
             {TokenType::LESS_THAN, &Parser::parseInfixExpression},
+            {TokenType::LBRACKET, &Parser::parseIndexExpression},
     };
     enum class Precedence {
         LOWEST,
@@ -71,7 +78,8 @@ private:
         SUM,            // +
         PRODUCT,        // *
         PREFIX,         // -X, !X
-        CALL            // myFunction(x)
+        CALL,           // myFunction(x)
+        INDEX,          // array[index]
     };
     std::map<TokenType, Precedence> getPrecedence = {
             {TokenType::EQUAL, Precedence::EQUALS},
@@ -81,27 +89,30 @@ private:
             {TokenType::MINUS, Precedence::SUM},
             {TokenType::ASTERISK, Precedence::PRODUCT},
             {TokenType::SLASH, Precedence::PRODUCT},
+            {TokenType::LBRACKET, Precedence::INDEX},
     };
 
     void initialization();
     void setNextToken();
-    void skipSpaceToken();
+    void skipToken(TokenType tokenType);
     Statement* parseStatement();
     LetStatement* parseLetStatement();
     ReturnStatement* parseReturnStatement();
     AssignStatement* parseAssignStatement();
-    IntegerStatement* parseIntegerStatement();
     ExpressionStatement* parseExpressionStatement();
     BlockStatement* parseBlockStatement();
 	IfStatement* parseIfStatement();
 	LoopStatement* parseLoopStatement();
+    ClassStatement* parseClassStatement();
 
 	Expression* parseIdentifierExpression();
-    Expression* parseIntegerExpression();
     Expression* parseExpression(Precedence precedence);
     Expression* parsePrefixExpression();
     Expression* parseGroupedExpression();
     Expression* parseInfixExpression(Expression* left);
+    Expression* parseIndexExpression(Expression* left);
+    Expression* parseFunctionExpression();
+
 
     Expression* parseIntegerLiteral();
     Expression* parseBooleanLiteral();
@@ -110,6 +121,7 @@ private:
     Expression* parseArrayLiteral();
 
     vector<IdentifierExpression*> parseFunctionParameters();
+    vector<Expression*> parseFunctionExpressionParameters();
     vector<Expression*> parseExpressionList(TokenType endTokenType);
 };
 

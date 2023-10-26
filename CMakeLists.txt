@@ -23,7 +23,6 @@ add_executable(tolelom main.cpp
         ast/expressions/infixExpression.h
         ast/program.h
         ast/expressions/integerExpression.h
-        ast/statements/integerStatement.h
         exception/exception.h
         evaluator/evaluator.cpp
         evaluator/evaluator.h
@@ -53,5 +52,10 @@ add_executable(tolelom main.cpp
         vm/virtualMachine.h
         compiler/symbolTable.cpp
         compiler/symbolTable.h
+        ast/literals/stringLiteral.h
+        object/objectType.h
+        ast/literals/arrayLiteral.h
+        ast/expressions/indexExpression.h
         ast/statements/loopStatement.h
+        ast/statements/classStatement.h
 )

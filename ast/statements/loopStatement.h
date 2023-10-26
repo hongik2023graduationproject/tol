@@ -3,6 +3,7 @@
 
 #include "statement.h"
 #include "blockStatement.h"
+#include "assignStatement.h"
 #include "../expressions/expression.h"
 
 class LoopStatement : public Statement{
@@ -10,7 +11,7 @@ public:
 	Token* token{};
 	Statement* initialization{};
 	Expression* condition{};
-	Statement* incrementation{};
+	AssignStatement* incrementation{};
 
 	BlockStatement* loopBody{};
 

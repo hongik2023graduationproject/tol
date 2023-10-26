@@ -19,6 +19,7 @@ enum class TokenType {
 	SEMICOLON,		// ;
     RIGHTARROW,     // ->
     COMMA,          // ,
+    DOT,            // .
     // 기호
     PLUS,           // +
     MINUS,          // -
@@ -41,7 +42,9 @@ enum class TokenType {
     LET,            // LET
     INT,            // 정수
     실수,            // 실수
+    STR,            // 문자열
     FUNCTION,       // 함수
+    CLASS,          // 클래스
     RETURN,         // return
     TRUE,           // true
     FALSE,          // false

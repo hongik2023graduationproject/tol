@@ -30,8 +30,15 @@ enum class OpcodeType {
     OpBang,
     OpSetGlobal,
     OpGetGlobal,
-	OpJumpNotTruthy,
-	OpJump
+    OpJumpNotTruthy,
+    OpJump,
+    OpArray,
+    OpIndex,
+	OpCall,
+	OpReturnValue,
+	OpReturn,
+	OpSetLocal,
+	OpGetLocal,
 
 };
 
@@ -64,9 +71,19 @@ public:
             {OpcodeType::OpBang, Definition{"OpBang", vector<int>{}}},
             {OpcodeType::OpSetGlobal, Definition{"OpSetGlobal", vector<int>{4}}},
             {OpcodeType::OpGetGlobal, Definition{"OpGetGlobal", vector<int>{4}}},
-			{OpcodeType::OpJumpNotTruthy, Definition{"OpJumpNotTruthy", vector<int>{4}}},
-			{OpcodeType::OpJump, Definition{"OpJump", vector<int>{4}}},
-			};
+            {OpcodeType::OpJumpNotTruthy, Definition{"OpJumpNotTruthy", vector<int>{4}}},
+            {OpcodeType::OpJump, Definition{"OpJump", vector<int>{4}}},
+            {OpcodeType::OpArray, Definition{"OpArray", vector<int>{2}}}, // 배열의 최대 크기 65535
+            {OpcodeType::OpIndex, Definition{"OpIndex", vector<int>{}}},
+			{OpcodeType::OpCall, Definition{"OpCall", vector<int>{}}},
+			{OpcodeType::OpReturnValue, Definition{"OpReturnValue", vector<int>{}}},
+			{OpcodeType::OpReturn, Definition{"OpReturn", vector<int>{}}},
+			{OpcodeType::OpSetLocal, Definition{"OpSetLocal", vector<int>{1}}},
+			{OpcodeType::OpGetLocal, Definition{"OpGetLocal", vector<int>{1}}},
+
+
+
+	};
 };
 
 

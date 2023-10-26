@@ -15,14 +15,23 @@ void VirtualMachine::testIntegerObject(long long expected, Object* object) {
 
 void VirtualMachine::run(Bytecode bytecode) {
     // init
-    instructions = bytecode.instructions;
-    constants = bytecode.constants;
+
+	CompiledFunction* mainFunction = new CompiledFunction;// (instructions); // 왜 생성자가 안먹히지?
+	mainFunction->instructions = bytecode.instructions;
+	Frame* mainFrame = new Frame(mainFunction, 0);
+	constants = bytecode.constants;
     stack.resize(StackSize);
     globals.resize(GlobalsSize);
+	frames.resize(MaxFrames);
     stackPointer = 0;
+	frameIndex = 0;
+	pushFrame(mainFrame);
 
-    for (int ip = 0; ip < int(instructions.size()); ++ip) { // ip = instruction pointer
-        OpcodeType opcode = static_cast<OpcodeType>(int((*instructions[ip])[0]));
+    while (currentFrame()->ip < (int)(currentFrame()->Instructions().size() -1)) { // ip = instruction pointer
+        int& ip = currentFrame()->ip;
+		vector<Instruction *> instructions = currentFrame()->Instructions();
+		ip++;
+		OpcodeType opcode = static_cast<OpcodeType>(int((*instructions[ip])[0]));
 
         if (opcode == OpcodeType::OpConstant) {
             int constIndex = endian.byteToInt(vector<byte>(instructions[ip]->begin() + 1, instructions[ip]->begin() + 5));
@@ -57,6 +66,20 @@ void VirtualMachine::run(Bytecode bytecode) {
             int globalIndex = endian.byteToInt(vector<byte>(instructions[ip]->begin() + 1, instructions[ip]->begin() + 5));
             push(globals[globalIndex]);
         }
+        else if (opcode == OpcodeType::OpArray) {
+            int numElements = endian.byteToInt(vector<byte>(instructions[ip]->begin() + 1, instructions[ip]->begin() + 5));
+
+            Object* array = buildArray(stackPointer - numElements, stackPointer);
+            stackPointer -= numElements;
+
+            push(array);
+        }
+        else if (opcode == OpcodeType::OpIndex) {
+            Object* index = pop();
+            Object* left  = pop();
+
+            executeIndexExpression(left, index);
+        }
 		else if (opcode == OpcodeType::OpJump) {
 			int position = endian.byteToInt(vector<byte>(instructions[ip]->begin() + 1, instructions[ip]->begin() + 5));
 			ip = position - 1;
@@ -68,8 +91,44 @@ void VirtualMachine::run(Bytecode bytecode) {
 			if(!isTruthy(condition)){
 				ip = position - 1;
 			}
+		}
+		else if (opcode == OpcodeType::OpCall) {
+			if (CompiledFunction* function = dynamic_cast<CompiledFunction*>(stack[stackPointer - 1])){
+				Frame* frame = new Frame(function, stackPointer);
+				pushFrame(frame);
+				stackPointer = frame->basePointer + function->numLocals;
+			}
+			else {
+				// throw(, "Calling non-function");
+				return;
+			}
+		}
+		else if (opcode == OpcodeType::OpReturnValue) {
+			auto returnValue = pop();
 
+			auto frame = popFrame(); // pop function frame
+			stackPointer = frame->basePointer - 1;
 
+			push(returnValue);
+		}
+		else if (opcode == OpcodeType::OpReturn) {
+			auto frame = popFrame();
+			stackPointer = frame->basePointer - 1;
+		}
+		else if (opcode == OpcodeType::OpSetLocal) {
+			int localIndex = endian.byteToInt(vector<byte>(instructions[ip]->begin() + 1, instructions[ip]->begin() + 5));
+			auto frame = currentFrame();
+			frame->ip++;
+
+			stack[frame->basePointer + localIndex] = pop();
+
+		}
+		else if (opcode == OpcodeType::OpGetLocal) {
+			int localIndex = endian.byteToInt(vector<byte>(instructions[ip]->begin() + 1, instructions[ip]->begin() + 5));
+			auto frame = currentFrame();
+			frame->ip++;
+
+			push(stack[frame->basePointer + localIndex]);
 		}
     }
 }
@@ -110,6 +169,9 @@ void VirtualMachine::executeBinaryOperation(OpcodeType opcode) {
     if (left->type == ObjectType::INTEGER && right->type == ObjectType::INTEGER) {
         return executeBinaryIntegerOperation(opcode, dynamic_cast<Integer*>(left), dynamic_cast<Integer*>(right));
     }
+    else if (left->type == ObjectType::STRING && right->type == ObjectType::STRING) {
+        return executeBinaryStringOperation(opcode, dynamic_cast<String*>(left), dynamic_cast<String*>(right));
+    }
 }
 
 void VirtualMachine::executeBinaryIntegerOperation(OpcodeType opcode, Integer* left, Integer* right) {
@@ -130,10 +192,21 @@ void VirtualMachine::executeBinaryIntegerOperation(OpcodeType opcode, Integer* l
         case OpcodeType::OpDiv:
             returnValue = leftValue / rightValue;
             break;
+        defalut:
+            throw invalid_argument("");
     }
 
     push(new Integer{returnValue});
 }
+
+void VirtualMachine::executeBinaryStringOperation(OpcodeType opcode, String *left, String *right) {
+    if (opcode != OpcodeType::OpAdd) {
+        throw invalid_argument("");
+    }
+
+    return push(new String{left->value + right->value});
+}
+
 
 void VirtualMachine::executeComparison(OpcodeType opcode) {
     Object* right = pop();
@@ -203,6 +276,36 @@ void VirtualMachine::executeMinusOperator() {
     }
 }
 
+
+Object* VirtualMachine::buildArray(int startIndex, int endIndex) {
+    vector<Object*> elements(endIndex - startIndex);
+
+    for (int i = startIndex; i < endIndex; ++i) {
+        elements[i - startIndex] = stack[i];
+    }
+
+    return new Array{elements};
+}
+
+void VirtualMachine::executeIndexExpression(Object *left, Object *index) {
+    if (left->type == ObjectType::ARRAY && index->type == ObjectType::INTEGER) {
+        return executeArrayIndex(static_cast<Array*>(left), static_cast<Integer*>(index));
+    }
+    else {
+        throw invalid_argument("");
+    }
+}
+
+void VirtualMachine::executeArrayIndex(Array* left, Integer* index) {
+    int m = left->elements.size() - 1;
+    long long i = index->value;
+    if (i < 0 || m < i) {
+        throw invalid_argument("");
+    }
+
+    push(left->elements[i]);
+}
+
 bool VirtualMachine::isTruthy(Object *obj) {
 	if(Boolean* boolean = dynamic_cast<Boolean*>(obj)){
 		return boolean->value;
@@ -212,3 +315,25 @@ bool VirtualMachine::isTruthy(Object *obj) {
 	}
 }
 
+Frame *VirtualMachine::currentFrame() {
+	return frames[frameIndex - 1];
+}
+
+void VirtualMachine::pushFrame(Frame *frame) {
+	frames[frameIndex++] = frame;
+}
+
+Frame *VirtualMachine::popFrame() {
+	frameIndex--;
+	return frames[frameIndex];
+}
+
+vector<Instruction *> Frame::Instructions() {
+	return function->instructions;
+}
+
+Frame::Frame(CompiledFunction *fn, int basePointer) {
+	this->function = fn;
+	this->basePointer = basePointer;
+	this->ip = -1;
+}

@@ -72,6 +72,9 @@ Statement* Parser::parseStatement() {
 	else if (currentToken->tokenType == TokenType::LOOP) {
 		return parseLoopStatement();
 	}
+    else if (currentToken->tokenType == TokenType::CLASS) {
+        return parseClassStatement();
+    }
     else {
         return parseExpressionStatement();
     }
@@ -244,6 +247,23 @@ BlockStatement* Parser::parseBlockStatement() {
     skipToken(TokenType::ENDBLOCK);
     return blockStatement;
 }
+
+ClassStatement* Parser::parseClassStatement() {
+    ClassStatement* classStatement = new ClassStatement;
+
+    skipToken(TokenType::CLASS);
+    skipToken(TokenType::SPACE);
+
+    classStatement->name = dynamic_cast<IdentifierExpression*>(parseIdentifierExpression());
+    skipToken(TokenType::IDENTIFIER);
+
+    skipToken(TokenType::NEW_LINE);
+
+    classStatement->block = parseBlockStatement();
+
+    return classStatement;
+}
+
 
 
 
@@ -432,14 +452,14 @@ vector<IdentifierExpression*> Parser::parseFunctionParameters() {
     while (nextToken->tokenType == TokenType::COMMA) {
         IdentifierExpression* identifier = dynamic_cast<IdentifierExpression*>(parseIdentifierExpression());
         identifiers.push_back(identifier);
-        setNextToken(); // current: identifier, next: COMMA
+        skipToken(TokenType::IDENTIFIER);
         skipToken(TokenType::COMMA);
         skipToken(TokenType::SPACE);
     }
 
     IdentifierExpression* identifier = dynamic_cast<IdentifierExpression*>(parseIdentifierExpression());
     identifiers.push_back(identifier);
-    setNextToken(); // current: identifier, next: SPACE
+    skipToken(TokenType::IDENTIFIER);
 
     return identifiers;
 }
@@ -461,7 +481,7 @@ Expression* Parser::parseFunctionLiteral() {
     skipToken(TokenType::SPACE);
 
     functionLiteral->name = dynamic_cast<IdentifierExpression *>(parseIdentifierExpression());
-    setNextToken(); // skip Identifier Token
+    skipToken(TokenType::IDENTIFIER);
     skipToken(TokenType::SPACE);
 
     skipToken(TokenType::RIGHTARROW);
@@ -470,7 +490,7 @@ Expression* Parser::parseFunctionLiteral() {
 
     // 리턴 타입이 없는 경우도 생각할 것
     if (currentToken->tokenType != TokenType::RBRACKET) {
-        if (currentToken->tokenType != TokenType::INT) {
+        if (currentToken->tokenType != TokenType::INT && currentToken->tokenType != TokenType::STR) {
             throw invalid_argument("parseFunctionLiteral: 리턴 타입이 잘못되었습니다.");
         }
         functionLiteral->returnType = currentToken;

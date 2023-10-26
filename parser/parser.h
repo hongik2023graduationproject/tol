@@ -21,9 +21,9 @@
 #include "../ast/statements/letStatement.h"
 #include "../ast/statements/returnStatement.h"
 #include "../ast/statements/assignStatement.h"
-#include "../ast/statements/integerStatement.h"
 #include "../ast/statements/expressionStatement.h"
 #include "../ast/statements/blockStatement.h"
+#include "../ast/statements/classStatement.h"
 
 #include "../ast/literals/integerLiteral.h"
 #include "../ast/literals/stringLiteral.h"
@@ -103,6 +103,7 @@ private:
     BlockStatement* parseBlockStatement();
 	IfStatement* parseIfStatement();
 	LoopStatement* parseLoopStatement();
+    ClassStatement* parseClassStatement();
 
 	Expression* parseIdentifierExpression();
     Expression* parseExpression(Precedence precedence);

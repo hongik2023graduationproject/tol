@@ -98,8 +98,9 @@ public:
 	vector<vector<byte> *> instructions;
 	int numLocals; // count of local variables
 
-	CompiledFunction() = default;
-	CompiledFunction(vector<vector<byte> *> instructions) : instructions(instructions) {};
+	CompiledFunction() {type = ObjectType::COMPILED_FUNCTION;};
+	CompiledFunction(vector<vector<byte> *> instructions) : instructions(instructions)
+		{type = ObjectType::COMPILED_FUNCTION;};
 
 	string print() {
 		return "CompiledFunction";

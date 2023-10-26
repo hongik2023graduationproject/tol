@@ -107,6 +107,16 @@ void Compiler::compile(Node *node) {
 			emit(OpcodeType::OpGetLocal, vector<int>{symbol.index});
 		}
     }
+	else if (AssignStatement* assignStatement = dynamic_cast<AssignStatement*>(node)) {
+		compile(assignStatement->value);
+		Symbol symbol = symbolTable->Resolve(assignStatement->name->name);
+		if (symbol.scope == GlobalScope) {
+			emit(OpcodeType::OpSetGlobal, vector<int>{symbol.index});
+		}
+		else {
+			emit(OpcodeType::OpSetLocal, vector<int>{symbol.index});
+		}
+	}
 	else if (IfStatement* ifExpression = dynamic_cast<IfStatement*>(node)) {
 		compile(ifExpression->condition);
 
@@ -185,7 +195,7 @@ void Compiler::compile(Node *node) {
 		compiledFn->numLocals = numLocals;
 
 		// 함수 리터럴을 배출
-		emit(OpcodeType::OpConstant, vector<int>(addConstant(compiledFn)));
+		emit(OpcodeType::OpConstant, vector<int>{addConstant(compiledFn)});
 
 		// 함수 이름과 literal assign 과정
 		Symbol symbol = symbolTable->Define(functionLiteral->name->name);
@@ -197,7 +207,7 @@ void Compiler::compile(Node *node) {
 		emit(OpcodeType::OpReturnValue);
 	}
 	else if (FunctionExpression* functionExpression = dynamic_cast<FunctionExpression*>(node)) {
-		compile(functionExpression->functionBody);
+		compile(functionExpression->function);
 
 		emit(OpcodeType::OpCall);
 	}
@@ -209,7 +219,8 @@ Bytecode Compiler::ReturnBytecode() {
 
 int Compiler::addConstant(Object* object) {
     constants.push_back(object);
-    return constants.size() - 1;
+    auto a = constants.size() - 1;
+	return a;
 }
 
 int Compiler::emit(OpcodeType opcode, vector<int> operands) {

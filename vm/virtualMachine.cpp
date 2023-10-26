@@ -27,8 +27,7 @@ void VirtualMachine::run(Bytecode bytecode) {
 	frameIndex = 0;
 	pushFrame(mainFrame);
 
-
-    while (currentFrame()->ip < (currentFrame()->Instructions().size() -1)) { // ip = instruction pointer
+    while (currentFrame()->ip < (int)(currentFrame()->Instructions().size() -1)) { // ip = instruction pointer
         int& ip = currentFrame()->ip;
 		vector<Instruction *> instructions = currentFrame()->Instructions();
 		ip++;

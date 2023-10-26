@@ -15,6 +15,8 @@ void Repl::runWithVM() {
     vector<Token*> tokens = lexer.run(code);
     Program* program = parser.run(tokens);
     Bytecode bytecode = compiler.run(program);
+	bytecode.instructions.push_back(new Instruction);
+	bytecode.instructions[1]->at(0) = (byte);
     vm.run(bytecode);
 
     cout << vm.lastPoppedElement()->print() << endl;

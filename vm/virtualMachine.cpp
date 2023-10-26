@@ -18,7 +18,7 @@ void VirtualMachine::run(Bytecode bytecode) {
 
 	CompiledFunction* mainFunction = new CompiledFunction;// (instructions); // 왜 생성자가 안먹히지?
 	mainFunction->instructions = bytecode.instructions;
-	Frame* mainFrame = new Frame{.function = mainFunction};
+	Frame* mainFrame = new Frame(mainFunction, 0);
 	constants = bytecode.constants;
     stack.resize(StackSize);
     globals.resize(GlobalsSize);
@@ -95,8 +95,9 @@ void VirtualMachine::run(Bytecode bytecode) {
 		}
 		else if (opcode == OpcodeType::OpCall) {
 			if (CompiledFunction* function = dynamic_cast<CompiledFunction*>(stackTop())){
-				Frame* frame = new Frame{.function = function};
+				Frame* frame = new Frame(function, stackPointer);
 				pushFrame(frame);
+				stackPointer = frame->basePointer + function->numLocals;
 			}
 			else {
 				// throw(, "Calling non-function");
@@ -105,14 +106,30 @@ void VirtualMachine::run(Bytecode bytecode) {
 		}
 		else if (opcode == OpcodeType::OpReturnValue) {
 			auto returnValue = pop();
-			popFrame(); // pop function frame
-			pop(); // pop CompiledFunction
+
+			auto frame = popFrame(); // pop function frame
+			stackPointer = frame->basePointer - 1;
 
 			push(returnValue);
 		}
 		else if (opcode == OpcodeType::OpReturn) {
-			popFrame();
-			pop();
+			auto frame = popFrame();
+			stackPointer = frame->basePointer - 1;
+		}
+		else if (opcode == OpcodeType::OpSetLocal) {
+			int localIndex = endian.byteToInt(vector<byte>(instructions[ip]->begin() + 1, instructions[ip]->begin() + 5));
+			auto frame = currentFrame();
+			frame->ip++;
+
+			stack[frame->basePointer + localIndex] = pop();
+
+		}
+		else if (opcode == OpcodeType::OpGetLocal) {
+			int localIndex = endian.byteToInt(vector<byte>(instructions[ip]->begin() + 1, instructions[ip]->begin() + 5));
+			auto frame = currentFrame();
+			frame->ip++;
+
+			push(stack[frame->basePointer + localIndex]);
 		}
     }
 }
@@ -314,4 +331,10 @@ Frame *VirtualMachine::popFrame() {
 
 vector<Instruction *> Frame::Instructions() {
 	return function->instructions;
+}
+
+Frame::Frame(CompiledFunction *fn, int basePointer) {
+	this->function = fn;
+	this->basePointer = basePointer;
+	this->ip = -1;
 }

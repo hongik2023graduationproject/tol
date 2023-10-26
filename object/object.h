@@ -95,10 +95,11 @@ public:
 
 class CompiledFunction : public Object {
 public:
-	vector<Instruction *> instructions;
+	vector<vector<byte> *> instructions;
+	int numLocals; // count of local variables
 
 	CompiledFunction() = default;
-	CompiledFunction(vector<Instruction *> instructions) : instructions(instructions) {};
+	CompiledFunction(vector<vector<byte> *> instructions) : instructions(instructions) {};
 
 	string print() {
 		return "CompiledFunction";

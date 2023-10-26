@@ -2,8 +2,8 @@
 
 int main() {
     Repl repl;
-    repl.lexerTest();
-//    repl.parserTest();
+//    repl.lexerTest();
+    repl.parserTest();
 //    repl.runWithEvaluator();
 //    repl.runWithVM();
 

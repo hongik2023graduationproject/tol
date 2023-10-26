@@ -178,8 +178,11 @@ void Compiler::compile(Node *node) {
 			emit(OpcodeType::OpReturn);
 		}
 
+		int numLocals = symbolTable->numberDefinitions;
 		vector<Instruction *> instructions = leaveScope();
-		CompiledFunction * compiledFn = new CompiledFunction(instructions);
+		CompiledFunction * compiledFn = new CompiledFunction; // 생성자가 안먹히는 이유는?
+		compiledFn->instructions = instructions;
+		compiledFn->numLocals = numLocals;
 
 		// 함수 리터럴을 배출
 		emit(OpcodeType::OpConstant, vector<int>(addConstant(compiledFn)));

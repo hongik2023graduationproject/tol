@@ -11,9 +11,12 @@
 class Frame {
 public:
 	CompiledFunction* function;
-	int ip = -1;
+	int ip = -1; // instruction point
+	int basePointer; // frame point
 
 	vector<Instruction*> Instructions();
+	Frame() = default;
+	Frame(CompiledFunction* fn, int basePointer);
 };
 
 

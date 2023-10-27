@@ -51,6 +51,8 @@ public:
 
 class Code {
 public:
+    Endian endian;
+
     static void applyOperand(Instruction* instruction, int offset, int size, vector<byte> operand);
     Instruction* makeInstruction(OpcodeType opType, const vector<int>& operands);
     Definition findDefinition(OpcodeType opType);
@@ -81,9 +83,11 @@ public:
 			{OpcodeType::OpSetLocal, Definition{"OpSetLocal", vector<int>{1}}},
 			{OpcodeType::OpGetLocal, Definition{"OpGetLocal", vector<int>{1}}},
 
-
-
 	};
+
+    string decodeInstruction(Instruction inst) {
+        return findDefinition(static_cast<OpcodeType>(inst[0])).name;
+    }
 };
 
 

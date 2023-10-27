@@ -18,7 +18,7 @@ public:
     vector<byte> intToByte(int value);
     int byteToInt(vector<byte> bytes);
 private:
-    bool isBigEndianComputer;
+    bool isBigEndianComputer{};
 };
 
 

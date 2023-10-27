@@ -37,6 +37,17 @@ void Repl::parserTest() {
     cout << program->String();
 }
 
+void Repl::compilerTest() {
+    string input = readInputFile();
+    vector<Token*> tokens = lexer.run(input);
+    Program* program = parser.run(tokens);
+    Bytecode byte = compiler.run(program);
+
+    for (auto it : byte.instructions) {
+        cout << compiler.code.decodeInstruction(it[0]) << endl;
+    }
+}
+
 string Repl::readInputFile() {
     string fileName = "./main.tol";
     string input;

@@ -48,20 +48,16 @@ public:
 
 class Compiler {
 public:
-    Endian endian;
     Bytecode run(Node* node);
 
     Code code;
-//    vector<Instruction*> instructions;
     vector<Object*> constants;
 private:
-    SymbolTable* symbolTable; // Scope 구현을 위해 포인터로 변경
-//	EmittedInstruction* lastInstruction, * previousInstruction;
+    SymbolTable* symbolTable;
 	vector<CompilationScope*> scopes;
 	int scopeIndex;
 
     void compile(Node* node);
-    Bytecode ReturnBytecode();
     int addConstant(Object* object);
     int addInstruction(Instruction* instruction);
     int emit(OpcodeType opcode, vector<int> operands = vector<int>{});

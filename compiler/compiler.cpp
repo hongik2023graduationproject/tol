@@ -1,8 +1,7 @@
 #include "compiler.h"
 
 Bytecode Compiler::run(Node* node) {
-    // Compiler init <- 여기에 적는 것이 맞을까?
-	CompilationScope * mainScope = new CompilationScope;
+	CompilationScope* mainScope = new CompilationScope;
 	symbolTable = new SymbolTable;
 	scopes.push_back(mainScope);
 	scopeIndex = 0;
@@ -71,8 +70,7 @@ void Compiler::compile(Node *node) {
         }
     }
     else if (IntegerLiteral* integerLiteral = dynamic_cast<IntegerLiteral*>(node)) {
-         Integer* integer  = new Integer;
-         integer->value = integerLiteral->value;
+         Integer* integer  = new Integer(integerLiteral->value);
          emit(OpcodeType::OpConstant, vector<int>{addConstant(integer)});
     }
     else if (BooleanLiteral* booleanLiteral = dynamic_cast<BooleanLiteral*>(node)) {
@@ -217,9 +215,6 @@ void Compiler::compile(Node *node) {
 	}
 }
 
-Bytecode Compiler::ReturnBytecode() {
-    return Bytecode{currentInstructions(), constants};
-}
 
 int Compiler::addConstant(Object* object) {
     constants.push_back(object);

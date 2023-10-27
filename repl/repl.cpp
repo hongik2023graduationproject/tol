@@ -14,10 +14,6 @@ void Repl::runWithVM() {
     string code = readInputFile();
     vector<Token*> tokens = lexer.run(code);
     Program* program = parser.run(tokens);
-	auto * fe = new FunctionExpression;
-	fe->function = new IdentifierExpression;
-	((IdentifierExpression*)fe->function)->name = "뭐라도하기";
-	program->statements.push_back((Statement*)fe);
     Bytecode bytecode = compiler.run(program);
 	vm.run(bytecode);
 

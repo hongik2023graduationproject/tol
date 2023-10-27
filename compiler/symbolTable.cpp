@@ -5,7 +5,7 @@ Symbol SymbolTable::Define(std::string name) {
     Symbol symbol;
     symbol.name = name;
     symbol.index = numberDefinitions;
-    symbol.scope = GlobalScope;
+    symbol.scope = outer == nullptr ? GlobalScope : LocalScope;
 
     store[name] = symbol;
     numberDefinitions++;
@@ -14,8 +14,18 @@ Symbol SymbolTable::Define(std::string name) {
 
 Symbol SymbolTable::Resolve(std::string name) {
     if (store.find(name) == store.end()) {
-        throw invalid_argument("");
+		if (outer != nullptr){
+			return outer->Resolve(name);
+		}
+		else throw invalid_argument("");
     }
 
     return store[name];
 }
+
+SymbolTable *SymbolTable::NewEnclosedSymbolTable(SymbolTable* outer) {
+	SymbolTable* symbolTable = new SymbolTable;
+	symbolTable->outer = outer;
+	return symbolTable;
+}
+

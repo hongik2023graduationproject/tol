@@ -8,6 +8,17 @@
 #include "../compiler/compiler.h"
 #include "../endian/endian.h"
 
+class Frame {
+public:
+	CompiledFunction* function;
+	int ip = -1; // instruction point
+	int basePointer; // frame point
+
+	vector<Instruction*> Instructions();
+	Frame() = default;
+	Frame(CompiledFunction* fn, int basePointer);
+};
+
 
 class VirtualMachine {
 public:
@@ -20,12 +31,15 @@ public:
     // 디버깅 용으로 public에 나둠 나중에 private로 옮길 것
     vector<Object*> stack;
     int stackPointer;
+	vector<Frame*> frames;
+	int frameIndex;
 private:
     const int GlobalsSize = 65536;
     const int StackSize = 2048;
+	const int MaxFrames = 1024;
 
     vector<Object*> constants;
-    vector<Instruction*> instructions;
+//    vector<Instruction*> instructions;
     vector<Object*> globals;
 
     // boolean 상수화 (const가 안되네..)
@@ -52,6 +66,10 @@ private:
 
     Object* buildArray(int startIndex, int endIndex);
 	bool isTruthy(Object* obj);
+
+	Frame* currentFrame();
+	void pushFrame(Frame* frame);
+	Frame* popFrame();
 };
 
 

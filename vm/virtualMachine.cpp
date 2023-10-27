@@ -15,14 +15,23 @@ void VirtualMachine::testIntegerObject(long long expected, Object* object) {
 
 void VirtualMachine::run(Bytecode bytecode) {
     // init
-    instructions = bytecode.instructions;
-    constants = bytecode.constants;
+
+	CompiledFunction* mainFunction = new CompiledFunction;// (instructions); // 왜 생성자가 안먹히지?
+	mainFunction->instructions = bytecode.instructions;
+	Frame* mainFrame = new Frame(mainFunction, 0);
+	constants = bytecode.constants;
     stack.resize(StackSize);
     globals.resize(GlobalsSize);
+	frames.resize(MaxFrames);
     stackPointer = 0;
+	frameIndex = 0;
+	pushFrame(mainFrame);
 
-    for (int ip = 0; ip < int(instructions.size()); ++ip) { // ip = instruction pointer
-        OpcodeType opcode = static_cast<OpcodeType>(int((*instructions[ip])[0]));
+    while (currentFrame()->ip < (int)(currentFrame()->Instructions().size() -1)) { // ip = instruction pointer
+        int& ip = currentFrame()->ip;
+		vector<Instruction *> instructions = currentFrame()->Instructions();
+		ip++;
+		OpcodeType opcode = static_cast<OpcodeType>(int((*instructions[ip])[0]));
 
         if (opcode == OpcodeType::OpConstant) {
             int constIndex = endian.byteToInt(vector<byte>(instructions[ip]->begin() + 1, instructions[ip]->begin() + 5));
@@ -82,8 +91,44 @@ void VirtualMachine::run(Bytecode bytecode) {
 			if(!isTruthy(condition)){
 				ip = position - 1;
 			}
+		}
+		else if (opcode == OpcodeType::OpCall) {
+			if (CompiledFunction* function = dynamic_cast<CompiledFunction*>(stack[stackPointer - 1])){
+				Frame* frame = new Frame(function, stackPointer);
+				pushFrame(frame);
+				stackPointer = frame->basePointer + function->numLocals;
+			}
+			else {
+				// throw(, "Calling non-function");
+				return;
+			}
+		}
+		else if (opcode == OpcodeType::OpReturnValue) {
+			auto returnValue = pop();
 
+			auto frame = popFrame(); // pop function frame
+			stackPointer = frame->basePointer - 1;
 
+			push(returnValue);
+		}
+		else if (opcode == OpcodeType::OpReturn) {
+			auto frame = popFrame();
+			stackPointer = frame->basePointer - 1;
+		}
+		else if (opcode == OpcodeType::OpSetLocal) {
+			int localIndex = endian.byteToInt(vector<byte>(instructions[ip]->begin() + 1, instructions[ip]->begin() + 5));
+			auto frame = currentFrame();
+			frame->ip++;
+
+			stack[frame->basePointer + localIndex] = pop();
+
+		}
+		else if (opcode == OpcodeType::OpGetLocal) {
+			int localIndex = endian.byteToInt(vector<byte>(instructions[ip]->begin() + 1, instructions[ip]->begin() + 5));
+			auto frame = currentFrame();
+			frame->ip++;
+
+			push(stack[frame->basePointer + localIndex]);
 		}
     }
 }
@@ -270,3 +315,25 @@ bool VirtualMachine::isTruthy(Object *obj) {
 	}
 }
 
+Frame *VirtualMachine::currentFrame() {
+	return frames[frameIndex - 1];
+}
+
+void VirtualMachine::pushFrame(Frame *frame) {
+	frames[frameIndex++] = frame;
+}
+
+Frame *VirtualMachine::popFrame() {
+	frameIndex--;
+	return frames[frameIndex];
+}
+
+vector<Instruction *> Frame::Instructions() {
+	return function->instructions;
+}
+
+Frame::Frame(CompiledFunction *fn, int basePointer) {
+	this->function = fn;
+	this->basePointer = basePointer;
+	this->ip = -1;
+}

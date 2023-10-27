@@ -3,9 +3,9 @@
 int main() {
     Repl repl;
 //    repl.lexerTest();
-    repl.parserTest();
+//    repl.parserTest();
 //    repl.runWithEvaluator();
-//    repl.runWithVM();
+    repl.runWithVM();
 
     return 0;
 }

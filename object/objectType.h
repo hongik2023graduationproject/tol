@@ -9,6 +9,7 @@ enum class ObjectType {
     BOOLEAN,
     RETURN_VALUE,
     ARRAY,
+	COMPILED_FUNCTION
 };
 
 

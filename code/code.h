@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "../endian/endian.h"
+#include "../object/object.h"
 
 using namespace std;
 
@@ -85,8 +86,23 @@ public:
 
 	};
 
-    string decodeInstruction(Instruction inst) {
-        return findDefinition(static_cast<OpcodeType>(inst[0])).name;
+    void decodeInstruction(vector<Instruction*> instructions, vector<Object*> constants) {
+        for (int i = 0; i < (int)instructions.size(); ++i) {
+            Instruction* instruction = instructions[i];
+            Definition def = findDefinition(static_cast<OpcodeType>((*instruction)[0]));
+
+            string s = to_string(i) + ": " + def.name;
+            for (int i = 0; i < (int) def.operandWidths.size(); ++i) {
+                int operand = endian.byteToInt(vector<byte>(instruction->begin() + 1, instruction->begin() + 1 + def.operandWidths[i]));
+
+                if (def.name == "OpConstant")
+                    s += " " + constants[operand]->print();
+                else
+                    s += " " + to_string(operand);
+            }
+
+            cout << s << endl;
+        }
     }
 };
 

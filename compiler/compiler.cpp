@@ -18,7 +18,7 @@ Bytecode Compiler::run(Node* node) {
 
 void Compiler::compile(Node *node) {
     if (Program* program = dynamic_cast<Program*>(node)) {
-        for (auto statement : program->statements) {
+        for (Statement* statement : program->statements) {
             compile(statement);
         }
     }
@@ -82,8 +82,7 @@ void Compiler::compile(Node *node) {
         }
     }
     else if (StringLiteral* stringLiteral = dynamic_cast<StringLiteral*>(node)) {
-        String* str = new String;
-        str->value = stringLiteral->value;
+        String* str = new String(stringLiteral->value);
         emit(OpcodeType::OpConstant, vector<int>{addConstant(str)});
     }
     else if (LetStatement* letStatement = dynamic_cast<LetStatement*>(node)) {
@@ -115,20 +114,20 @@ void Compiler::compile(Node *node) {
 			emit(OpcodeType::OpSetLocal, vector<int>{symbol.index});
 		}
 	}
-	else if (IfStatement* ifExpression = dynamic_cast<IfStatement*>(node)) {
-		compile(ifExpression->condition);
+	else if (IfStatement* ifStatement = dynamic_cast<IfStatement*>(node)) {
+		compile(ifStatement->condition);
 
 		// OpJumpNotTruthy 명령어에 쓰레깃값 9999 널어서 배출
 		int jumpNotTruthyPos = emit(OpcodeType::OpJumpNotTruthy, vector<int>{9999});
 
-		compile(ifExpression->consequence);
+		compile(ifStatement->consequence);
 		int jumpPos = emit(OpcodeType::OpJump, vector<int>{9999});
 		int afterConsequencePos = currentInstructions().size();
 		changeOperand(jumpNotTruthyPos, afterConsequencePos);
 
-		if(ifExpression->alternative != nullptr){
+		if(ifStatement->alternative != nullptr){
 
-			compile(ifExpression->alternative);
+			compile(ifStatement->alternative);
 
 			afterConsequencePos = currentInstructions().size();
 		}

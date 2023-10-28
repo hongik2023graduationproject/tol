@@ -43,9 +43,7 @@ void Repl::compilerTest() {
     Program* program = parser.run(tokens);
     Bytecode byte = compiler.run(program);
 
-    for (auto it : byte.instructions) {
-        cout << compiler.code.decodeInstruction(it[0]) << endl;
-    }
+    compiler.code.decodeInstruction(byte.instructions, byte.constants);
 }
 
 string Repl::readInputFile() {

@@ -25,7 +25,6 @@
 #include "symbolTable.h"
 using namespace std;
 
-// 컴파일러가 만들어낸 Instructions와 컴파일러가 평가한 Constants를 담는다.
 class Bytecode {
 public:
     vector<Instruction*> instructions;

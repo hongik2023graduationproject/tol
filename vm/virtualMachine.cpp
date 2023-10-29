@@ -81,15 +81,9 @@ void VirtualMachine::run(Bytecode bytecode) {
 			}
 		}
 		else if (opcode == OpcodeType::OpCall) {
-			if (CompiledFunction* function = dynamic_cast<CompiledFunction*>(stack[stackPointer - 1])){
-				Frame* frame = new Frame(function, stackPointer);
-				pushFrame(frame);
-				stackPointer = frame->basePointer + function->numLocals;
-			}
-			else {
-				// throw(, "Calling non-function");
-				return;
-			}
+			int numArgs = endian.byteToInt(vector<byte>(instructions[ip]->begin() + 1, instructions[ip]->begin() + 5));
+
+			callFunction(numArgs);
 		}
 		else if (opcode == OpcodeType::OpReturnValue) {
 			auto returnValue = pop();
@@ -314,6 +308,27 @@ void VirtualMachine::pushFrame(Frame *frame) {
 Frame *VirtualMachine::popFrame() {
 	frameIndex--;
 	return frames[frameIndex];
+}
+
+void VirtualMachine::callFunction(int numArgs){
+	if (CompiledFunction* function = dynamic_cast<CompiledFunction*>(stack[stackPointer - 1 - numArgs])){
+
+		if(numArgs != function->numParameters){
+			// 인수 개수 오류
+			throw(("인수의 개수가 맞지 않습니다. 매개변수 : "
+				+ to_string(function->numParameters) + ", 인수 : " + to_string(numArgs)));
+		}
+
+		Frame* frame = new Frame(function, stackPointer - numArgs);
+		pushFrame(frame);
+		stackPointer = frame->basePointer + function->numLocals;
+
+		return;
+	}
+	else {
+		// 함수 호출 오류
+		throw(invalid_argument("함수가 아닌 것을 호출했습니다."));
+	}
 }
 
 vector<Instruction *> Frame::Instructions() {

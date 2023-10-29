@@ -179,6 +179,10 @@ void Compiler::compile(Node *node) {
 	else if (FunctionLiteral* functionLiteral = dynamic_cast<FunctionLiteral*>(node)) {
 		enterScope();
 
+		for(auto parameter : functionLiteral->parameters){
+			symbolTable->Define(parameter->name);
+		}
+
 		compile(functionLiteral->blockStatement);
 
 		if(!lastInstructionIs(OpcodeType::OpReturnValue)) {
@@ -190,6 +194,7 @@ void Compiler::compile(Node *node) {
 		CompiledFunction * compiledFn = new CompiledFunction; // 생성자가 안먹히는 이유는?
 		compiledFn->instructions = instructions;
 		compiledFn->numLocals = numLocals;
+		compiledFn->numParameters = functionLiteral->parameters.size();
 
 		// 함수 리터럴을 배출
 		emit(OpcodeType::OpConstant, vector<int>{addConstant(compiledFn)});
@@ -210,7 +215,11 @@ void Compiler::compile(Node *node) {
 	else if (FunctionExpression* functionExpression = dynamic_cast<FunctionExpression*>(node)) {
 		compile(functionExpression->function);
 
-		emit(OpcodeType::OpCall);
+		for(auto arg : functionExpression->arguments){
+			compile(arg);
+		}
+
+		emit(OpcodeType::OpCall, vector<int>{static_cast<int>(functionExpression->arguments.size())});
 	}
 }
 

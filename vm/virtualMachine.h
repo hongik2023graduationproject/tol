@@ -69,6 +69,8 @@ private:
 	Frame* currentFrame();
 	void pushFrame(Frame* frame);
 	Frame* popFrame();
+
+	void callFunction(int numArgs);
 };
 
 

@@ -1,13 +1,13 @@
 #include "code.h"
 
 void Code::applyOperand(Instruction* instruction, int offset, int size, vector<byte> operand) {
-    for (int point = 0; point < size; ++point)
+    for (int point = 0; point < size; ++point) {
         (*instruction)[point + offset] = operand[point];
+    }
 }
 
 
 Instruction* Code::makeInstruction(OpcodeType opType, const vector<int>& operands) {
-    Endian endian{};
     Definition definition = findDefinition(opType); // throw
 
     int instructionLength = 1;

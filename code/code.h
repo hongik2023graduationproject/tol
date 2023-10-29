@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "../endian/endian.h"
+#include "../object/object.h"
 
 using namespace std;
 
@@ -51,6 +52,8 @@ public:
 
 class Code {
 public:
+    Endian endian;
+
     static void applyOperand(Instruction* instruction, int offset, int size, vector<byte> operand);
     Instruction* makeInstruction(OpcodeType opType, const vector<int>& operands);
     Definition findDefinition(OpcodeType opType);
@@ -75,15 +78,32 @@ public:
             {OpcodeType::OpJump, Definition{"OpJump", vector<int>{4}}},
             {OpcodeType::OpArray, Definition{"OpArray", vector<int>{2}}}, // 배열의 최대 크기 65535
             {OpcodeType::OpIndex, Definition{"OpIndex", vector<int>{}}},
-			{OpcodeType::OpCall, Definition{"OpCall", vector<int>{}}},
+			{OpcodeType::OpCall, Definition{"OpCall", vector<int>{1}}},
 			{OpcodeType::OpReturnValue, Definition{"OpReturnValue", vector<int>{}}},
 			{OpcodeType::OpReturn, Definition{"OpReturn", vector<int>{}}},
 			{OpcodeType::OpSetLocal, Definition{"OpSetLocal", vector<int>{1}}},
 			{OpcodeType::OpGetLocal, Definition{"OpGetLocal", vector<int>{1}}},
 
-
-
 	};
+
+    void decodeInstruction(vector<Instruction*> instructions, vector<Object*> constants) {
+        for (int i = 0; i < (int)instructions.size(); ++i) {
+            Instruction* instruction = instructions[i];
+            Definition def = findDefinition(static_cast<OpcodeType>((*instruction)[0]));
+
+            string s = to_string(i) + ": " + def.name;
+            for (int i = 0; i < (int) def.operandWidths.size(); ++i) {
+                int operand = endian.byteToInt(vector<byte>(instruction->begin() + 1, instruction->begin() + 1 + def.operandWidths[i]));
+
+                if (def.name == "OpConstant")
+                    s += " " + constants[operand]->print();
+                else
+                    s += " " + to_string(operand);
+            }
+
+            cout << s << endl;
+        }
+    }
 };
 
 

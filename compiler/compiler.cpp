@@ -1,8 +1,7 @@
 #include "compiler.h"
 
 Bytecode Compiler::run(Node* node) {
-    // Compiler init <- 여기에 적는 것이 맞을까?
-	CompilationScope * mainScope = new CompilationScope;
+	CompilationScope* mainScope = new CompilationScope;
 	symbolTable = new SymbolTable;
 	scopes.push_back(mainScope);
 	scopeIndex = 0;
@@ -19,7 +18,7 @@ Bytecode Compiler::run(Node* node) {
 
 void Compiler::compile(Node *node) {
     if (Program* program = dynamic_cast<Program*>(node)) {
-        for (auto statement : program->statements) {
+        for (Statement* statement : program->statements) {
             compile(statement);
         }
     }
@@ -71,8 +70,7 @@ void Compiler::compile(Node *node) {
         }
     }
     else if (IntegerLiteral* integerLiteral = dynamic_cast<IntegerLiteral*>(node)) {
-         Integer* integer  = new Integer;
-         integer->value = integerLiteral->value;
+         Integer* integer  = new Integer(integerLiteral->value);
          emit(OpcodeType::OpConstant, vector<int>{addConstant(integer)});
     }
     else if (BooleanLiteral* booleanLiteral = dynamic_cast<BooleanLiteral*>(node)) {
@@ -84,8 +82,7 @@ void Compiler::compile(Node *node) {
         }
     }
     else if (StringLiteral* stringLiteral = dynamic_cast<StringLiteral*>(node)) {
-        String* str = new String;
-        str->value = stringLiteral->value;
+        String* str = new String(stringLiteral->value);
         emit(OpcodeType::OpConstant, vector<int>{addConstant(str)});
     }
     else if (LetStatement* letStatement = dynamic_cast<LetStatement*>(node)) {
@@ -117,20 +114,20 @@ void Compiler::compile(Node *node) {
 			emit(OpcodeType::OpSetLocal, vector<int>{symbol.index});
 		}
 	}
-	else if (IfStatement* ifExpression = dynamic_cast<IfStatement*>(node)) {
-		compile(ifExpression->condition);
+	else if (IfStatement* ifStatement = dynamic_cast<IfStatement*>(node)) {
+		compile(ifStatement->condition);
 
 		// OpJumpNotTruthy 명령어에 쓰레깃값 9999 널어서 배출
 		int jumpNotTruthyPos = emit(OpcodeType::OpJumpNotTruthy, vector<int>{9999});
 
-		compile(ifExpression->consequence);
+		compile(ifStatement->consequence);
 		int jumpPos = emit(OpcodeType::OpJump, vector<int>{9999});
 		int afterConsequencePos = currentInstructions().size();
 		changeOperand(jumpNotTruthyPos, afterConsequencePos);
 
-		if(ifExpression->alternative != nullptr){
+		if(ifStatement->alternative != nullptr){
 
-			compile(ifExpression->alternative);
+			compile(ifStatement->alternative);
 
 			afterConsequencePos = currentInstructions().size();
 		}
@@ -182,6 +179,10 @@ void Compiler::compile(Node *node) {
 	else if (FunctionLiteral* functionLiteral = dynamic_cast<FunctionLiteral*>(node)) {
 		enterScope();
 
+		for(auto parameter : functionLiteral->parameters){
+			symbolTable->Define(parameter->name);
+		}
+
 		compile(functionLiteral->blockStatement);
 
 		if(!lastInstructionIs(OpcodeType::OpReturnValue)) {
@@ -193,6 +194,7 @@ void Compiler::compile(Node *node) {
 		CompiledFunction * compiledFn = new CompiledFunction; // 생성자가 안먹히는 이유는?
 		compiledFn->instructions = instructions;
 		compiledFn->numLocals = numLocals;
+		compiledFn->numParameters = functionLiteral->parameters.size();
 
 		// 함수 리터럴을 배출
 		emit(OpcodeType::OpConstant, vector<int>{addConstant(compiledFn)});
@@ -213,13 +215,14 @@ void Compiler::compile(Node *node) {
 	else if (FunctionExpression* functionExpression = dynamic_cast<FunctionExpression*>(node)) {
 		compile(functionExpression->function);
 
-		emit(OpcodeType::OpCall);
+		for(auto arg : functionExpression->arguments){
+			compile(arg);
+		}
+
+		emit(OpcodeType::OpCall, vector<int>{static_cast<int>(functionExpression->arguments.size())});
 	}
 }
 
-Bytecode Compiler::ReturnBytecode() {
-    return Bytecode{currentInstructions(), constants};
-}
 
 int Compiler::addConstant(Object* object) {
     constants.push_back(object);

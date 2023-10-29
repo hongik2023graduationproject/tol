@@ -22,7 +22,6 @@ public:
 
 class VirtualMachine {
 public:
-    void testIntegerObject(long long expected, Object* object);
     void run(Bytecode bytecode);
 
 
@@ -42,7 +41,7 @@ private:
 //    vector<Instruction*> instructions;
     vector<Object*> globals;
 
-    // boolean 상수화 (const가 안되네..)
+    // boolean 상수화
     Boolean* TRUE = new Boolean{true};
     Boolean* FALSE = new Boolean{false};
 
@@ -70,6 +69,8 @@ private:
 	Frame* currentFrame();
 	void pushFrame(Frame* frame);
 	Frame* popFrame();
+
+	void callFunction(int numArgs);
 };
 
 

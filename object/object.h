@@ -97,6 +97,7 @@ class CompiledFunction : public Object {
 public:
 	vector<vector<byte> *> instructions;
 	int numLocals; // count of local variables
+	int numParameters; // count of parameters
 
 	CompiledFunction() {type = ObjectType::COMPILED_FUNCTION;};
 	CompiledFunction(vector<vector<byte> *> instructions) : instructions(instructions)

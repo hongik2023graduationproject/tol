@@ -16,6 +16,7 @@ public:
     void runWithVM();
     void parserTest();
     void lexerTest();
+    void compilerTest();
 private:
     Lexer lexer;
     Parser parser;

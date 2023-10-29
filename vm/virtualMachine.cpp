@@ -65,7 +65,6 @@ void VirtualMachine::run(Bytecode bytecode) {
         else if (opcode == OpcodeType::OpIndex) {
             Object* index = pop();
             Object* left  = pop();
-
             executeIndexExpression(left, index);
         }
 		else if (opcode == OpcodeType::OpJump) {
@@ -266,7 +265,8 @@ void VirtualMachine::executeMinusOperator() {
 
 
 Object* VirtualMachine::buildArray(int startIndex, int endIndex) {
-    vector<Object*> elements(endIndex - startIndex);
+    int numElements = endIndex - startIndex;
+    vector<Object*> elements(numElements);
 
     for (int i = startIndex; i < endIndex; ++i) {
         elements[i - startIndex] = stack[i];
@@ -277,15 +277,15 @@ Object* VirtualMachine::buildArray(int startIndex, int endIndex) {
 
 void VirtualMachine::executeIndexExpression(Object *left, Object *index) {
     if (left->type == ObjectType::ARRAY && index->type == ObjectType::INTEGER) {
-        return executeArrayIndex(static_cast<Array*>(left), static_cast<Integer*>(index));
+        return executeArrayIndex(dynamic_cast<Array*>(left), dynamic_cast<Integer*>(index));
     }
     else {
-        throw invalid_argument("");
+        throw invalid_argument("index operator not supported");
     }
 }
 
 void VirtualMachine::executeArrayIndex(Array* left, Integer* index) {
-    int m = left->elements.size() - 1;
+    int m = (int)left->elements.size() - 1;
     long long i = index->value;
     if (i < 0 || m < i) {
         throw invalid_argument("");

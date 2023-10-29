@@ -23,8 +23,8 @@ class SymbolTable {
 public:
 	SymbolTable* outer{nullptr};
 
-    Symbol Define(string name);
-    Symbol Resolve(string name);
+    Symbol Define(const string& name);
+    Symbol Resolve(const string& name);
 	static SymbolTable* NewEnclosedSymbolTable(SymbolTable* outer);
 
     map<string, Symbol> store;

@@ -31,6 +31,7 @@ public:
     vector<Object*> constants;
 };
 
+// 10.28 김성민: if문이 statement인데 이게 필요한가..?
 class EmittedInstruction{
 public:
 	OpcodeType opcode;
@@ -41,10 +42,16 @@ public:
 class CompilationScope {
 public:
 	vector<Instruction*> instructions;
-	EmittedInstruction* lastInstruction, * previousInstruction;
-
+	EmittedInstruction* lastInstruction;
+    EmittedInstruction* previousInstruction;
 };
 
+
+/*  NOTE
+ *  AST를 한 번만 순회할 필요는 없다.
+ *  조사 처리할 때 한 번 고려해보자.
+ *
+ */
 class Compiler {
 public:
     Bytecode run(Node* node);

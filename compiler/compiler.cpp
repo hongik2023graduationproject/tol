@@ -85,6 +85,13 @@ void Compiler::compile(Node *node) {
         String* str = new String(stringLiteral->value);
         emit(OpcodeType::OpConstant, vector<int>{addConstant(str)});
     }
+    else if (ArrayLiteral* arrayLiteral = dynamic_cast<ArrayLiteral*>(node)) {
+        for (auto element : arrayLiteral->elements) {
+            compile(element); // 타입 통일하려면 여기서 에러 띄워야 할 듯
+        }
+
+        emit(OpcodeType::OpArray, vector<int>{(int)arrayLiteral->elements.size()});
+    }
     else if (LetStatement* letStatement = dynamic_cast<LetStatement*>(node)) {
         compile(letStatement->expression);
         Symbol symbol = symbolTable->Define(letStatement->name->name);
@@ -114,22 +121,19 @@ void Compiler::compile(Node *node) {
 			emit(OpcodeType::OpSetLocal, vector<int>{symbol.index});
 		}
 	}
-	else if (IfStatement* ifStatement = dynamic_cast<IfStatement*>(node)) {
-		compile(ifStatement->condition);
+	else if (IfStatement* ifStatement = dynamic_cast<IfStatement*>(node)) { // 이거 최적화 해야 함 JUMP 명령어가 무조건 나오는 건 문제가 있음
+ 		compile(ifStatement->condition);
 
-		// OpJumpNotTruthy 명령어에 쓰레깃값 9999 널어서 배출
-		int jumpNotTruthyPos = emit(OpcodeType::OpJumpNotTruthy, vector<int>{9999});
-
+		int jumpNotTruthyPos = emit(OpcodeType::OpJumpNotTruthy, vector<int>{9999}); // back-patching
 		compile(ifStatement->consequence);
-		int jumpPos = emit(OpcodeType::OpJump, vector<int>{9999});
-		int afterConsequencePos = currentInstructions().size();
+		int jumpPos = emit(OpcodeType::OpJump, vector<int>{9999}); // back-patching
+
+		int afterConsequencePos = (int)currentInstructions().size();
 		changeOperand(jumpNotTruthyPos, afterConsequencePos);
 
 		if(ifStatement->alternative != nullptr){
-
 			compile(ifStatement->alternative);
-
-			afterConsequencePos = currentInstructions().size();
+			afterConsequencePos = (int)currentInstructions().size();
 		}
 		changeOperand(jumpPos, afterConsequencePos);
 	}
@@ -162,18 +166,9 @@ void Compiler::compile(Node *node) {
 		int afterLoopPos = currentInstructions().size();
 		changeOperand(jumpNotTruthyPos, afterLoopPos);
 	}
-    else if (ArrayLiteral* arrayLiteral = dynamic_cast<ArrayLiteral*>(node)) {
-        for (auto element : arrayLiteral->elements) {
-            compile(element);
-        }
-
-        emit(OpcodeType::OpArray, vector<int>{(int)arrayLiteral->elements.size()});
-    }
     else if (IndexExpression* indexExpression = dynamic_cast<IndexExpression*>(node)) {
         compile(indexExpression->left);
-
         compile(indexExpression->index);
-
         emit(OpcodeType::OpIndex);
     }
 	else if (FunctionLiteral* functionLiteral = dynamic_cast<FunctionLiteral*>(node)) {
@@ -224,8 +219,7 @@ int Compiler::addConstant(Object* object) {
 int Compiler::emit(OpcodeType opcode, vector<int> operands) {
     Instruction* instruction = code.makeInstruction(opcode, operands);
     int pos = addInstruction(instruction);
-
-	setLastInstruction(opcode, pos);
+    setLastInstruction(opcode, pos);
 
     return pos;
 }
@@ -238,16 +232,13 @@ int Compiler::addInstruction(Instruction* instruction) {
 }
 
 void Compiler::setLastInstruction(OpcodeType opcode, int position) {
-	EmittedInstruction* previous = scopes[scopeIndex]->lastInstruction;
-	EmittedInstruction* last = new EmittedInstruction{opcode, position};
-
-	delete scopes[scopeIndex]->previousInstruction;
-	scopes[scopeIndex]->previousInstruction = previous;
-	scopes[scopeIndex]->lastInstruction = last;
+    delete scopes[scopeIndex]->previousInstruction;
+    scopes[scopeIndex]->previousInstruction = scopes[scopeIndex]->lastInstruction;
+    scopes[scopeIndex]->lastInstruction = new EmittedInstruction{opcode, position};
 }
 
 bool Compiler::lastInstructionIs(OpcodeType opcode) {
-	if(currentInstructions().size() == 0){
+	if(currentInstructions().empty()){
 		return false;
 	}
 
@@ -258,8 +249,9 @@ void Compiler::removeLastInstruction() {
 	// instructions.pop_back(); // remove last instruction(OpPop)
 }
 
-void Compiler::replaceInstruction(int position, Instruction *newInstruction) {
-	currentInstructions().at(position) = newInstruction;
+void Compiler::replaceInstruction(int position, Instruction* newInstruction) {
+    vector<Instruction*> instructions = currentInstructions();
+	instructions.at(position) = newInstruction; // 기존 명령어 삭제 필요
 }
 
 void Compiler::changeOperand(int opPos, int operand) {
@@ -281,7 +273,7 @@ void Compiler::enterScope() {
 	symbolTable = SymbolTable::NewEnclosedSymbolTable(symbolTable);
 }
 
-vector<Instruction *> Compiler::leaveScope() {
+vector<Instruction*> Compiler::leaveScope() {
 	auto instructions = currentInstructions();
 	scopes.pop_back();
 	scopeIndex--;

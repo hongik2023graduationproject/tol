@@ -1,7 +1,7 @@
 #include "symbolTable.h"
 
 
-Symbol SymbolTable::Define(std::string name) {
+Symbol SymbolTable::Define(const std::string& name) {
     Symbol symbol;
     symbol.name = name;
     symbol.index = numberDefinitions;
@@ -12,7 +12,7 @@ Symbol SymbolTable::Define(std::string name) {
     return symbol;
 }
 
-Symbol SymbolTable::Resolve(std::string name) {
+Symbol SymbolTable::Resolve(const std::string& name) {
     if (store.find(name) == store.end()) {
 		if (outer != nullptr){
 			return outer->Resolve(name);

@@ -1,13 +1,13 @@
 
-#ifndef TOLELOM_FUNCTIONLITERAL_H
-#define TOLELOM_FUNCTIONLITERAL_H
+#ifndef TOLELOM_FUNCTIONSTATEMENT_H
+#define TOLELOM_FUNCTIONSTATEMENT_H
 
 #include <vector>
-#include "literal.h"
+#include "../literals/literal.h"
 #include "../expressions/identifierExpression.h"
-#include "../statements/blockStatement.h"
+#include "blockStatement.h"
 
-class FunctionLiteral : public Literal {
+class FunctionStatement : public Statement {
 public:
     Token* token{};
     vector<IdentifierExpression*> parameters;
@@ -30,4 +30,4 @@ public:
 };
 
 
-#endif //TOLELOM_FUNCTIONLITERAL_H
+#endif //TOLELOM_FUNCTIONSTATEMENT_H

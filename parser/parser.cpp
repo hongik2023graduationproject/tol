@@ -75,6 +75,9 @@ Statement* Parser::parseStatement() {
     else if (currentToken->tokenType == TokenType::CLASS) {
         return parseClassStatement();
     }
+    else if (currentToken->tokenType == TokenType::FUNCTION) {
+        return parseFunctionStatement();
+    }
     else {
         return parseExpressionStatement();
     }
@@ -470,24 +473,24 @@ vector<IdentifierExpression*> Parser::parseFunctionParameters() {
     return identifiers;
 }
 
-Expression* Parser::parseFunctionLiteral() {
-    FunctionLiteral* functionLiteral = new FunctionLiteral;
+FunctionStatement* Parser::parseFunctionStatement() {
+    FunctionStatement* functionStatement = new FunctionStatement;
 
     if (currentToken->tokenType != TokenType::FUNCTION) {
-        throw invalid_argument("parseFunctionLiteral: FUNCTION이 아닙니다.");
+        throw invalid_argument("parseFunctionStatement: FUNCTION이 아닙니다.");
     }
-    functionLiteral->token = currentToken;
+    functionStatement->token = currentToken;
     setNextToken();
 
     skipToken(TokenType::COLON);
     skipToken(TokenType::SPACE);
 
     if (nextToken->tokenType != TokenType::DOT) {
-        functionLiteral->parameters = parseFunctionParameters();
+        functionStatement->parameters = parseFunctionParameters();
         skipToken(TokenType::SPACE);
     }
 
-    functionLiteral->name = dynamic_cast<IdentifierExpression *>(parseIdentifierExpression());
+    functionStatement->name = dynamic_cast<IdentifierExpression *>(parseIdentifierExpression());
     skipToken(TokenType::IDENTIFIER);
     skipToken(TokenType::DOT);
     skipToken(TokenType::SPACE);
@@ -499,16 +502,16 @@ Expression* Parser::parseFunctionLiteral() {
     // 리턴 타입이 없는 경우도 생각할 것
     if (currentToken->tokenType != TokenType::RBRACKET) {
         if (currentToken->tokenType != TokenType::INT && currentToken->tokenType != TokenType::STR) {
-            throw invalid_argument("parseFunctionLiteral: 리턴 타입이 잘못되었습니다.");
+            throw invalid_argument("parseFunctionStatement: 리턴 타입이 잘못되었습니다.");
         }
-        functionLiteral->returnType = currentToken;
+        functionStatement->returnType = currentToken;
         setNextToken();
     }
 
     skipToken(TokenType::RBRACKET);
     skipToken(TokenType::NEW_LINE);
 
-    functionLiteral->blockStatement = parseBlockStatement();
+    functionStatement->blockStatement = parseBlockStatement();
 
-    return functionLiteral;
+    return functionStatement;
 }

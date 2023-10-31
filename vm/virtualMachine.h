@@ -15,7 +15,7 @@ public:
 	int basePointer; // frame point
 
 	vector<Instruction*> Instructions();
-	Frame() = default;
+//	Frame() = default;
 	Frame(CompiledFunction* fn, int basePointer);
 };
 
@@ -46,6 +46,8 @@ private:
     Boolean* FALSE = new Boolean{false};
 
     Endian endian;
+
+    void init(Bytecode& bytecode);
 
     Object* stackTop();
     void push(Object* object);

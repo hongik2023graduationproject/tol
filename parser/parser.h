@@ -28,7 +28,7 @@
 #include "../ast/literals/integerLiteral.h"
 #include "../ast/literals/stringLiteral.h"
 #include "../ast/literals/booleanLiteral.h"
-#include "../ast/literals/functionLiteral.h"
+#include "../ast/statements/functionStatement.h"
 #include "../ast/literals/arrayLiteral.h"
 
 enum class Precedence;
@@ -57,7 +57,6 @@ private:
             {TokenType::TRUE, &Parser::parseBooleanLiteral},
             {TokenType::FALSE, &Parser::parseBooleanLiteral},
             {TokenType::LPAREN, &Parser::parseGroupedExpression},
-            {TokenType::FUNCTION, &Parser::parseFunctionLiteral},
             {TokenType::LBRACE, &Parser::parseArrayLiteral},
             {TokenType::COLON, &Parser::parseFunctionExpression},
     };
@@ -104,6 +103,7 @@ private:
 	IfStatement* parseIfStatement();
 	LoopStatement* parseLoopStatement();
     ClassStatement* parseClassStatement();
+    FunctionStatement* parseFunctionStatement();
 
 	Expression* parseIdentifierExpression();
     Expression* parseExpression(Precedence precedence);
@@ -116,7 +116,6 @@ private:
 
     Expression* parseIntegerLiteral();
     Expression* parseBooleanLiteral();
-    Expression* parseFunctionLiteral();
     Expression* parseStringLiteral();
     Expression* parseArrayLiteral();
 

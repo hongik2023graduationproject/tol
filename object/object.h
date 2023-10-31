@@ -5,7 +5,6 @@
 
 #include "objectType.h"
 
-
 class Object;
 
 using BuiltinFunction = Object* (*)(vector<Object*> args);
@@ -95,12 +94,12 @@ public:
 
 class CompiledFunction : public Object {
 public:
-	vector<vector<byte> *> instructions;
+	vector<vector<byte>*> instructions;
 	int numLocals; // count of local variables
 	int numParameters; // count of parameters
 
 	CompiledFunction() {type = ObjectType::COMPILED_FUNCTION;};
-	CompiledFunction(vector<vector<byte> *> instructions) : instructions(instructions)
+	CompiledFunction(vector<vector<byte>*> instructions) : instructions(std::move(instructions))
 		{type = ObjectType::COMPILED_FUNCTION;};
 
 	string print() {

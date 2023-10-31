@@ -17,7 +17,7 @@
 #include "../ast/literals/booleanLiteral.h"
 #include "../ast/literals/stringLiteral.h"
 #include "../ast/literals/arrayLiteral.h"
-#include "../ast/literals/functionLiteral.h"
+#include "../ast/statements/functionStatement.h"
 #include "../ast/statements/ifStatement.h"
 #include "../ast/statements/loopStatement.h"
 #include "../ast/statements/returnStatement.h"
@@ -42,8 +42,8 @@ public:
 class CompilationScope {
 public:
 	vector<Instruction*> instructions;
-	EmittedInstruction* lastInstruction;
-    EmittedInstruction* previousInstruction;
+	EmittedInstruction* lastInstruction; // 필요한가?
+    EmittedInstruction* previousInstruction; // 필요한가?
 };
 
 
@@ -57,10 +57,13 @@ public:
     Bytecode run(Node* node);
 
     Code code;
-    vector<Object*> constants;
 private:
+
+    vector<Object*> constants;
+
     SymbolTable* symbolTable;
-	vector<CompilationScope*> scopes;
+
+	vector<CompilationScope*> scopes; // vector -> stack으로 바꿔도 됨
 	int scopeIndex;
 
     void compile(Node* node);
@@ -72,6 +75,7 @@ private:
 	void removeLastInstruction();
 	void replaceInstruction(int position, Instruction* newInstruction);
 	void changeOperand(int opPos, int operand);
+
 	vector<Instruction*>& currentInstructions();
 	void enterScope();
 	vector<Instruction*> leaveScope();

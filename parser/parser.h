@@ -15,6 +15,7 @@
 #include "../ast/expressions/prefixExpression.h"
 #include "../ast/expressions/indexExpression.h"
 #include "../ast/expressions/functionExpression.h"
+#include "../ast/expressions/classExpression.h"
 
 #include "../ast/statements/ifStatement.h"
 #include "../ast/statements/loopStatement.h"
@@ -24,6 +25,7 @@
 #include "../ast/statements/expressionStatement.h"
 #include "../ast/statements/blockStatement.h"
 #include "../ast/statements/classStatement.h"
+#include "../ast/statements/classInitStatement.h"
 
 #include "../ast/literals/integerLiteral.h"
 #include "../ast/literals/stringLiteral.h"
@@ -57,7 +59,8 @@ private:
             {TokenType::TRUE, &Parser::parseBooleanLiteral},
             {TokenType::FALSE, &Parser::parseBooleanLiteral},
             {TokenType::LPAREN, &Parser::parseGroupedExpression},
-            {TokenType::LBRACE, &Parser::parseArrayLiteral},
+            {TokenType::LBRACKET, &Parser::parseArrayLiteral}, // ????
+            {TokenType::LBRACE, &Parser::parseClassExpression},
             {TokenType::COLON, &Parser::parseFunctionExpression},
     };
     std::map<TokenType, infixParseFunction> infixParseFunctions = {
@@ -68,7 +71,7 @@ private:
             {TokenType::EQUAL, &Parser::parseInfixExpression},
             {TokenType::NOT_EQUAL, &Parser::parseInfixExpression},
             {TokenType::LESS_THAN, &Parser::parseInfixExpression},
-            {TokenType::LBRACKET, &Parser::parseIndexExpression},
+            {TokenType::LBRACKET, &Parser::parseIndexExpression}, // ????
     };
     enum class Precedence {
         LOWEST,
@@ -104,6 +107,8 @@ private:
 	LoopStatement* parseLoopStatement();
     ClassStatement* parseClassStatement();
     FunctionStatement* parseFunctionStatement();
+    ClassInitStatement* parseClassInitStatement();
+
 
 	Expression* parseIdentifierExpression();
     Expression* parseExpression(Precedence precedence);
@@ -112,6 +117,7 @@ private:
     Expression* parseInfixExpression(Expression* left);
     Expression* parseIndexExpression(Expression* left);
     Expression* parseFunctionExpression();
+    Expression* parseClassExpression();
 
 
     Expression* parseIntegerLiteral();

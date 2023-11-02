@@ -272,7 +272,20 @@ ClassStatement* Parser::parseClassStatement() {
     return classStatement;
 }
 
+ClassInitStatement* Parser::parseClassInitStatement() {
+    ClassInitStatement* classInitStatement = new ClassInitStatement;
+    classInitStatement->token = currentToken;
 
+    skipToken(TokenType::DOT);
+    classInitStatement->name = dynamic_cast<IdentifierExpression*>(parseIdentifierExpression());
+    skipToken(TokenType::IDENTIFIER);
+    skipToken(TokenType::COLON);
+    skipToken(TokenType::SPACE);
+    classInitStatement->value = parseExpression(Precedence::LOWEST);
+    setNextToken();
+
+    return classInitStatement;
+}
 
 
 
@@ -372,6 +385,25 @@ Expression* Parser::parseFunctionExpression() {
     return functionExpression;
 }
 
+Expression* Parser::parseClassExpression() {
+    ClassExpression* classExpression = new ClassExpression;
+    classExpression->token = currentToken;
+    skipToken(TokenType::LBRACE);
+    skipToken(TokenType::NEW_LINE);
+    skipToken(TokenType::STARTBLOCK);
+
+
+    while (currentToken->tokenType != TokenType::ENDBLOCK) {
+        ClassInitStatement* statement = parseClassInitStatement();
+        classExpression->statements.push_back(statement);
+        skipToken(TokenType::NEW_LINE);
+    }
+    skipToken(TokenType::ENDBLOCK);
+
+    return classExpression;
+}
+
+
 vector<Expression*> Parser::parseFunctionExpressionParameters() {
     vector<Expression*> expressions;
 
@@ -412,8 +444,8 @@ Expression* Parser::parseBooleanLiteral() {
 
 Expression* Parser::parseArrayLiteral() {
     ArrayLiteral* arrayLiteral = new ArrayLiteral;
-    arrayLiteral->token = currentToken; // "{"
-    arrayLiteral->elements = parseExpressionList(TokenType::RBRACE);
+    arrayLiteral->token = currentToken; // "["
+    arrayLiteral->elements = parseExpressionList(TokenType::RBRACKET);
 
     return arrayLiteral;
 }

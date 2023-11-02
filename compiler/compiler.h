@@ -12,7 +12,7 @@
 #include "../ast/expressions/infixExpression.h"
 #include "../ast/expressions/prefixExpression.h"
 #include "../ast/expressions/indexExpression.h"
-#include "../ast/expressions/FunctionExpression.h"
+#include "../ast/expressions/functionExpression.h"
 #include "../ast/literals/integerLiteral.h"
 #include "../ast/literals/booleanLiteral.h"
 #include "../ast/literals/stringLiteral.h"

@@ -37,7 +37,7 @@ add_executable(tolelom main.cpp
         ast/statements/blockStatement.h
         object/environment.h
         ast/expressions/functionExpression.h
-        ast/literals/functionLiteral.h
+        ast/statements/functionStatement.h
         code/code.h
         compiler/compiler.h
         compiler/compiler.cpp
@@ -54,4 +54,6 @@ add_executable(tolelom main.cpp
         ast/expressions/indexExpression.h
         ast/statements/loopStatement.h
         ast/statements/classStatement.h
+        ast/expressions/classExpression.h
+        ast/statements/classInitStatement.h
 )

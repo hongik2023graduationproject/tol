@@ -1,10 +1,11 @@
 #ifndef TOLELOM_OBJECT_H
 #define TOLELOM_OBJECT_H
 
+#include <vector>
 #include <utility>
 
 #include "objectType.h"
-
+using namespace std;
 
 class Object;
 
@@ -66,7 +67,15 @@ public:
 
 class Builtin : public Object {
 public:
+	string name;
     BuiltinFunction fn;
+
+	Builtin() {type = ObjectType::BUILTIN_FUNCTION;};
+	Builtin(string name, BuiltinFunction fn) {
+		this->name = name;
+		this->fn = fn;
+		type = ObjectType::BUILTIN_FUNCTION;
+	};
 
     string print() {
         return "builtin function";
@@ -95,12 +104,12 @@ public:
 
 class CompiledFunction : public Object {
 public:
-	vector<vector<byte> *> instructions;
+	vector<vector<byte>*> instructions;
 	int numLocals; // count of local variables
 	int numParameters; // count of parameters
 
 	CompiledFunction() {type = ObjectType::COMPILED_FUNCTION;};
-	CompiledFunction(vector<vector<byte> *> instructions) : instructions(instructions)
+	CompiledFunction(vector<vector<byte>*> instructions) : instructions(std::move(instructions))
 		{type = ObjectType::COMPILED_FUNCTION;};
 
 	string print() {

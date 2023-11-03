@@ -1,24 +1,25 @@
 #include "virtualMachine.h"
 
+void VirtualMachine::init(Bytecode& bytecode) {
+    CompiledFunction* mainFunction = new CompiledFunction(bytecode.instructions);
+    Frame* mainFrame = new Frame(mainFunction, 0);
+    constants = bytecode.constants;
+    stack.resize(StackSize);
+    stackPointer = 0;
+    globals.resize(GlobalsSize);
+    frames.resize(MaxFrames);
+    frameIndex = 0;
+    pushFrame(mainFrame);
+}
+
 
 void VirtualMachine::run(Bytecode bytecode) {
-    // init
-
-	CompiledFunction* mainFunction = new CompiledFunction;// (instructions); // 왜 생성자가 안먹히지?
-	mainFunction->instructions = bytecode.instructions;
-	Frame* mainFrame = new Frame(mainFunction, 0);
-	constants = bytecode.constants;
-    stack.resize(StackSize);
-    globals.resize(GlobalsSize);
-	frames.resize(MaxFrames);
-    stackPointer = 0;
-	frameIndex = 0;
-	pushFrame(mainFrame);
+    init(bytecode);
 
     while (currentFrame()->ip < (int)(currentFrame()->Instructions().size() -1)) { // ip = instruction pointer
         int& ip = currentFrame()->ip;
-		vector<Instruction *> instructions = currentFrame()->Instructions();
-		ip++;
+        ip++;
+		vector<Instruction*> instructions = currentFrame()->Instructions();
 		OpcodeType opcode = static_cast<OpcodeType>(int((*instructions[ip])[0]));
 
         if (opcode == OpcodeType::OpConstant) {
@@ -65,7 +66,6 @@ void VirtualMachine::run(Bytecode bytecode) {
         else if (opcode == OpcodeType::OpIndex) {
             Object* index = pop();
             Object* left  = pop();
-
             executeIndexExpression(left, index);
         }
 		else if (opcode == OpcodeType::OpJump) {
@@ -83,7 +83,7 @@ void VirtualMachine::run(Bytecode bytecode) {
 		else if (opcode == OpcodeType::OpCall) {
 			int numArgs = endian.byteToInt(vector<byte>(instructions[ip]->begin() + 1, instructions[ip]->begin() + 5));
 
-			callFunction(numArgs);
+			executeCall(numArgs);
 		}
 		else if (opcode == OpcodeType::OpReturnValue) {
 			auto returnValue = pop();
@@ -103,7 +103,6 @@ void VirtualMachine::run(Bytecode bytecode) {
 			frame->ip++;
 
 			stack[frame->basePointer + localIndex] = pop();
-
 		}
 		else if (opcode == OpcodeType::OpGetLocal) {
 			int localIndex = endian.byteToInt(vector<byte>(instructions[ip]->begin() + 1, instructions[ip]->begin() + 5));
@@ -111,6 +110,13 @@ void VirtualMachine::run(Bytecode bytecode) {
 			frame->ip++;
 
 			push(stack[frame->basePointer + localIndex]);
+		}
+		else if (opcode == OpcodeType::OpGetBuiltin) {
+			int builtinIndex = endian.byteToInt(vector<byte>(instructions[ip]->begin() + 1, instructions[ip]->begin() + 5));
+
+			Builtin* definition = &(builtins.builtinList[builtinIndex]);
+
+			push(definition);
 		}
     }
 }
@@ -260,7 +266,8 @@ void VirtualMachine::executeMinusOperator() {
 
 
 Object* VirtualMachine::buildArray(int startIndex, int endIndex) {
-    vector<Object*> elements(endIndex - startIndex);
+    int numElements = endIndex - startIndex;
+    vector<Object*> elements(numElements);
 
     for (int i = startIndex; i < endIndex; ++i) {
         elements[i - startIndex] = stack[i];
@@ -271,15 +278,15 @@ Object* VirtualMachine::buildArray(int startIndex, int endIndex) {
 
 void VirtualMachine::executeIndexExpression(Object *left, Object *index) {
     if (left->type == ObjectType::ARRAY && index->type == ObjectType::INTEGER) {
-        return executeArrayIndex(static_cast<Array*>(left), static_cast<Integer*>(index));
+        return executeArrayIndex(dynamic_cast<Array*>(left), dynamic_cast<Integer*>(index));
     }
     else {
-        throw invalid_argument("");
+        throw invalid_argument("index operator not supported");
     }
 }
 
 void VirtualMachine::executeArrayIndex(Array* left, Integer* index) {
-    int m = left->elements.size() - 1;
+    int m = (int)left->elements.size() - 1;
     long long i = index->value;
     if (i < 0 || m < i) {
         throw invalid_argument("");
@@ -310,26 +317,52 @@ Frame *VirtualMachine::popFrame() {
 	return frames[frameIndex];
 }
 
-void VirtualMachine::callFunction(int numArgs){
-	if (CompiledFunction* function = dynamic_cast<CompiledFunction*>(stack[stackPointer - 1 - numArgs])){
-
-		if(numArgs != function->numParameters){
-			// 인수 개수 오류
-			throw(("인수의 개수가 맞지 않습니다. 매개변수 : "
-				+ to_string(function->numParameters) + ", 인수 : " + to_string(numArgs)));
-		}
-
-		Frame* frame = new Frame(function, stackPointer - numArgs);
-		pushFrame(frame);
-		stackPointer = frame->basePointer + function->numLocals;
-
-		return;
+void VirtualMachine::callFunction(CompiledFunction* function,int numArgs){
+	if(numArgs != function->numParameters){
+		// 인수 개수 오류
+		throw(("인수의 개수가 맞지 않습니다. 매개변수 : "
+			   + to_string(function->numParameters) + ", 인수 : " + to_string(numArgs)));
 	}
-	else {
-		// 함수 호출 오류
-		throw(invalid_argument("함수가 아닌 것을 호출했습니다."));
+
+	Frame* frame = new Frame(function, stackPointer - numArgs);
+	pushFrame(frame);
+	stackPointer = frame->basePointer + function->numLocals;
+
+	return;
+}
+
+void VirtualMachine::callBuiltin(Builtin *builtin, int numArgs) {
+	vector<Object*> args;
+	for(int i = stackPointer - numArgs; i < stackPointer; i++){
+		args.push_back(stack[i]);
+	}
+	Object* result = builtin->fn(args);
+	if(result != nullptr){
+		push(result);
 	}
 }
+
+void VirtualMachine::executeCall(int numArgs) {
+	Object* callee = stack[stackPointer - 1 - numArgs];
+	if(CompiledFunction* function = dynamic_cast<CompiledFunction*>(callee)){
+		callFunction(function, numArgs);
+	}
+	else if(Builtin* builtin = dynamic_cast<Builtin*>(callee)){
+		callBuiltin(builtin, numArgs);
+	}
+	else{
+		throw(invalid_argument("함수가 아닌 것을 호출하고 있습니다."));
+	}
+}
+
+
+
+
+
+
+
+
+// Frame
 
 vector<Instruction *> Frame::Instructions() {
 	return function->instructions;

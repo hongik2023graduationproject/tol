@@ -17,7 +17,7 @@ void Repl::runWithVM() {
     Bytecode bytecode = compiler.run(program);
 	vm.run(bytecode);
 
-    cout << vm.lastPoppedElement()->print() << endl;
+//    cout << vm.lastPoppedElement()->print() << endl;
 }
 
 void Repl::lexerTest() {

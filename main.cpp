@@ -3,10 +3,10 @@
 int main() {
     Repl repl;
 //    repl.lexerTest();
-//    repl.parserTest();
+    repl.parserTest();
 //    repl.compilerTest();
 //    repl.runWithEvaluator();
-    repl.runWithVM();
+//    repl.runWithVM();
 
     return 0;
 }

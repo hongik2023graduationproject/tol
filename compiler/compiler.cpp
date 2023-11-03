@@ -171,7 +171,7 @@ void Compiler::compile(Node *node) {
         compile(indexExpression->index);
         emit(OpcodeType::OpIndex);
     }
-	else if (FunctionLiteral* functionLiteral = dynamic_cast<FunctionLiteral*>(node)) {
+	else if (FunctionStatement* functionLiteral = dynamic_cast<FunctionStatement*>(node)) {
 		enterScope();
 
 		for(auto parameter : functionLiteral->parameters){
@@ -185,8 +185,9 @@ void Compiler::compile(Node *node) {
 		}
 
 		int numLocals = symbolTable->numberDefinitions;
-		vector<Instruction *> instructions = leaveScope();
-		CompiledFunction * compiledFn = new CompiledFunction; // 생성자가 안먹히는 이유는?
+		vector<Instruction*> instructions = leaveScope();
+
+		CompiledFunction* compiledFn = new CompiledFunction;
 		compiledFn->instructions = instructions;
 		compiledFn->numLocals = numLocals;
 		compiledFn->numParameters = functionLiteral->parameters.size();
@@ -210,7 +211,7 @@ void Compiler::compile(Node *node) {
 	else if (FunctionExpression* functionExpression = dynamic_cast<FunctionExpression*>(node)) {
 		compile(functionExpression->function);
 
-		for(auto arg : functionExpression->arguments){
+		for(auto arg : functionExpression->arguments) {
 			compile(arg);
 		}
 
@@ -260,7 +261,7 @@ void Compiler::removeLastInstruction() {
 
 void Compiler::replaceInstruction(int position, Instruction* newInstruction) {
     vector<Instruction*> instructions = currentInstructions();
-	instructions.at(position) = newInstruction; // 기존 명령어 삭제 필요
+	instructions[position] = newInstruction; // 기존 명령어 삭제 필요
 }
 
 void Compiler::changeOperand(int opPos, int operand) {

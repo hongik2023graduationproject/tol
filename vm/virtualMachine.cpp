@@ -1,24 +1,25 @@
 #include "virtualMachine.h"
 
+void VirtualMachine::init(Bytecode& bytecode) {
+    CompiledFunction* mainFunction = new CompiledFunction(bytecode.instructions);
+    Frame* mainFrame = new Frame(mainFunction, 0);
+    constants = bytecode.constants;
+    stack.resize(StackSize);
+    stackPointer = 0;
+    globals.resize(GlobalsSize);
+    frames.resize(MaxFrames);
+    frameIndex = 0;
+    pushFrame(mainFrame);
+}
+
 
 void VirtualMachine::run(Bytecode bytecode) {
-    // init
-
-	CompiledFunction* mainFunction = new CompiledFunction;// (instructions); // 왜 생성자가 안먹히지?
-	mainFunction->instructions = bytecode.instructions;
-	Frame* mainFrame = new Frame(mainFunction, 0);
-	constants = bytecode.constants;
-    stack.resize(StackSize);
-    globals.resize(GlobalsSize);
-	frames.resize(MaxFrames);
-    stackPointer = 0;
-	frameIndex = 0;
-	pushFrame(mainFrame);
+    init(bytecode);
 
     while (currentFrame()->ip < (int)(currentFrame()->Instructions().size() -1)) { // ip = instruction pointer
         int& ip = currentFrame()->ip;
-		vector<Instruction *> instructions = currentFrame()->Instructions();
-		ip++;
+        ip++;
+		vector<Instruction*> instructions = currentFrame()->Instructions();
 		OpcodeType opcode = static_cast<OpcodeType>(int((*instructions[ip])[0]));
 
         if (opcode == OpcodeType::OpConstant) {
@@ -102,7 +103,6 @@ void VirtualMachine::run(Bytecode bytecode) {
 			frame->ip++;
 
 			stack[frame->basePointer + localIndex] = pop();
-
 		}
 		else if (opcode == OpcodeType::OpGetLocal) {
 			int localIndex = endian.byteToInt(vector<byte>(instructions[ip]->begin() + 1, instructions[ip]->begin() + 5));
@@ -354,6 +354,15 @@ void VirtualMachine::executeCall(int numArgs) {
 		throw(invalid_argument("함수가 아닌 것을 호출하고 있습니다."));
 	}
 }
+
+
+
+
+
+
+
+
+// Frame
 
 vector<Instruction *> Frame::Instructions() {
 	return function->instructions;

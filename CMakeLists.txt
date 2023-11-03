@@ -54,4 +54,6 @@ add_executable(tolelom main.cpp
         ast/expressions/indexExpression.h
         ast/statements/loopStatement.h
         ast/statements/classStatement.h
+        builtins/builtins.h
+        builtins/builtins.cpp
 )

@@ -46,6 +46,7 @@ private:
     Boolean* FALSE = new Boolean{false};
 
     Endian endian;
+	Builtins builtins;
 
     Object* stackTop();
     void push(Object* object);
@@ -70,7 +71,9 @@ private:
 	void pushFrame(Frame* frame);
 	Frame* popFrame();
 
-	void callFunction(int numArgs);
+	void callFunction(CompiledFunction* function, int numArgs);
+	void callBuiltin(Builtin* builtin, int numArgs);
+	void executeCall(int numArgs);
 };
 
 

@@ -171,38 +171,53 @@ void Compiler::compile(Node *node) {
         compile(indexExpression->index);
         emit(OpcodeType::OpIndex);
     }
-	else if (FunctionStatement* functionLiteral = dynamic_cast<FunctionStatement*>(node)) {
-		enterScope();
+    else if (ClassStatement* classStatement = dynamic_cast<ClassStatement*>(node)) {
+        enterScope();
+        compile(classStatement->block);
+        int numLocalDefine = symbolTable->numberDefinitions;
+        vector<Instruction*> instructions = leaveScope();
 
-		for(auto parameter : functionLiteral->parameters){
-			symbolTable->Define(parameter->name);
-		}
+        CompiledClass* compiledClass = new CompiledClass;
+        compiledClass->instructions = instructions;
+        compiledClass->numLocalDefine = numLocalDefine;
+        compiledClass->name = classStatement->name->name;
 
-		compile(functionLiteral->blockStatement);
+        emit(OpcodeType::OpConstant, vector<int>{addConstant(compiledClass)});
 
-		if(!lastInstructionIs(OpcodeType::OpReturnValue)) {
-			emit(OpcodeType::OpReturn);
-		}
+        Symbol symbol = symbolTable->Define(classStatement->name->name);
+        emit(OpcodeType::OpSetGlobal, vector<int>{symbol.index});
+    }
+    else if (FunctionStatement* functionStatement = dynamic_cast<FunctionStatement*>(node)) {
+        enterScope();
 
-		int numLocals = symbolTable->numberDefinitions;
-		vector<Instruction*> instructions = leaveScope();
+        for(auto parameter : functionStatement->parameters){
+            symbolTable->Define(parameter->name);
+        }
+        compile(functionStatement->blockStatement);
+        if(!lastInstructionIs(OpcodeType::OpReturnValue)) {
+            emit(OpcodeType::OpReturn);
+        }
+        int numLocals = symbolTable->numberDefinitions;
 
-		CompiledFunction* compiledFn = new CompiledFunction;
-		compiledFn->instructions = instructions;
-		compiledFn->numLocals = numLocals;
-		compiledFn->numParameters = functionLiteral->parameters.size();
+        vector<Instruction*> instructions = leaveScope();
 
-		// 함수 리터럴을 배출
-		emit(OpcodeType::OpConstant, vector<int>{addConstant(compiledFn)});
+        CompiledFunction* compiledFn = new CompiledFunction;
+        compiledFn->instructions = instructions;
+        compiledFn->numLocals = numLocals;
+        compiledFn->numParameters = functionStatement->parameters.size();
 
-		// 함수 이름과 literal assign 과정
-		Symbol symbol = symbolTable->Define(functionLiteral->name->name);
-		emit(OpcodeType::OpSetGlobal, vector<int>{symbol.index});
+        // 함수 리터럴을 배출
+        emit(OpcodeType::OpConstant, vector<int>{addConstant(compiledFn)});
 
-		if (lastInstructionIs(OpcodeType::OpPop)) { // 함수 정의 이후 결과를 pop하는 것을 방지
-			removeLastInstruction();
-		}
-	}
+        // 함수 이름과 literal assign 과정
+        Symbol symbol = symbolTable->Define(functionStatement->name->name);
+        emit(OpcodeType::OpSetGlobal, vector<int>{symbol.index});
+
+        if (lastInstructionIs(OpcodeType::OpPop)) { // 함수 정의 이후 결과를 pop하는 것을 방지
+            removeLastInstruction();
+        }
+
+    }
 	else if (ReturnStatement* returnStatement = dynamic_cast<ReturnStatement*>(node)) {
 		compile(returnStatement->returnValue);
 

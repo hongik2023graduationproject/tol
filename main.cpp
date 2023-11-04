@@ -3,8 +3,8 @@
 int main() {
     Repl repl;
 //    repl.lexerTest();
-    repl.parserTest();
-//    repl.compilerTest();
+//    repl.parserTest();
+    repl.compilerTest();
 //    repl.runWithEvaluator();
 //    repl.runWithVM();
 

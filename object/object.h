@@ -117,4 +117,15 @@ public:
 	}
 };
 
+class CompiledClass : public Object {
+public:
+    vector<vector<byte>*> instructions;
+    int numLocalDefine;
+    string name;
+
+    string print() {
+        return "Compiled Class: " + name;
+    }
+};
+
 #endif //TOLELOM_OBJECT_H

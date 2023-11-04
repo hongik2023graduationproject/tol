@@ -98,10 +98,13 @@ public:
             for (int i = 0; i < (int) def.operandWidths.size(); ++i) {
                 int operand = endian.byteToInt(vector<byte>(instruction->begin() + 1, instruction->begin() + 1 + def.operandWidths[i]));
 
+
+                s += " " + to_string(operand);
                 if (def.name == "OpConstant")
-                    s += " " + constants[operand]->print();
-                else
-                    s += " " + to_string(operand);
+                    s += ": " + constants[operand]->print();
+                if (def.name == "OpGetBuiltin") {
+
+                }
             }
 
             cout << s << endl;

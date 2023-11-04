@@ -22,6 +22,7 @@
 #include "../ast/statements/loopStatement.h"
 #include "../ast/statements/returnStatement.h"
 #include "../endian/endian.h"
+#include "../builtins/builtins.h"
 #include "symbolTable.h"
 using namespace std;
 
@@ -79,6 +80,7 @@ private:
 	vector<Instruction*>& currentInstructions();
 	void enterScope();
 	vector<Instruction*> leaveScope();
+	void loadSymbol(Symbol symbol);
 };
 
 

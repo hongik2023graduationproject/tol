@@ -10,6 +10,7 @@ using SymbolScope = string;
 //class Scopes {
     const SymbolScope GlobalScope = "Global";
 	const SymbolScope LocalScope = "Local";
+	const SymbolScope BuiltinScope = "Builtin";
 //};
 
 class Symbol {
@@ -25,6 +26,7 @@ public:
 
     Symbol Define(const string& name);
     Symbol Resolve(const string& name);
+	Symbol DefineBuiltin(int index, const string& name);
 	static SymbolTable* NewEnclosedSymbolTable(SymbolTable* outer);
 
     map<string, Symbol> store;

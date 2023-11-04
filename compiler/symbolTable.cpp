@@ -29,3 +29,9 @@ SymbolTable *SymbolTable::NewEnclosedSymbolTable(SymbolTable* outer) {
 	return symbolTable;
 }
 
+Symbol SymbolTable::DefineBuiltin(int index, const string &name) {
+	Symbol symbol{.name = name, .index = index, .scope = BuiltinScope};
+	store[name] = symbol;
+	return symbol;
+}
+

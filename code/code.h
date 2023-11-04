@@ -40,6 +40,7 @@ enum class OpcodeType {
 	OpReturn,
 	OpSetLocal,
 	OpGetLocal,
+	OpGetBuiltin,
 
 };
 
@@ -78,11 +79,13 @@ public:
             {OpcodeType::OpJump, Definition{"OpJump", vector<int>{4}}},
             {OpcodeType::OpArray, Definition{"OpArray", vector<int>{2}}}, // 배열의 최대 크기 65535
             {OpcodeType::OpIndex, Definition{"OpIndex", vector<int>{}}},
-			{OpcodeType::OpCall, Definition{"OpCall", vector<int>{1}}},
+			{OpcodeType::OpCall, Definition{"OpCall", vector<int>{4}}},
 			{OpcodeType::OpReturnValue, Definition{"OpReturnValue", vector<int>{}}},
 			{OpcodeType::OpReturn, Definition{"OpReturn", vector<int>{}}},
-			{OpcodeType::OpSetLocal, Definition{"OpSetLocal", vector<int>{1}}},
-			{OpcodeType::OpGetLocal, Definition{"OpGetLocal", vector<int>{1}}},
+			{OpcodeType::OpSetLocal, Definition{"OpSetLocal", vector<int>{4}}},
+			{OpcodeType::OpGetLocal, Definition{"OpGetLocal", vector<int>{4}}},
+			{OpcodeType::OpGetBuiltin, Definition{"OpGetBuiltin", vector<int>{4}}},
+			
 
 	};
 

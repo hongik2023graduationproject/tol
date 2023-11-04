@@ -3,6 +3,11 @@
 Bytecode Compiler::run(Node* node) {
 	CompilationScope* mainScope = new CompilationScope;
 	symbolTable = new SymbolTable;
+	Builtins builtins;
+	for (int i = 0; i < builtins.builtinList.size(); i++){
+		symbolTable->DefineBuiltin(i, builtins.builtinList[i].name);
+	}
+
 	scopes.push_back(mainScope);
 	scopeIndex = 0;
 
@@ -104,12 +109,7 @@ void Compiler::compile(Node *node) {
     }
     else if (IdentifierExpression* identifierExpression = dynamic_cast<IdentifierExpression*>(node)) {
         Symbol symbol = symbolTable->Resolve(identifierExpression->name); // 오류 생길 수도 처리 필요 할 수도
-		if (symbol.scope == GlobalScope) {
-			emit(OpcodeType::OpGetGlobal, vector<int>{symbol.index});
-		}
-		else {
-			emit(OpcodeType::OpGetLocal, vector<int>{symbol.index});
-		}
+		loadSymbol(symbol);
     }
 	else if (AssignStatement* assignStatement = dynamic_cast<AssignStatement*>(node)) {
 		compile(assignStatement->value);
@@ -291,4 +291,16 @@ vector<Instruction*> Compiler::leaveScope() {
 	symbolTable = symbolTable->outer;
 
 	return instructions;
+}
+
+void Compiler::loadSymbol(Symbol symbol) {
+	if (symbol.scope == GlobalScope) {
+		emit(OpcodeType::OpGetGlobal, vector<int>{symbol.index});
+	}
+	else if (symbol.scope == LocalScope) {
+		emit(OpcodeType::OpGetLocal, vector<int>{symbol.index});
+	}
+	else if (symbol.scope == BuiltinScope) {
+		emit(OpcodeType::OpGetBuiltin, vector<int>{symbol.index});
+	}
 }

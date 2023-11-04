@@ -83,7 +83,7 @@ void VirtualMachine::run(Bytecode bytecode) {
 		else if (opcode == OpcodeType::OpCall) {
 			int numArgs = endian.byteToInt(vector<byte>(instructions[ip]->begin() + 1, instructions[ip]->begin() + 5));
 
-			callFunction(numArgs);
+			executeCall(numArgs);
 		}
 		else if (opcode == OpcodeType::OpReturnValue) {
 			auto returnValue = pop();
@@ -110,6 +110,13 @@ void VirtualMachine::run(Bytecode bytecode) {
 			frame->ip++;
 
 			push(stack[frame->basePointer + localIndex]);
+		}
+		else if (opcode == OpcodeType::OpGetBuiltin) {
+			int builtinIndex = endian.byteToInt(vector<byte>(instructions[ip]->begin() + 1, instructions[ip]->begin() + 5));
+
+			Builtin* definition = &(builtins.builtinList[builtinIndex]);
+
+			push(definition);
 		}
     }
 }
@@ -310,21 +317,41 @@ Frame *VirtualMachine::popFrame() {
 	return frames[frameIndex];
 }
 
-void VirtualMachine::callFunction(int numArgs){
-	if (CompiledFunction* function = dynamic_cast<CompiledFunction*>(stack[stackPointer - 1 - numArgs])){
-
-		if(numArgs != function->numParameters){
-			throw invalid_argument("인수의 개수가 맞지 않습니다. 매개변수 : " + to_string(function->numParameters) + ", 인수 : " + to_string(numArgs));
-		}
-
-		Frame* frame = new Frame(function, stackPointer - numArgs);
-		pushFrame(frame);
-		stackPointer = frame->basePointer + function->numLocals;
-
-		return;
+void VirtualMachine::callFunction(CompiledFunction* function,int numArgs){
+	if(numArgs != function->numParameters){
+		// 인수 개수 오류
+		throw(("인수의 개수가 맞지 않습니다. 매개변수 : "
+			   + to_string(function->numParameters) + ", 인수 : " + to_string(numArgs)));
 	}
-	else {
-		throw(invalid_argument("함수가 아닌 것을 호출했습니다."));
+
+	Frame* frame = new Frame(function, stackPointer - numArgs);
+	pushFrame(frame);
+	stackPointer = frame->basePointer + function->numLocals;
+
+	return;
+}
+
+void VirtualMachine::callBuiltin(Builtin *builtin, int numArgs) {
+	vector<Object*> args;
+	for(int i = stackPointer - numArgs; i < stackPointer; i++){
+		args.push_back(stack[i]);
+	}
+	Object* result = builtin->fn(args);
+	if(result != nullptr){
+		push(result);
+	}
+}
+
+void VirtualMachine::executeCall(int numArgs) {
+	Object* callee = stack[stackPointer - 1 - numArgs];
+	if(CompiledFunction* function = dynamic_cast<CompiledFunction*>(callee)){
+		callFunction(function, numArgs);
+	}
+	else if(Builtin* builtin = dynamic_cast<Builtin*>(callee)){
+		callBuiltin(builtin, numArgs);
+	}
+	else{
+		throw(invalid_argument("함수가 아닌 것을 호출하고 있습니다."));
 	}
 }
 

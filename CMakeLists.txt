@@ -56,4 +56,6 @@ add_executable(tolelom main.cpp
         ast/statements/classStatement.h
         ast/expressions/classExpression.h
         ast/statements/classInitStatement.h
+        builtins/builtins.h
+        builtins/builtins.cpp
 )

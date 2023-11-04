@@ -1,6 +1,7 @@
 #ifndef TOLELOM_LEXER_H
 #define TOLELOM_LEXER_H
 
+#include <set>
 #include <map>
 #include <string>
 #include <vector>
@@ -31,6 +32,8 @@ private:
     static bool isLetter(const string &character);
     string readLetter();
     string readString();
+
+    set<string> classNames;
 
     map<string, TokenType> keywords = {
             {"정수", TokenType::INT},

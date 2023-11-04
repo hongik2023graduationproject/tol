@@ -88,7 +88,7 @@ LetStatement* Parser::parseLetStatement() {
 
     skipToken(TokenType::LBRACKET); // [
 
-    if (currentToken->tokenType != TokenType::INT && currentToken->tokenType != TokenType::STR) {
+    if (currentToken->tokenType != TokenType::INT && currentToken->tokenType != TokenType::STR && currentToken->tokenType != TokenType::IDENTIFIER) {
         throw NotFoundToken(currentToken->line, TokenType::INT ,currentToken);
     }
     letStatement->token = currentToken;

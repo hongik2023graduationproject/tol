@@ -2,7 +2,6 @@
 #define TOLELOM_OBJECTTYPE_H
 
 
-
 enum class ObjectType {
     INTEGER,
     STRING,
@@ -11,7 +10,7 @@ enum class ObjectType {
     ARRAY,
 	COMPILED_FUNCTION,
 	BUILTIN_FUNCTION,
-
+    COMPILED_CLASS
 };
 
 

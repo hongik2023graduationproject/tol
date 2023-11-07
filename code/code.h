@@ -41,7 +41,7 @@ enum class OpcodeType {
 	OpSetLocal,
 	OpGetLocal,
 	OpGetBuiltin,
-
+    OpMakeClass,
 };
 
 
@@ -85,8 +85,7 @@ public:
 			{OpcodeType::OpSetLocal, Definition{"OpSetLocal", vector<int>{4}}},
 			{OpcodeType::OpGetLocal, Definition{"OpGetLocal", vector<int>{4}}},
 			{OpcodeType::OpGetBuiltin, Definition{"OpGetBuiltin", vector<int>{4}}},
-			
-
+            {OpcodeType::OpMakeClass, Definition{"OpMakeClass", vector<int>{4}}}, // 임시 4
 	};
 
     void decodeInstruction(vector<Instruction*> instructions, vector<Object*> constants) {

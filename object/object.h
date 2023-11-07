@@ -30,6 +30,7 @@ public:
     }
 };
 
+
 class String : public Object {
 public:
     string value{};
@@ -109,8 +110,8 @@ public:
 	int numParameters; // count of parameters
 
 	CompiledFunction() {type = ObjectType::COMPILED_FUNCTION;};
-	CompiledFunction(vector<vector<byte>*> instructions) : instructions(std::move(instructions))
-		{type = ObjectType::COMPILED_FUNCTION;};
+	CompiledFunction(vector<vector<byte>*> instructions, int numLocals = 0, int numParameters = 0)
+        : instructions(std::move(instructions)), numLocals(numLocals), numParameters(numParameters) {type = ObjectType::COMPILED_FUNCTION;};
 
 	string print() {
 		return "CompiledFunction";
@@ -122,6 +123,9 @@ public:
     vector<vector<byte>*> instructions;
     int numLocalDefine;
     string name;
+
+    CompiledClass(string name, vector<vector<byte>*> instructions, int numLocalDefine)
+        : name(name), instructions(instructions), numLocalDefine(numLocalDefine) { type = ObjectType::COMPILED_CLASS; }
 
     string print() {
         return "Compiled Class: " + name;

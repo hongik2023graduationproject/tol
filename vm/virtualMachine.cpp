@@ -82,7 +82,6 @@ void VirtualMachine::run(Bytecode bytecode) {
 		}
 		else if (opcode == OpcodeType::OpCall) {
 			int numArgs = endian.byteToInt(vector<byte>(instructions[ip]->begin() + 1, instructions[ip]->begin() + 5));
-
 			executeCall(numArgs);
 		}
 		else if (opcode == OpcodeType::OpReturnValue) {
@@ -118,6 +117,10 @@ void VirtualMachine::run(Bytecode bytecode) {
 
 			push(definition);
 		}
+        else if (opcode == OpcodeType::OpMakeClass) {
+            int numArgs = endian.byteToInt(vector<byte>(instructions[ip]->begin() + 1, instructions[ip]->begin() + 5));
+            makeClass(numArgs);
+        }
     }
 }
 
@@ -344,15 +347,24 @@ void VirtualMachine::callBuiltin(Builtin *builtin, int numArgs) {
 
 void VirtualMachine::executeCall(int numArgs) {
 	Object* callee = stack[stackPointer - 1 - numArgs];
-	if(CompiledFunction* function = dynamic_cast<CompiledFunction*>(callee)){
+	if(CompiledFunction* function = dynamic_cast<CompiledFunction*>(callee)) {
 		callFunction(function, numArgs);
 	}
-	else if(Builtin* builtin = dynamic_cast<Builtin*>(callee)){
+	else if(Builtin* builtin = dynamic_cast<Builtin*>(callee)) {
 		callBuiltin(builtin, numArgs);
 	}
 	else{
 		throw(invalid_argument("함수가 아닌 것을 호출하고 있습니다."));
 	}
+}
+
+void VirtualMachine::makeClass(int numArgs) {
+    Object* callee = stack[stackPointer - 1 - numArgs];
+    if (CompiledClass* classObj = dynamic_cast<CompiledClass*>(callee)) {
+
+    } else {
+        throw(invalid_argument("클래스가 아닌 것을 호출하고 있습니다."));
+    }
 }
 
 

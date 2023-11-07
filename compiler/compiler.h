@@ -5,6 +5,7 @@
 #include <vector>
 #include "../code/code.h"
 #include "../object/object.h"
+#include "../object/objectType.h"
 #include "../ast/node.h"
 #include "../ast/program.h"
 #include "../ast/statements/expressionStatement.h"
@@ -18,6 +19,7 @@
 #include "../ast/expressions/prefixExpression.h"
 #include "../ast/expressions/indexExpression.h"
 #include "../ast/expressions/functionExpression.h"
+#include "../ast/expressions/classExpression.h"
 #include "../ast/literals/integerLiteral.h"
 #include "../ast/literals/booleanLiteral.h"
 #include "../ast/literals/stringLiteral.h"
@@ -68,7 +70,7 @@ private:
 	vector<CompilationScope*> scopes; // vector -> stack으로 바꿔도 됨
 	int scopeIndex;
 
-    void compile(Node* node);
+    ObjectType compile(Node* node);
     int addConstant(Object* object);
     int addInstruction(Instruction* instruction);
     int emit(OpcodeType opcode, vector<int> operands = vector<int>{});
@@ -77,6 +79,9 @@ private:
 	void removeLastInstruction();
 	void replaceInstruction(int position, Instruction* newInstruction);
 	void changeOperand(int opPos, int operand);
+
+    void letStatementTypeCheck(string name, ObjectType valueType);
+
 
 	vector<Instruction*>& currentInstructions();
 	void enterScope();

@@ -252,6 +252,7 @@ ObjectType Compiler::compile(Node *node) {
         }
     }
     else if (IdentifierExpression* identifierExpression = dynamic_cast<IdentifierExpression*>(node)) {
+        // 중요: 정의되지 않은 변수를 참조할 때 오류 발생해야 함
         Symbol symbol = symbolTable->Resolve(identifierExpression->name);
         loadSymbol(symbol);
         return symbol.type;
@@ -327,8 +328,7 @@ void Compiler::removeLastInstruction() {
 }
 
 void Compiler::replaceInstruction(int position, Instruction* newInstruction) {
-    vector<Instruction*> instructions = currentInstructions();
-	instructions[position] = newInstruction; // 기존 명령어 삭제 필요
+    currentInstructions()[position] = newInstruction; // 기존 명령어 삭제 필요
 }
 
 void Compiler::changeOperand(int opPos, int operand) {

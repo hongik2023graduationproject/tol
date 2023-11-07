@@ -117,14 +117,14 @@ ObjectType Compiler::compile(Node *node) {
     else if (ClassStatement* classStatement = dynamic_cast<ClassStatement*>(node)) {
         // compile class statement
         enterScope();
-        compile(classStatement->block);
+        compile(classStatement->block); // 이걸 바꿔야 되나 아니면 체킹을 해야되나
         int numLocalDefine = symbolTable->numberDefinitions;
         vector<Instruction*> instructions = leaveScope();
 
         auto* compiledClass = new CompiledClass(classStatement->name->name, instructions, numLocalDefine);
-
         emit(OpcodeType::OpConstant, vector<int>{addConstant(compiledClass)});
 
+        // binding
         Symbol symbol = symbolTable->Define(classStatement->name->name, ObjectType::COMPILED_CLASS);
         emit(OpcodeType::OpSetGlobal, vector<int>{symbol.index});
     }
@@ -143,8 +143,6 @@ ObjectType Compiler::compile(Node *node) {
         vector<Instruction*> instructions = leaveScope();
 
         CompiledFunction* compiledFn = new CompiledFunction(instructions, numLocals, functionStatement->parameters.size());
-
-        // 함수 리터럴을 배출
         emit(OpcodeType::OpConstant, vector<int>{addConstant(compiledFn)});
 
         // 함수 이름과 literal assign 과정

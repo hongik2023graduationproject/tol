@@ -117,7 +117,7 @@ ObjectType Compiler::compile(Node *node) {
     else if (ClassStatement* classStatement = dynamic_cast<ClassStatement*>(node)) {
         // compile class statement
         enterScope();
-        compile(classStatement->block); // 이걸 바꿔야 되나 아니면 체킹을 해야되나
+//        compile(classStatement->block); // 이걸 바꿔야 되나 아니면 체킹을 해야되나
         int numLocalDefine = symbolTable->numberDefinitions;
         vector<Instruction*> instructions = leaveScope();
 
@@ -126,14 +126,15 @@ ObjectType Compiler::compile(Node *node) {
 
         // binding
         Symbol symbol = symbolTable->Define(classStatement->name->name, ObjectType::COMPILED_CLASS);
+        classSet[classStatement->name->name] = symbol.index; // 테스팅 중
         emit(OpcodeType::OpSetGlobal, vector<int>{symbol.index});
     }
     else if (FunctionStatement* functionStatement = dynamic_cast<FunctionStatement*>(node)) {
         // compile function statement
         enterScope();
         for(auto parameter : functionStatement->parameters){
-//            수정 후 주석 풀 예정
-//            symbolTable->Define(parameter->name);
+//            임시로 테스트 위해서 INTEGER로 해놓음
+            symbolTable->Define(parameter->name, ObjectType::INTEGER);
         }
         compile(functionStatement->blockStatement);
         if(!lastInstructionIs(OpcodeType::OpReturnValue)) {
@@ -267,12 +268,12 @@ ObjectType Compiler::compile(Node *node) {
 			compile(arg);
 		}
 		emit(OpcodeType::OpCall, vector<int>{static_cast<int>(functionExpression->arguments.size())});
-        return ObjectType::COMPILED_FUNCTION;
+
+        // 중요: 함수의 리턴 값에 대한 형식을 리턴해야 함
+        return ObjectType::INTEGER;
 	}
     else if (ClassExpression* classExpression = dynamic_cast<ClassExpression*>(node)) {
-//        compile(classExpression)
-
-        for (auto initalField : classExpression->statements) {
+        for (auto initalField : classExpression->statements) { // 여기서 좀 더 세부적인 처리가 필요?
             compile(initalField);
         }
 
@@ -371,10 +372,9 @@ void Compiler::loadSymbol(Symbol symbol) {
 }
 
 void Compiler::letStatementTypeCheck(std::string name, ObjectType valueType) {
-    if (name == "정수" && valueType == ObjectType::INTEGER) {
-
-    }
+    if (name == "정수" && valueType == ObjectType::INTEGER) {}
     else if (name == "문자" && valueType == ObjectType::STRING) {}
+    else if (classSet.find(name) != classSet.end()) {}
     else {
         throw invalid_argument("let statement의 타입과 값의 타입이 일치하지 않습니다.");
     }

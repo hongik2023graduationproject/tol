@@ -7,8 +7,8 @@
 class ClassExpression : public Expression {
 public:
     Token* token{};
-    vector<ClassInitStatement*> statements; // 선언, 함수만 들어가야함 체크는 컴파일러에서
-
+    IdentifierExpression* name;
+    vector<ClassInitStatement*> statements;
 
     string String() {
         string s = "{\n";

@@ -105,8 +105,8 @@ void Lexer::tokenizing() {
             }
             else if (tabCount < indentLevel) {
                 for (int t = tabCount; t != indentLevel; t++) {
-                    tokens.push_back(new Token{TokenType::NEW_LINE, "\\n", line});
                     tokens.push_back(new Token{TokenType::ENDBLOCK, "", line});
+                    tokens.push_back(new Token{TokenType::NEW_LINE, "\\n", line});
                 }
             }
             else {

@@ -62,12 +62,11 @@ public:
 
     Code code;
 private:
-
     vector<Object*> constants;
-
     SymbolTable* symbolTable;
-
 	vector<CompilationScope*> scopes; // vector -> stack으로 바꿔도 됨
+    map<string, int> classSet; // 11.9
+
 	int scopeIndex;
 
     ObjectType compile(Node* node);

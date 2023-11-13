@@ -10,6 +10,7 @@
 class FunctionStatement : public Statement {
 public:
     Token* token{};
+    vector<Token*> parameterTypes;
     vector<IdentifierExpression*> parameters;
     IdentifierExpression* name;
     BlockStatement* blockStatement;

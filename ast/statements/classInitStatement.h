@@ -6,7 +6,6 @@
 #include "../expressions/identifierExpression.h"
 #include "../expressions/expression.h";
 
-
 class ClassInitStatement : public Statement {
 public:
     Token* token{};

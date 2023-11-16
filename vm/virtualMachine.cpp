@@ -359,7 +359,7 @@ void VirtualMachine::executeCall(int numArgs) {
 }
 
 void VirtualMachine::makeClass(int numArgs) {
-    Object* callee = stack[stackPointer - 1 - numArgs];
+    Object* callee = stack[stackPointer - 1 - numArgs]; // class Obj
     if (CompiledClass* classObj = dynamic_cast<CompiledClass*>(callee)) {
         for (int pointer = stackPointer - 1 - numArgs + 1; pointer < stackPointer; ++pointer) {
             Object* argument = stack[pointer];

@@ -347,10 +347,10 @@ void VirtualMachine::callBuiltin(Builtin *builtin, int numArgs) {
 
 void VirtualMachine::executeCall(int numArgs) {
 	Object* callee = stack[stackPointer - 1 - numArgs];
-	if(CompiledFunction* function = dynamic_cast<CompiledFunction*>(callee)) {
+	if (CompiledFunction* function = dynamic_cast<CompiledFunction*>(callee)) {
 		callFunction(function, numArgs);
 	}
-	else if(Builtin* builtin = dynamic_cast<Builtin*>(callee)) {
+	else if (Builtin* builtin = dynamic_cast<Builtin*>(callee)) {
 		callBuiltin(builtin, numArgs);
 	}
 	else{
@@ -361,7 +361,11 @@ void VirtualMachine::executeCall(int numArgs) {
 void VirtualMachine::makeClass(int numArgs) {
     Object* callee = stack[stackPointer - 1 - numArgs];
     if (CompiledClass* classObj = dynamic_cast<CompiledClass*>(callee)) {
+        for (int pointer = stackPointer - 1 - numArgs + 1; pointer < stackPointer; ++pointer) {
+            Object* argument = stack[pointer];
 
+
+        }
     } else {
         throw(invalid_argument("클래스가 아닌 것을 호출하고 있습니다."));
     }

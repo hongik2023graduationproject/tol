@@ -32,10 +32,14 @@ ObjectType Compiler::compile(Node *node) {
         emit(OpcodeType::OpPop);
     }
     else if (LetStatement* letStatement = dynamic_cast<LetStatement*>(node)) {
+        string type = letStatement->token->literal;
+        if (classSet.find(type) != classSet.end()) {
+            emit(OpcodeType::OpGetGlobal, vector<int>{classSet.find(type)->second});
+        }
+
         ObjectType expressionType = compile(letStatement->expression);
 
         // type checking
-        string type = letStatement->token->literal;
         letStatementTypeCheck(type, expressionType);
 
 

@@ -4,6 +4,7 @@
 
 enum class ObjectType {
     INTEGER,
+	FLOAT,
     STRING,
     BOOLEAN,
     RETURN_VALUE,

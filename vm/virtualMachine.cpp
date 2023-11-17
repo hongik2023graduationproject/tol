@@ -29,7 +29,8 @@ void VirtualMachine::run(Bytecode bytecode) {
         else if (opcode == OpcodeType::OpAdd || opcode == OpcodeType::OpSub || opcode == OpcodeType::OpMul || opcode == OpcodeType::OpDiv) {
             executeBinaryOperation(opcode);
         }
-        else if (opcode == OpcodeType::OpEqual || opcode == OpcodeType::OpNotEqual || opcode == OpcodeType::OpLessThan) {
+        else if (opcode == OpcodeType::OpEqual || opcode == OpcodeType::OpNotEqual || opcode == OpcodeType::OpLessThan
+					|| opcode == OpcodeType::OpGreaterThan || opcode == OpcodeType::OpLessEqual || opcode == OpcodeType::OpGreaterEqual) {
             executeComparison(opcode);
         }
         else if (opcode == OpcodeType::OpPop) {
@@ -229,6 +230,12 @@ void VirtualMachine::executeIntegerComparison(OpcodeType opcode, Integer *left, 
             return push(nativeBoolToBooleanObject(leftValue != rightValue));
         case OpcodeType::OpLessThan:
             return push(nativeBoolToBooleanObject(leftValue < rightValue));
+		case OpcodeType::OpGreaterThan:
+			return push(nativeBoolToBooleanObject(leftValue > rightValue));
+		case OpcodeType::OpLessEqual:
+			return push(nativeBoolToBooleanObject(leftValue <= rightValue));
+		case OpcodeType::OpGreaterEqual:
+			return push(nativeBoolToBooleanObject(leftValue >= rightValue));
         default:
             throw invalid_argument("");
     }

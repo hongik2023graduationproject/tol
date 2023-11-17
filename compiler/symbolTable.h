@@ -3,6 +3,7 @@
 
 #include <map>
 #include <string>
+#include "../object/objectType.h"
 using namespace std;
 
 using SymbolScope = string;
@@ -18,13 +19,14 @@ public:
     string name;
     int index;
     SymbolScope scope;
+    ObjectType type;
 };
 
 class SymbolTable {
 public:
 	SymbolTable* outer{nullptr};
 
-    Symbol Define(const string& name);
+    Symbol Define(const string& name, const ObjectType type);
     Symbol Resolve(const string& name);
 	Symbol DefineBuiltin(int index, const string& name);
 	static SymbolTable* NewEnclosedSymbolTable(SymbolTable* outer);

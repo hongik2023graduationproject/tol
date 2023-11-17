@@ -27,6 +27,9 @@ enum class OpcodeType {
     OpEqual,
     OpNotEqual,
     OpLessThan,
+	OpGreaterThan,
+	OpLessEqual,
+	OpGreaterEqual,
     OpMinus,
     OpBang,
     OpSetGlobal,
@@ -41,7 +44,7 @@ enum class OpcodeType {
 	OpSetLocal,
 	OpGetLocal,
 	OpGetBuiltin,
-
+    OpMakeClass,
 };
 
 
@@ -85,8 +88,7 @@ public:
 			{OpcodeType::OpSetLocal, Definition{"OpSetLocal", vector<int>{4}}},
 			{OpcodeType::OpGetLocal, Definition{"OpGetLocal", vector<int>{4}}},
 			{OpcodeType::OpGetBuiltin, Definition{"OpGetBuiltin", vector<int>{4}}},
-			
-
+            {OpcodeType::OpMakeClass, Definition{"OpMakeClass", vector<int>{4}}}, // 임시 4
 	};
 
     void decodeInstruction(vector<Instruction*> instructions, vector<Object*> constants) {
@@ -98,10 +100,13 @@ public:
             for (int i = 0; i < (int) def.operandWidths.size(); ++i) {
                 int operand = endian.byteToInt(vector<byte>(instruction->begin() + 1, instruction->begin() + 1 + def.operandWidths[i]));
 
+
+                s += " " + to_string(operand);
                 if (def.name == "OpConstant")
-                    s += " " + constants[operand]->print();
-                else
-                    s += " " + to_string(operand);
+                    s += ": " + constants[operand]->print();
+                if (def.name == "OpGetBuiltin") {
+
+                }
             }
 
             cout << s << endl;

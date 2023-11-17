@@ -88,7 +88,7 @@ LetStatement* Parser::parseLetStatement() {
 
     skipToken(TokenType::LBRACKET); // [
 
-    if (currentToken->tokenType != TokenType::INT && currentToken->tokenType != TokenType::STR) {
+    if (currentToken->tokenType != TokenType::INT && currentToken->tokenType != TokenType::STR && currentToken->tokenType != TokenType::IDENTIFIER) {
         throw NotFoundToken(currentToken->line, TokenType::INT ,currentToken);
     }
     letStatement->token = currentToken;
@@ -248,7 +248,7 @@ BlockStatement* Parser::parseBlockStatement() {
     while (currentToken->tokenType != TokenType::ENDBLOCK) {
         Statement* statement = parseStatement();
         blockStatement->statements.push_back(statement);
-        if (currentToken->tokenType == TokenType::NEW_LINE)
+        if (currentToken->tokenType == TokenType::NEW_LINE) // 이게 조건으로 들어갈 이유가 있나?? statement가 연속해서 한 줄에 2개 나오는 경우가?
             skipToken(TokenType::NEW_LINE);
     }
 
@@ -264,10 +264,28 @@ ClassStatement* Parser::parseClassStatement() {
 
     classStatement->name = dynamic_cast<IdentifierExpression*>(parseIdentifierExpression());
     skipToken(TokenType::IDENTIFIER);
-
     skipToken(TokenType::NEW_LINE);
 
-    classStatement->block = parseBlockStatement();
+
+    // block statement 대신에 수정 중
+    skipToken(TokenType::STARTBLOCK);
+    while (currentToken->tokenType != TokenType::ENDBLOCK) {
+        Statement *statement = parseStatement();
+        skipToken(TokenType::NEW_LINE);
+        if (LetStatement* letStatement = dynamic_cast<LetStatement*>(statement)) {
+            classStatement->variables.push_back(letStatement);
+        }
+        else if (FunctionStatement* functionStatement = dynamic_cast<FunctionStatement*>(statement)) {
+            classStatement->functions.push_back(functionStatement);
+        }
+        else {
+            throw invalid_argument("클래스 내 잘못된 statement가 있습니다.");
+        }
+    }
+    skipToken(TokenType::ENDBLOCK);
+    // 수정 부분의 끝
+
+//    classStatement->block = parseBlockStatement();
 
     return classStatement;
 }
@@ -390,15 +408,16 @@ Expression* Parser::parseClassExpression() {
     classExpression->token = currentToken;
     skipToken(TokenType::LBRACE);
     skipToken(TokenType::NEW_LINE);
-    skipToken(TokenType::STARTBLOCK);
 
-
-    while (currentToken->tokenType != TokenType::ENDBLOCK) {
-        ClassInitStatement* statement = parseClassInitStatement();
-        classExpression->statements.push_back(statement);
-        skipToken(TokenType::NEW_LINE);
+    if (currentToken->tokenType == TokenType::STARTBLOCK) {
+        skipToken(TokenType::STARTBLOCK);
+        while (currentToken->tokenType != TokenType::ENDBLOCK) {
+            ClassInitStatement *statement = parseClassInitStatement();
+            classExpression->statements.push_back(statement);
+            skipToken(TokenType::NEW_LINE);
+        }
+        skipToken(TokenType::ENDBLOCK);
     }
-    skipToken(TokenType::ENDBLOCK);
 
     return classExpression;
 }
@@ -486,11 +505,15 @@ vector<Expression*> Parser::parseExpressionList(TokenType endTokenType) {
 vector<IdentifierExpression*> Parser::parseFunctionParameters() {
     vector<IdentifierExpression*> identifiers;
 
-    if (currentToken->tokenType == TokenType::SPACE) {
-        return identifiers;
-    }
+//    if (currentToken->tokenType == TokenType::SPACE) {
+//        return identifiers;
+//    }
 
-    while (nextToken->tokenType == TokenType::COMMA) {
+    while (nextToken->tokenType == TokenType::COMMA) { // 중요: 이 루프에서 타입도 같이 받아서 넘겨야 함
+//        skipToken(TokenType::LBRACKET);
+        // ??????????? 타입 넘기는 부분
+//        skipToken(TokenType::RBRACKET);
+//        skipToken(TokenType::SPACE);
         IdentifierExpression* identifier = dynamic_cast<IdentifierExpression*>(parseIdentifierExpression());
         identifiers.push_back(identifier);
         skipToken(TokenType::IDENTIFIER);

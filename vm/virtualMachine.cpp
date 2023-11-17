@@ -29,7 +29,8 @@ void VirtualMachine::run(Bytecode bytecode) {
         else if (opcode == OpcodeType::OpAdd || opcode == OpcodeType::OpSub || opcode == OpcodeType::OpMul || opcode == OpcodeType::OpDiv) {
             executeBinaryOperation(opcode);
         }
-        else if (opcode == OpcodeType::OpEqual || opcode == OpcodeType::OpNotEqual || opcode == OpcodeType::OpLessThan) {
+        else if (opcode == OpcodeType::OpEqual || opcode == OpcodeType::OpNotEqual || opcode == OpcodeType::OpLessThan
+					|| opcode == OpcodeType::OpGreaterThan || opcode == OpcodeType::OpLessEqual || opcode == OpcodeType::OpGreaterEqual) {
             executeComparison(opcode);
         }
         else if (opcode == OpcodeType::OpPop) {
@@ -82,7 +83,6 @@ void VirtualMachine::run(Bytecode bytecode) {
 		}
 		else if (opcode == OpcodeType::OpCall) {
 			int numArgs = endian.byteToInt(vector<byte>(instructions[ip]->begin() + 1, instructions[ip]->begin() + 5));
-
 			executeCall(numArgs);
 		}
 		else if (opcode == OpcodeType::OpReturnValue) {
@@ -118,6 +118,10 @@ void VirtualMachine::run(Bytecode bytecode) {
 
 			push(definition);
 		}
+        else if (opcode == OpcodeType::OpMakeClass) {
+            int numArgs = endian.byteToInt(vector<byte>(instructions[ip]->begin() + 1, instructions[ip]->begin() + 5));
+            makeClass(numArgs);
+        }
     }
 }
 
@@ -226,6 +230,12 @@ void VirtualMachine::executeIntegerComparison(OpcodeType opcode, Integer *left, 
             return push(nativeBoolToBooleanObject(leftValue != rightValue));
         case OpcodeType::OpLessThan:
             return push(nativeBoolToBooleanObject(leftValue < rightValue));
+		case OpcodeType::OpGreaterThan:
+			return push(nativeBoolToBooleanObject(leftValue > rightValue));
+		case OpcodeType::OpLessEqual:
+			return push(nativeBoolToBooleanObject(leftValue <= rightValue));
+		case OpcodeType::OpGreaterEqual:
+			return push(nativeBoolToBooleanObject(leftValue >= rightValue));
         default:
             throw invalid_argument("");
     }
@@ -344,15 +354,28 @@ void VirtualMachine::callBuiltin(Builtin *builtin, int numArgs) {
 
 void VirtualMachine::executeCall(int numArgs) {
 	Object* callee = stack[stackPointer - 1 - numArgs];
-	if(CompiledFunction* function = dynamic_cast<CompiledFunction*>(callee)){
+	if (CompiledFunction* function = dynamic_cast<CompiledFunction*>(callee)) {
 		callFunction(function, numArgs);
 	}
-	else if(Builtin* builtin = dynamic_cast<Builtin*>(callee)){
+	else if (Builtin* builtin = dynamic_cast<Builtin*>(callee)) {
 		callBuiltin(builtin, numArgs);
 	}
 	else{
 		throw(invalid_argument("함수가 아닌 것을 호출하고 있습니다."));
 	}
+}
+
+void VirtualMachine::makeClass(int numArgs) {
+    Object* callee = stack[stackPointer - 1 - numArgs]; // class Obj
+    if (CompiledClass* classObj = dynamic_cast<CompiledClass*>(callee)) {
+        for (int pointer = stackPointer - 1 - numArgs + 1; pointer < stackPointer; ++pointer) {
+            Object* argument = stack[pointer];
+
+
+        }
+    } else {
+        throw(invalid_argument("클래스가 아닌 것을 호출하고 있습니다."));
+    }
 }
 
 

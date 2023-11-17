@@ -76,6 +76,7 @@ private:
 	void callFunction(CompiledFunction* function, int numArgs);
 	void callBuiltin(Builtin* builtin, int numArgs);
 	void executeCall(int numArgs);
+    void makeClass(int numArgs);
 };
 
 

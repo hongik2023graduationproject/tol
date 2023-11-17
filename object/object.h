@@ -30,6 +30,19 @@ public:
     }
 };
 
+class Float : public Object{
+public:
+	long long value{};
+
+	Float() { type = ObjectType::INTEGER; };
+	Float(double value) : value(value) { type = ObjectType::FLOAT; };
+
+	string print() final {
+		return to_string(value);
+	}
+};
+
+
 class String : public Object {
 public:
     string value{};
@@ -109,12 +122,26 @@ public:
 	int numParameters; // count of parameters
 
 	CompiledFunction() {type = ObjectType::COMPILED_FUNCTION;};
-	CompiledFunction(vector<vector<byte>*> instructions) : instructions(std::move(instructions))
-		{type = ObjectType::COMPILED_FUNCTION;};
+	CompiledFunction(vector<vector<byte>*> instructions, int numLocals = 0, int numParameters = 0)
+        : instructions(std::move(instructions)), numLocals(numLocals), numParameters(numParameters) {type = ObjectType::COMPILED_FUNCTION;};
 
 	string print() {
 		return "CompiledFunction";
 	}
+};
+
+class CompiledClass : public Object {
+public:
+    vector<vector<byte>*> instructions;
+    int numLocalDefine;
+    string name;
+
+    CompiledClass(string name, vector<vector<byte>*> instructions, int numLocalDefine)
+        : name(name), instructions(instructions), numLocalDefine(numLocalDefine) { type = ObjectType::COMPILED_CLASS; }
+
+    string print() {
+        return "Compiled Class: " + name;
+    }
 };
 
 #endif //TOLELOM_OBJECT_H

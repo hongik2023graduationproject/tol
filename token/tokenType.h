@@ -37,6 +37,9 @@ enum class TokenType {
     RBRACKET,       // ]
     LESS_THAN,      // <
 	GREATER_THAN,	// >
+	LESS_EQUAL,  	// <=
+	GREATER_EQUAL, 	// >=
+
 
     // 예약어
     LET,            // LET

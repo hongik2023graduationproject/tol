@@ -1,6 +1,7 @@
 #ifndef TOLELOM_LEXER_H
 #define TOLELOM_LEXER_H
 
+#include <set>
 #include <map>
 #include <string>
 #include <vector>
@@ -32,11 +33,13 @@ private:
     string readLetter();
     string readString();
 
+    set<string> classNames;
+
     map<string, TokenType> keywords = {
             {"정수", TokenType::INT},
             {"함수", TokenType::FUNCTION},
-            {"변수", TokenType::LET},
-            {"리턴", TokenType::RETURN},
+            {"변수", TokenType::LET}, // 삭제해도 될 듯?
+            {"return", TokenType::RETURN},
             {"true", TokenType::TRUE},
             {"false", TokenType::FALSE},
             {"만약", TokenType::IF},
@@ -44,7 +47,7 @@ private:
             {"아니면", TokenType::ELSE},
 			{"반복", TokenType::LOOP},
             {"문자", TokenType::STR},
-            {"클래스", TokenType::CLASS},
+            {"class", TokenType::CLASS},
     };
 };
 

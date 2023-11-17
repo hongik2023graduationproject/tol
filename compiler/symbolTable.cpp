@@ -5,7 +5,7 @@ Symbol SymbolTable::Define(const std::string& name, const ObjectType type) {
     Symbol symbol;
     symbol.name = name;
     symbol.index = numberDefinitions;
-    symbol.scope = outer == nullptr ? GlobalScope : LocalScope;
+    symbol.scope = (outer == nullptr) ? GlobalScope : LocalScope;
     symbol.type = type;
 
     store[name] = symbol;

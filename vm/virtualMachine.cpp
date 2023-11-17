@@ -360,11 +360,18 @@ void VirtualMachine::executeCall(int numArgs) {
 
 void VirtualMachine::makeClass(int numArgs) {
     Object* callee = stack[stackPointer - 1 - numArgs]; // class Obj
-    if (CompiledClass* classObj = dynamic_cast<CompiledClass*>(callee)) {
+
+    Class* classObject = new Class;
+
+    if (CompiledClass* compiledClass = dynamic_cast<CompiledClass*>(callee)) {
+//        compiledClass->classInitInstructions
+
+
+
         for (int pointer = stackPointer - 1 - numArgs + 1; pointer < stackPointer; ++pointer) {
             Object* argument = stack[pointer];
-
-
+            // 타입 체킹, 값 수정
+            classObject->elements.push_back(argument);
         }
     } else {
         throw(invalid_argument("클래스가 아닌 것을 호출하고 있습니다."));

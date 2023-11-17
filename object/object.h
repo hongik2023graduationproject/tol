@@ -30,6 +30,18 @@ public:
     }
 };
 
+class Float : public Object{
+public:
+	long long value{};
+
+	Float() { type = ObjectType::INTEGER; };
+	Float(double value) : value(value) { type = ObjectType::FLOAT; };
+
+	string print() final {
+		return to_string(value);
+	}
+};
+
 
 class String : public Object {
 public:

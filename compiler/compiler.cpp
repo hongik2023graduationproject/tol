@@ -242,6 +242,16 @@ ObjectType Compiler::compile(Node *node) {
             emit(OpcodeType::OpLessThan);
             return ObjectType::BOOLEAN;
         }
+		else if (infixExpression->token->tokenType == TokenType::GREATER_THAN) {
+			emit(OpcodeType::OpGreaterThan);
+			return ObjectType::BOOLEAN;
+		}else if (infixExpression->token->tokenType == TokenType::LESS_EQUAL) {
+			emit(OpcodeType::OpLessEqual);
+			return ObjectType::BOOLEAN;
+		}else if (infixExpression->token->tokenType == TokenType::GREATER_EQUAL) {
+			emit(OpcodeType::OpGreaterEqual);
+			return ObjectType::BOOLEAN;
+		}
         else if (infixExpression->token->tokenType == TokenType::EQUAL) {
             emit(OpcodeType::OpEqual);
             return ObjectType::BOOLEAN;

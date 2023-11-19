@@ -134,10 +134,24 @@ void Lexer::tokenizing() {
             tokens.push_back(new Token{TokenType::RBRACKET, characters[currentReadPoint], line});
         }
         else if (characters[currentReadPoint] == "<") {
-            tokens.push_back(new Token{TokenType::LESS_THAN, characters[currentReadPoint], line});
+			if (characters[nextReadPoint] == "=") {
+				tokens.push_back(new Token{TokenType::LESS_EQUAL, characters[currentReadPoint] + characters[nextReadPoint], line});
+				currentReadPoint++;
+				nextReadPoint++;
+			}
+			else {
+				tokens.push_back(new Token{TokenType::LESS_THAN, characters[currentReadPoint], line});
+			}
         }
         else if (characters[currentReadPoint] == ">") {
-            tokens.push_back(new Token{TokenType::GREATER_THAN, characters[currentReadPoint], line});
+			if (characters[nextReadPoint] == "=") {
+				tokens.push_back(new Token{TokenType::GREATER_EQUAL, characters[currentReadPoint] + characters[nextReadPoint], line});
+				currentReadPoint++;
+				nextReadPoint++;
+			}
+			else {
+				tokens.push_back(new Token{TokenType::GREATER_THAN, characters[currentReadPoint], line});
+			}
         }
         else if (characters[currentReadPoint] == "\"") {
             tokens.push_back(new Token{TokenType::STRING, readString(), line});

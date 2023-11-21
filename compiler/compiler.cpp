@@ -178,6 +178,11 @@ ObjectType Compiler::compile(Node *node) {
         emit(OpcodeType::OpConstant, vector<int>{addConstant(integer)});
         return ObjectType::INTEGER;
     }
+	else if (FloatLiteral* floatLiteral = dynamic_cast<FloatLiteral*>(node)) {
+		Float* flt  = new Float(floatLiteral->value);
+		emit(OpcodeType::OpConstant, vector<int>{addConstant(flt)});
+		return ObjectType::FLOAT;
+	}
     else if (BooleanLiteral* booleanLiteral = dynamic_cast<BooleanLiteral*>(node)) {
         if (booleanLiteral->value) {
             emit(OpcodeType::OpTrue);
@@ -388,6 +393,7 @@ void Compiler::loadSymbol(Symbol symbol) {
 void Compiler::letStatementTypeCheck(std::string name, ObjectType valueType) {
     if (name == "정수" && valueType == ObjectType::INTEGER) {}
     else if (name == "문자" && valueType == ObjectType::STRING) {}
+	else if (name == "실수" && valueType == ObjectType::FLOAT) {}
     else if (classSet.find(name) != classSet.end()) {}
     else {
         throw invalid_argument("let statement의 타입과 값의 타입이 일치하지 않습니다.");

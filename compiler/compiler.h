@@ -24,6 +24,7 @@
 #include "../ast/literals/booleanLiteral.h"
 #include "../ast/literals/stringLiteral.h"
 #include "../ast/literals/arrayLiteral.h"
+#include "../ast/literals/floatLiteral.h"
 #include "../endian/endian.h"
 #include "../builtins/builtins.h"
 #include "symbolTable.h"

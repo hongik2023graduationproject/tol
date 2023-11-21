@@ -32,6 +32,9 @@ Object *Builtins::funcPuts(vector<Object *> args) {
 		else if(String* str = dynamic_cast<String*>(obj)){
 			cout << str->value;
 		}
+		else if(Float* flt = dynamic_cast<Float*>(obj)){
+			cout << flt->value;
+		}
 		else{
 			throw(invalid_argument("출력한다. : 올뱌르지 않은 인수입니다."));
 		}

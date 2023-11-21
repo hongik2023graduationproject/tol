@@ -164,6 +164,9 @@ void VirtualMachine::executeBinaryOperation(OpcodeType opcode) {
     else if (left->type == ObjectType::STRING && right->type == ObjectType::STRING) {
         return executeBinaryStringOperation(opcode, dynamic_cast<String*>(left), dynamic_cast<String*>(right));
     }
+	else if (left->type == ObjectType::FLOAT && right->type == ObjectType::FLOAT) {
+		return executeBinaryFloatOperation(opcode, dynamic_cast<Float*>(left), dynamic_cast<Float*>(right));
+	}
 }
 
 void VirtualMachine::executeBinaryIntegerOperation(OpcodeType opcode, Integer* left, Integer* right) {
@@ -191,6 +194,31 @@ void VirtualMachine::executeBinaryIntegerOperation(OpcodeType opcode, Integer* l
     push(new Integer{returnValue});
 }
 
+void VirtualMachine::executeBinaryFloatOperation(OpcodeType opcode, Float* left, Float* right) {
+	double leftValue = left->value;
+	double rightValue = right->value;
+
+	double returnValue;
+	switch (opcode) {
+		case OpcodeType::OpAdd:
+			returnValue = leftValue + rightValue;
+			break;
+		case OpcodeType::OpSub:
+			returnValue = leftValue - rightValue;
+			break;
+		case OpcodeType::OpMul:
+			returnValue = leftValue * rightValue;
+			break;
+		case OpcodeType::OpDiv:
+			returnValue = leftValue / rightValue;
+			break;
+		defalut:
+			throw invalid_argument("");
+	}
+
+	push(new Float{returnValue});
+}
+
 void VirtualMachine::executeBinaryStringOperation(OpcodeType opcode, String *left, String *right) {
     if (opcode != OpcodeType::OpAdd) {
         throw invalid_argument("");
@@ -207,6 +235,9 @@ void VirtualMachine::executeComparison(OpcodeType opcode) {
     if (left->type == ObjectType::INTEGER && right->type == ObjectType::INTEGER) {
         return executeIntegerComparison(opcode, dynamic_cast<Integer*>(left), dynamic_cast<Integer*>(right));
     }
+	else if (left->type == ObjectType::FLOAT && right->type == ObjectType::FLOAT) {
+		return executeFloatComparison(opcode, dynamic_cast<Float*>(left), dynamic_cast<Float*>(right));
+	}
 
     // boolean끼리 연산
     switch (opcode) {
@@ -239,6 +270,28 @@ void VirtualMachine::executeIntegerComparison(OpcodeType opcode, Integer *left, 
         default:
             throw invalid_argument("");
     }
+}
+
+void VirtualMachine::executeFloatComparison(OpcodeType opcode, Float *left, Float *right) {
+	double leftValue = left->value;
+	double rightValue = right->value;
+
+	switch (opcode) {
+		case OpcodeType::OpEqual:
+			return push(nativeBoolToBooleanObject(leftValue == rightValue));
+		case OpcodeType::OpNotEqual:
+			return push(nativeBoolToBooleanObject(leftValue != rightValue));
+		case OpcodeType::OpLessThan:
+			return push(nativeBoolToBooleanObject(leftValue < rightValue));
+		case OpcodeType::OpGreaterThan:
+			return push(nativeBoolToBooleanObject(leftValue > rightValue));
+		case OpcodeType::OpLessEqual:
+			return push(nativeBoolToBooleanObject(leftValue <= rightValue));
+		case OpcodeType::OpGreaterEqual:
+			return push(nativeBoolToBooleanObject(leftValue >= rightValue));
+		default:
+			throw invalid_argument("");
+	}
 }
 
 Boolean* VirtualMachine::nativeBoolToBooleanObject(bool input) {

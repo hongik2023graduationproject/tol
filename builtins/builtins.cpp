@@ -65,10 +65,12 @@ Object *Builtins::funcGets(vector<Object *> args) {
 	}
 
 	// 실수로 변환 시도
-//	iss >> floatResult;
-//	if(!iss.fail()){
-//
-//	}
+	iss >> floatResult;
+	if(!iss.fail()){
+		Float* flt = new Float;
+		flt->value = floatResult;
+		return flt;
+	}
 
 	// string 객체 반환
 	auto str = new String;

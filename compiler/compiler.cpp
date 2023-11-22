@@ -42,7 +42,6 @@ ObjectType Compiler::compile(Node *node) {
         // type checking
         letStatementTypeCheck(type, expressionType);
 
-
         Symbol symbol = symbolTable->Define(letStatement->name->name, expressionType);
         if (symbol.scope == GlobalScope) {
 			emit(OpcodeType::OpSetGlobal, vector<int>{symbol.index});
@@ -121,7 +120,10 @@ ObjectType Compiler::compile(Node *node) {
     else if (ClassStatement* classStatement = dynamic_cast<ClassStatement*>(node)) {
         // compile class statement
         enterScope();
-//        compile(classStatement->block); // 이걸 바꿔야 되나 아니면 체킹을 해야되나
+        for (auto variable : classStatement->variables)
+            compile(variable);
+//        for (auto function : classStatement->functions)
+//            compile(function);
         int numLocalDefine = symbolTable->numberDefinitions;
         vector<Instruction*> instructions = leaveScope();
 

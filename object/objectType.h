@@ -11,7 +11,9 @@ enum class ObjectType {
     ARRAY,
 	COMPILED_FUNCTION,
 	BUILTIN_FUNCTION,
-    COMPILED_CLASS
+    COMPILED_CLASS,
+    CLASS,
+
 };
 
 

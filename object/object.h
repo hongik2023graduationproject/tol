@@ -132,15 +132,26 @@ public:
 
 class CompiledClass : public Object {
 public:
-    vector<vector<byte>*> instructions;
-    int numLocalDefine;
     string name;
+    vector<vector<byte>*> classInitInstructions;
+    int numLocalDefine;
 
-    CompiledClass(string name, vector<vector<byte>*> instructions, int numLocalDefine)
-        : name(name), instructions(instructions), numLocalDefine(numLocalDefine) { type = ObjectType::COMPILED_CLASS; }
+    CompiledClass(string name, vector<vector<byte>*> classInitInstructions, int numLocalDefine)
+        : name(name), classInitInstructions(classInitInstructions), numLocalDefine(numLocalDefine) { type = ObjectType::COMPILED_CLASS; }
 
     string print() {
         return "Compiled Class: " + name;
+    }
+};
+
+class Class : public Object {
+public:
+    vector<Object*> elements;
+
+//    Class(CompiledClass* compiledClass) : compiledClass(compiledClass) { type = ObjectType::CLASS; };
+
+    string print() {
+        return "Class: ";
     }
 };
 

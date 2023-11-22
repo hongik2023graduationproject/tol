@@ -446,7 +446,9 @@ vector<Expression*> Parser::parseFunctionExpressionParameters() {
 
 
 
-
+Expression* Parser::parseFloatLiteral() {
+	return new FloatLiteral{currentToken, stod(currentToken->literal)};
+}
 
 Expression* Parser::parseIntegerLiteral() {
     return new IntegerLiteral{currentToken, stoll(currentToken->literal)};

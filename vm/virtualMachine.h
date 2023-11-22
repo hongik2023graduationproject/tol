@@ -77,6 +77,10 @@ private:
 	void callBuiltin(Builtin* builtin, int numArgs);
 	void executeCall(int numArgs);
     void makeClass(int numArgs);
+
+	void executeFloatComparison(OpcodeType opcode, Float *left, Float *right);
+
+	void executeBinaryFloatOperation(OpcodeType opcode, Float *left, Float *right);
 };
 
 

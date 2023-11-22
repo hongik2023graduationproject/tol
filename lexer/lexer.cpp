@@ -134,16 +134,32 @@ void Lexer::tokenizing() {
             tokens.push_back(new Token{TokenType::RBRACKET, characters[currentReadPoint], line});
         }
         else if (characters[currentReadPoint] == "<") {
-            tokens.push_back(new Token{TokenType::LESS_THAN, characters[currentReadPoint], line});
+			if (characters[nextReadPoint] == "=") {
+				tokens.push_back(new Token{TokenType::LESS_EQUAL, characters[currentReadPoint] + characters[nextReadPoint], line});
+				currentReadPoint++;
+				nextReadPoint++;
+			}
+			else {
+				tokens.push_back(new Token{TokenType::LESS_THAN, characters[currentReadPoint], line});
+			}
         }
         else if (characters[currentReadPoint] == ">") {
-            tokens.push_back(new Token{TokenType::GREATER_THAN, characters[currentReadPoint], line});
+			if (characters[nextReadPoint] == "=") {
+				tokens.push_back(new Token{TokenType::GREATER_EQUAL, characters[currentReadPoint] + characters[nextReadPoint], line});
+				currentReadPoint++;
+				nextReadPoint++;
+			}
+			else {
+				tokens.push_back(new Token{TokenType::GREATER_THAN, characters[currentReadPoint], line});
+			}
         }
         else if (characters[currentReadPoint] == "\"") {
             tokens.push_back(new Token{TokenType::STRING, readString(), line});
         }
         else if (isNumber(characters[currentReadPoint])) {
-            tokens.push_back(new Token{TokenType::INTEGER, readNumber(), line});
+			TokenType numberType;
+			string readNum = readNumber(numberType);
+            tokens.push_back(new Token{numberType, readNum, line});
         }
         else if (isLetter(characters[currentReadPoint])) { // isNumber가 먼저 있어서 숫자로 시작하는 문자열은 존재하지 않는다. 혼동의 여지가 있으니 나중에 정리하는 것도 추천
             string letter = readLetter();
@@ -184,13 +200,25 @@ bool Lexer::isNumber(const std::string &character) {
     return ("0" <= character && character <= "9");
 }
 
-string Lexer::readNumber() {
+string Lexer::readNumber(TokenType & numberType) {
     string number = characters[currentReadPoint];
+	numberType = TokenType::INTEGER;
     while (nextReadPoint < characters.size() && isNumber(characters[nextReadPoint])) {
         currentReadPoint++;
         nextReadPoint++;
         number += characters[currentReadPoint];
     }
+	if (characters[nextReadPoint] == ".") {
+		numberType = TokenType::FLOAT;
+		currentReadPoint++;
+		nextReadPoint++;
+		number += characters[currentReadPoint];
+		while (nextReadPoint < characters.size() && isNumber(characters[nextReadPoint])) {
+			currentReadPoint++;
+			nextReadPoint++;
+			number += characters[currentReadPoint];
+		}
+	}
     return number;
 }
 

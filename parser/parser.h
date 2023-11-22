@@ -32,6 +32,7 @@
 #include "../ast/literals/booleanLiteral.h"
 #include "../ast/statements/functionStatement.h"
 #include "../ast/literals/arrayLiteral.h"
+#include "../ast/literals/floatLiteral.h"
 
 enum class Precedence;
 
@@ -53,6 +54,7 @@ private:
     std::map<TokenType, prefixParseFunction> prefixParseFunctions = {
             {TokenType::IDENTIFIER, &Parser::parseIdentifierExpression},
             {TokenType::INTEGER, &Parser::parseIntegerLiteral},
+			{TokenType::FLOAT, &Parser::parseFloatLiteral},
             {TokenType::STRING, &Parser::parseStringLiteral},
             {TokenType::BANG, &Parser::parsePrefixExpression},
             {TokenType::MINUS, &Parser::parsePrefixExpression},
@@ -71,6 +73,9 @@ private:
             {TokenType::EQUAL, &Parser::parseInfixExpression},
             {TokenType::NOT_EQUAL, &Parser::parseInfixExpression},
             {TokenType::LESS_THAN, &Parser::parseInfixExpression},
+			{TokenType::GREATER_THAN, &Parser::parseInfixExpression},
+			{TokenType::LESS_EQUAL, &Parser::parseInfixExpression},
+			{TokenType::GREATER_EQUAL, &Parser::parseInfixExpression},
             {TokenType::LBRACKET, &Parser::parseIndexExpression}, // ????
     };
     enum class Precedence {
@@ -87,6 +92,9 @@ private:
             {TokenType::EQUAL, Precedence::EQUALS},
             {TokenType::NOT_EQUAL, Precedence::EQUALS},
             {TokenType::LESS_THAN, Precedence::LESSGREATER},
+			{TokenType::GREATER_THAN, Precedence::LESSGREATER},
+			{TokenType::LESS_EQUAL, Precedence::LESSGREATER},
+			{TokenType::GREATER_EQUAL, Precedence::LESSGREATER},
             {TokenType::PLUS, Precedence::SUM},
             {TokenType::MINUS, Precedence::SUM},
             {TokenType::ASTERISK, Precedence::PRODUCT},
@@ -124,6 +132,7 @@ private:
     Expression* parseBooleanLiteral();
     Expression* parseStringLiteral();
     Expression* parseArrayLiteral();
+	Expression* parseFloatLiteral();
 
     vector<IdentifierExpression*> parseFunctionParameters();
     vector<Expression*> parseFunctionExpressionParameters();

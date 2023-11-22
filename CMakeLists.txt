@@ -58,4 +58,5 @@ add_executable(tolelom main.cpp
         ast/statements/classInitStatement.h
         builtins/builtins.h
         builtins/builtins.cpp
+        ast/literals/floatLiteral.h
 )

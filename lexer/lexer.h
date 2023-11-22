@@ -28,7 +28,7 @@ private:
     void tokenizing();
 
     static bool isNumber(const std::string &character);
-    string readNumber();
+    string readNumber(TokenType & numberType);
     static bool isLetter(const string &character);
     string readLetter();
     string readString();

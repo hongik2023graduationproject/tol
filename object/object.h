@@ -32,9 +32,9 @@ public:
 
 class Float : public Object{
 public:
-	long long value{};
+	double value{};
 
-	Float() { type = ObjectType::INTEGER; };
+	Float() { type = ObjectType::FLOAT; };
 	Float(double value) : value(value) { type = ObjectType::FLOAT; };
 
 	string print() final {

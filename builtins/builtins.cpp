@@ -54,15 +54,6 @@ Object *Builtins::funcGets(vector<Object *> args) {
 	int integerResult;
 	float floatResult;
 
-	// 정수로 변환 시도
-	iss >> integerResult;
-
-	// 변환 성공했으면 정수 객체 반환
-	if (!iss.fail()) {
-		Integer* integer = new Integer;
-		integer->value = integerResult;
-		return integer;
-	}
 
 	// 실수로 변환 시도
 	iss >> floatResult;
@@ -71,6 +62,16 @@ Object *Builtins::funcGets(vector<Object *> args) {
 		flt->value = floatResult;
 		return flt;
 	}
+
+	// 정수로 변환 시도
+	iss >> integerResult;
+
+	if (!iss.fail()) {
+		Integer* integer = new Integer;
+		integer->value = integerResult;
+		return integer;
+	}
+
 
 	// string 객체 반환
 	auto str = new String;

@@ -40,7 +40,7 @@ ObjectType Compiler::compile(Node *node) {
         ObjectType expressionType = compile(letStatement->expression);
 
         // type checking
-        letStatementTypeCheck(type, expressionType);
+        // letStatementTypeCheck(type, expressionType);
 
         Symbol symbol = symbolTable->Define(letStatement->name->name, expressionType);
         if (symbol.scope == GlobalScope) {

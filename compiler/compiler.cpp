@@ -32,10 +32,14 @@ ObjectType Compiler::compile(Node *node) {
         emit(OpcodeType::OpPop);
     }
     else if (LetStatement* letStatement = dynamic_cast<LetStatement*>(node)) {
-        string type = letStatement->token->literal;
+        string type = letStatement->token->literal; // 이것도 타입 체킹의 일부 나중에 리팩토링하기
         if (classSet.find(type) != classSet.end()) {
-            emit(OpcodeType::OpGetGlobal, vector<int>{classSet.find(type)->second});
+            classIndex = classSet.find(type)->second;
         }
+        else {
+            // class가 아닐 때 에러 띄우기
+        }
+
 
         ObjectType expressionType = compile(letStatement->expression);
 
@@ -122,8 +126,8 @@ ObjectType Compiler::compile(Node *node) {
         enterScope();
         for (auto variable : classStatement->variables)
             compile(variable);
-//        for (auto function : classStatement->functions)
-//            compile(function);
+        for (auto function : classStatement->functions)
+            compile(function);
         int numLocalDefine = symbolTable->numberDefinitions;
         vector<Instruction*> instructions = leaveScope();
 
@@ -289,12 +293,8 @@ ObjectType Compiler::compile(Node *node) {
         return ObjectType::INTEGER;
 	}
     else if (ClassExpression* classExpression = dynamic_cast<ClassExpression*>(node)) {
-        for (auto initalField : classExpression->statements) { // 여기서 좀 더 세부적인 처리가 필요?
-            compile(initalField);
-        }
-
-        emit(OpcodeType::OpMakeClass, vector<int>{static_cast<int>(classExpression->statements.size())});
-
+        Class* classObject = classExpressionStatementCompile(classExpression);
+        emit(OpcodeType::OpConstant, vector<int>{addConstant(classObject)});
         return ObjectType::COMPILED_CLASS;
     }
     else {
@@ -394,4 +394,65 @@ void Compiler::letStatementTypeCheck(std::string name, ObjectType valueType) {
     else {
         throw invalid_argument("let statement의 타입과 값의 타입이 일치하지 않습니다.");
     }
+}
+
+Class* Compiler::classExpressionStatementCompile(ClassExpression* classExpression) {
+    Class* classObject = new Class;
+
+    ClassStatement* classStatement = dynamic_cast<ClassStatement*>(constants[classIndex]);
+
+    enterScope();
+    for (auto variable : classStatement->variables) {
+        bool findInInitalField = false;
+        for (auto initialField : classExpression->statements) {
+            if (variable->name == initialField->name) {
+                findInInitalField = true;
+                classObject->elements.push_back(makeObject(initialField));
+            }
+        }
+        if (!findInInitalField) {
+            makeObject(variable->expression);
+        }
+    }
+    for (auto variable : classStatement->functions) {
+        classObject->elements.push_back(makeFunctionObject(variable));
+    }
+    leaveScope();
+
+    return classObject;
+}
+
+Object* Compiler::makeObject(Node* node) {
+    if (IntegerLiteral* integerLiteral = dynamic_cast<IntegerLiteral*>(node)) {
+        Integer* integer  = new Integer(integerLiteral->value);
+        return integer;
+    }
+    else if (BooleanLiteral* booleanLiteral = dynamic_cast<BooleanLiteral*>(node)) {
+        Boolean* boolean;
+        boolean->value = booleanLiteral->value;
+        return boolean;
+    }
+    else if (StringLiteral* stringLiteral = dynamic_cast<StringLiteral*>(node)) {
+        String* str = new String(stringLiteral->value);
+        return str;
+    }
+    else {
+        throw invalid_argument("알려지지 않은 오류 발생.");
+    }
+}
+
+Object* Compiler::makeFunctionObject(FunctionStatement* functionStatement) {
+    enterScope();
+    for(auto parameter : functionStatement->parameters){
+        symbolTable->Define(parameter->name, ObjectType::INTEGER);
+    }
+    compile(functionStatement->blockStatement);
+    if(!lastInstructionIs(OpcodeType::OpReturnValue)) {
+        emit(OpcodeType::OpReturn);
+    }
+    int numLocals = symbolTable->numberDefinitions;
+    vector<Instruction*> instructions = leaveScope();
+
+    CompiledFunction* compiledFn = new CompiledFunction(instructions, numLocals, functionStatement->parameters.size());
+    return compiledFn;
 }

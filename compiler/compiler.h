@@ -66,8 +66,10 @@ private:
     SymbolTable* symbolTable;
 	vector<CompilationScope*> scopes; // vector -> stack으로 바꿔도 됨
     map<string, int> classSet; // 11.9
+    int classIndex;
 
 	int scopeIndex;
+    bool isMakeClass = false;
 
     ObjectType compile(Node* node);
     int addConstant(Object* object);
@@ -81,6 +83,9 @@ private:
 
     void letStatementTypeCheck(string name, ObjectType valueType);
 
+    Class* classExpressionStatementCompile(ClassExpression* classExpression);
+    Object* makeObject(Node* node);
+    Object* makeFunctionObject(FunctionStatement* functionStatement);
 
 	vector<Instruction*>& currentInstructions();
 	void enterScope();

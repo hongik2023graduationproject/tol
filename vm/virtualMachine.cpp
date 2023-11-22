@@ -371,10 +371,6 @@ void VirtualMachine::makeClass(int numArgs) {
     Class* classObject = new Class;
 
     if (CompiledClass* compiledClass = dynamic_cast<CompiledClass*>(callee)) {
-//        compiledClass->classInitInstructions
-
-
-
         for (int pointer = stackPointer - 1 - numArgs + 1; pointer < stackPointer; ++pointer) {
             Object* argument = stack[pointer];
             // 타입 체킹, 값 수정
